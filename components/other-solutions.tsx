@@ -52,11 +52,13 @@ function SolutionCard({ solution, index, isViewportActive, cardRef }: { solution
   return (
     <div
       ref={cardRef}
-      className={`glass-panel rounded-3xl p-8 relative overflow-hidden group transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(34,211,238,0.15)] hover:border-neon-cyan/50 will-change-transform ${isViewportActive ? "viewport-active" : ""}`}
+      className={`glass-panel rounded-3xl p-8 relative overflow-hidden group will-change-transform ${isViewportActive ? "viewport-active" : ""}`}
       style={{
         animationDelay: `${0.2 + index * 0.1}s`,
-        borderColor: isViewportActive ? neonColor : ''
-      }}
+        "--active-border": index % 2 === 0 ? "rgba(168,85,247,0.5)" : "rgba(34,211,238,0.5)",
+        "--active-glow": index % 2 === 0 ? "rgba(168,85,247,0.2)" : "rgba(34,211,238,0.2)",
+        "--neon-glow": index % 2 === 0 ? "rgba(168,85,247,0.15)" : "rgba(34,211,238,0.15)"
+      } as React.CSSProperties}
     >
       <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-500">
         <span className="text-6xl filter blur-[2px]">{solution.icon}</span>

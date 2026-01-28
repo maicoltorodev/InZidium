@@ -138,9 +138,14 @@
   }
 }
 
-.glass-panel:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+/* Standard Hover for mouse devices only */
+@media (hover: hover) {
+  .glass-panel:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transform: translateY(-8px);
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5), 0 0 20px var(--neon-glow, transparent);
+  }
 }
 
 /* Scroll Animations Definitions */
@@ -178,13 +183,15 @@
 /* Simulation of hover on mobile (centered in viewport) */
 .viewport-active {
   transition: all 0.4s ease;
+  will-change: transform, border-color, background, box-shadow;
 }
 
 @media (max-width: 768px) {
   .viewport-active {
-    border-color: rgba(168, 85, 247, 0.4) !important;
-    background: rgba(255, 255, 255, 0.06) !important;
-    /* No transformation or heavy shadow for max performance on mobile center focus */
+    border-color: var(--active-border, rgba(168, 85, 247, 0.4)) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    transform: scale(1.02);
+    box-shadow: 0 0 20px var(--active-glow, rgba(168, 85, 247, 0.2)) !important;
   }
 
   .hide-on-mobile {

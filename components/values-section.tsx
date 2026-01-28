@@ -43,11 +43,12 @@ function ValueCard({ value, index, isViewportActive, cardRef }: { value: (typeof
   return (
     <div
       ref={cardRef}
-      className={`glass-panel border-white/5 bg-white/5 rounded-3xl p-8 sm:p-10 relative overflow-hidden group transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl will-change-transform ${isViewportActive ? "viewport-active" : ""}`}
+      className={`glass-panel border-white/5 bg-white/5 rounded-3xl p-8 sm:p-10 relative overflow-hidden group will-change-transform ${isViewportActive ? "viewport-active" : ""}`}
       style={{
-        boxShadow: isViewportActive ? `0 0 30px ${neonColor}20` : '',
-        borderColor: isViewportActive ? `${neonColor}50` : ''
-      }}
+        "--active-border": index % 2 === 0 ? "rgba(168,85,247,0.5)" : "rgba(34,211,238,0.5)",
+        "--active-glow": index % 2 === 0 ? "rgba(168,85,247,0.2)" : "rgba(34,211,238,0.2)",
+        "--neon-glow": index % 2 === 0 ? "rgba(168,85,247,0.15)" : "rgba(34,211,238,0.15)"
+      } as React.CSSProperties}
     >
       {/* Background gradient overlay on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />

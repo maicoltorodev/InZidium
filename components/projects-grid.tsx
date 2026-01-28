@@ -75,11 +75,13 @@ function ProjectCard({ project, index, isViewportActive, cardRef }: { project: (
   return (
     <article
       ref={cardRef}
-      className={`glass-panel rounded-3xl overflow-hidden relative group transition-all duration-300 hover:-translate-y-2 hover:border-neon-purple/50 hover:shadow-[0_0_40px_rgba(168,85,247,0.15)] will-change-transform ${isViewportActive ? "viewport-active" : ""}`}
+      className={`glass-panel rounded-3xl overflow-hidden relative group will-change-transform ${isViewportActive ? "viewport-active" : ""}`}
       style={{
         animationDelay: `${0.2 + index * 0.1}s`,
-        borderColor: isViewportActive ? neonColor : ''
-      }}
+        "--active-border": "rgba(168,85,247,0.5)",
+        "--active-glow": "rgba(168,85,247,0.2)",
+        "--neon-glow": "rgba(168,85,247,0.15)"
+      } as React.CSSProperties}
     >
       {/* Glow behind the card on hover */}
       <div className="absolute inset-0 bg-neon-purple/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl pointer-events-none" />
