@@ -47,48 +47,46 @@ const solutions: Solution[] = [
 ]
 
 function SolutionCard({ solution, index, isViewportActive, cardRef }: { solution: Solution; index: number; isViewportActive: boolean; cardRef: (el: HTMLDivElement | null) => void }) {
+  const neonColor = index % 2 === 0 ? 'var(--color-neon-purple)' : 'var(--color-neon-cyan)';
+
   return (
-    <Card 
+    <div
       ref={cardRef}
-      className={`group border border-primary/30 bg-gradient-to-br from-card/95 to-card/80 overflow-hidden transition-all duration-500 cursor-pointer hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 animate-on-mount md:hover:scale-[1.02] ${isViewportActive ? "viewport-active" : ""}`}
-      data-animation="fade-up" 
-      style={{ animationDelay: `${0.2 + index * 0.1}s` }}
+      className={`glass-panel rounded-3xl p-8 relative overflow-hidden group transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(34,211,238,0.15)] hover:border-neon-cyan/50 ${isViewportActive ? "viewport-active" : ""}`}
+      style={{
+        animationDelay: `${0.2 + index * 0.1}s`,
+        borderColor: isViewportActive ? neonColor : ''
+      }}
     >
-      {/* Icon container with transform wrapper */}
-      <div className="relative h-48 sm:h-56 overflow-hidden bg-gradient-to-br from-primary/10 to-accent/10">
-        {/* Transform container: scales icon and overlays together */}
-        <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-110 origin-center">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-6xl">{solution.icon}</div>
-          </div>
-          
-          {/* Gradient overlays - same transform context as icon */}
-          <div className="absolute inset-0 z-[1] pointer-events-none">
-            <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent opacity-80" />
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-accent/0 group-hover:from-primary/15 group-hover:via-transparent group-hover:to-accent/15 transition-all duration-500" />
-          </div>
-        </div>
+      <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-500">
+        <span className="text-6xl filter blur-[2px]">{solution.icon}</span>
       </div>
 
-      <CardContent className="relative z-10 p-6">
-        <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors duration-500">
+      <div className="relative z-10">
+        <div className="text-4xl mb-6 bg-white/10 w-16 h-16 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/5 shadow-inner">
+          {solution.icon}
+        </div>
+
+        <h3 className="text-xl sm:text-2xl font-orbitron text-white mb-4 group-hover:text-neon-cyan transition-colors">
           {solution.title}
         </h3>
-        <p className="text-sm sm:text-base text-muted-foreground/80 mb-4 leading-relaxed">{solution.description}</p>
+
+        <p className="text-muted-foreground leading-relaxed mb-6">
+          {solution.description}
+        </p>
 
         <div className="flex flex-wrap gap-2">
           {solution.features.map((feature) => (
-            <Badge 
-              key={feature} 
-              variant="secondary" 
-              className="text-xs font-medium border-primary/30 bg-primary/5 group-hover:bg-primary/10 group-hover:border-primary/50 transition-colors duration-500"
+            <span
+              key={feature}
+              className="text-xs font-medium px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/80 group-hover:border-neon-cyan/30 transition-colors"
             >
               {feature}
-            </Badge>
+            </span>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
 
@@ -98,18 +96,27 @@ export function OtherSolutions() {
   const activeCardIndex = useViewportHover(cardRefs)
 
   return (
-    <section id="otras-soluciones" className="scroll-mt-24 sm:scroll-mt-32 pt-28 sm:pt-40 pb-20 sm:pb-32 bg-card/50 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent opacity-50" />
+    <section id="otras-soluciones" className="scroll-mt-24 sm:scroll-mt-32 pt-28 sm:pt-40 pb-20 sm:pb-32 relative overflow-hidden">
+      {/* Ambience */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/2 left-1/4 w-[600px] h-[600px] bg-neon-purple/10 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-neon-cyan/10 rounded-full blur-[100px]" />
+      </div>
+
       <div ref={containerRef} className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="text-center mb-20 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-down">
-          <SectionHeader titleLeft="Otras" titleHighlight="Soluciones" subtitle="Más allá de páginas web, ofrecemos soluciones tecnológicas completas para tu negocio" />
+          <SectionHeader
+            titleLeft="Otras"
+            titleHighlight="Soluciones"
+            subtitle="Tecnología que se adapta a las necesidades específicas de tu crecimiento"
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {solutions.map((solution, index) => (
-            <SolutionCard 
-              key={solution.id} 
-              solution={solution} 
+            <SolutionCard
+              key={solution.id}
+              solution={solution}
               index={index}
               isViewportActive={activeCardIndex === index}
               cardRef={(el) => {

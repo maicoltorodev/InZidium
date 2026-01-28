@@ -12,35 +12,47 @@ export function AboutSection() {
   return (
     <PageSection id="sobre-mi" containerSize="lg">
       <div ref={containerRef} className="relative">
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[400px] h-[400px] sm:w-[800px] sm:h-[800px] opacity-[0.01] sm:opacity-[0.02] pointer-events-none z-0">
-          <div className="relative w-full h-full">
-            <Image src="/logo.webp" alt="Fondo decorativo - InZidium" fill className="object-contain" aria-hidden="true" loading="lazy" fetchPriority="low" quality={40} sizes="(max-width: 640px) 400px, 800px" placeholder="blur" blurDataURL={BLUR_PLACEHOLDER} />
-          </div>
+        {/* Background Gradients */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-neon-purple/20 rounded-full blur-[120px] -z-10 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-neon-cyan/20 rounded-full blur-[120px] -z-10 pointer-events-none" />
+
+        <div className="text-center mb-16 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-down">
+          <SectionHeader
+            titleLeft="Sobre"
+            titleHighlight="Nosotros"
+            subtitle="Transformamos ideas en experiencias digitales de alto impacto"
+            className="text-foreground"
+          />
         </div>
 
-        <div className="text-center mb-20 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-down">
-          <SectionHeader titleLeft="Sobre" titleHighlight="Nosotros" subtitle="Soluciones digitales que impulsan tu negocio y generan resultados reales" />
-        </div>
+        <div className="mb-20 sm:mb-24 animate-on-mount" data-animation="fade-up" style={{ animationDelay: "0.2s" }}>
+          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            <div className="glass-panel p-8 sm:p-10 rounded-3xl hover:bg-white/5 transition-all duration-300 group border border-white/10 hover:border-neon-purple/50 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)]">
+              <h3 className="text-2xl sm:text-3xl font-orbitron mb-4 text-white group-hover:text-neon-purple transition-colors">Estrategia</h3>
+              <p className="text-muted-foreground text-lg leading-relaxed">
+                Entendemos tu <span className="text-white font-medium">modelo comercial</span> a profundidad para diseñar soluciones que no solo se ven bien, sino que funcionan para tu negocio.
+              </p>
+            </div>
 
-        <div className="mb-20 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-up" style={{ animationDelay: "0.3s" }}>
-          <div className="max-w-5xl mx-auto">
-            <div className="relative p-8 sm:p-12 lg:p-16 rounded-3xl bg-card/50 border border-border/30">
-              <div className="absolute top-0 left-0 w-20 h-20 border-t-2 border-l-2 border-primary/20 rounded-tl-3xl" />
-              <div className="absolute bottom-0 right-0 w-20 h-20 border-b-2 border-r-2 border-accent/20 rounded-br-3xl" />
-              <ul className="space-y-4 sm:space-y-6 text-center relative z-10">
-                <li className="about-item-float-left text-xl sm:text-2xl md:text-3xl lg:text-4xl text-foreground/90 leading-relaxed font-normal tracking-wide">
-                  Entendemos tu <span className="text-primary font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">modelo comercial</span>
-                </li>
-                <li className="about-item-float-right text-xl sm:text-2xl md:text-3xl lg:text-4xl text-foreground/90 leading-relaxed font-normal tracking-wide">
-                  Creamos <span className="text-primary font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">páginas web profesionales</span>
-                </li>
-                <li className="about-item-float-left text-xl sm:text-2xl md:text-3xl lg:text-4xl text-foreground/90 leading-relaxed font-normal tracking-wide">
-                  Para <span className="text-primary font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">generar resultados tangibles</span>
-                </li>
-                <li className="about-item-float-right text-xl sm:text-2xl md:text-3xl lg:text-4xl text-foreground/90 leading-relaxed font-normal tracking-wide">
-                  Y el <span className="text-primary font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">crecimiento de tu negocio</span>
-                </li>
-              </ul>
+            <div className="glass-panel p-8 sm:p-10 rounded-3xl hover:bg-white/5 transition-all duration-300 group border border-white/10 hover:border-neon-cyan/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]">
+              <h3 className="text-2xl sm:text-3xl font-orbitron mb-4 text-white group-hover:text-neon-cyan transition-colors">Diseño</h3>
+              <p className="text-muted-foreground text-lg leading-relaxed">
+                Creamos <span className="text-white font-medium">interfaces inmersivas</span> que capturan la esencia de tu marca y mantienen a tus usuarios cautivados.
+              </p>
+            </div>
+
+            <div className="glass-panel p-8 sm:p-10 rounded-3xl hover:bg-white/5 transition-all duration-300 group border border-white/10 hover:border-neon-cyan/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]">
+              <h3 className="text-2xl sm:text-3xl font-orbitron mb-4 text-white group-hover:text-neon-cyan transition-colors">Resultados</h3>
+              <p className="text-muted-foreground text-lg leading-relaxed">
+                Enfocados en <span className="text-white font-medium">métricas reales</span>. Tu crecimiento es nuestro principal indicador de éxito.
+              </p>
+            </div>
+
+            <div className="glass-panel p-8 sm:p-10 rounded-3xl hover:bg-white/5 transition-all duration-300 group border border-white/10 hover:border-neon-purple/50 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)]">
+              <h3 className="text-2xl sm:text-3xl font-orbitron mb-4 text-white group-hover:text-neon-purple transition-colors">Tecnología</h3>
+              <p className="text-muted-foreground text-lg leading-relaxed">
+                Utilizamos el stack más moderno para garantizar <span className="text-white font-medium">velocidad y escalabilidad</span> en cada proyecto.
+              </p>
             </div>
           </div>
         </div>

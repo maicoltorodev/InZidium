@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Geist, Geist_Mono, Orbitron } from "next/font/google"
 import "./globals.css"
 import { JSONLDSchema } from "./components/json-ld-schema"
 
@@ -22,6 +22,13 @@ const geistMono = Geist_Mono({
   adjustFontFallback: true,
   fallback: ["monospace"],
   weight: ["400"],
+})
+
+const orbitron = Orbitron({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-orbitron",
+  weight: ["400", "500", "600", "700", "800", "900"],
 })
 
 export const metadata: Metadata = {
@@ -100,11 +107,8 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-        <link rel="preload" href="/logo.webp" as="image" type="image/webp" fetchPriority="high" />
-        <link rel="prefetch" href="/proyectos/bogotadetailingcenter.webp" as="image" fetchPriority="low" />
-        <link rel="prefetch" href="/proyectos/clinicameryalvarez.webp" as="image" fetchPriority="low" />
       </head>
-      <body className={`${geist.variable} ${geistMono.variable} font-sans antialiased`}>
+      <body className={`${geist.variable} ${geistMono.variable} ${orbitron.variable} font-sans antialiased`}>
         <JSONLDSchema />
         {children}
       </body>

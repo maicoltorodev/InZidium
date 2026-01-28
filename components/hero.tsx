@@ -1,113 +1,161 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { ArrowDown } from "lucide-react"
+import { motion } from "framer-motion"
 import { scrollToId } from "@/lib/utils"
-import { useMounted } from "@/lib/hooks/use-mounted"
 
 export function Hero() {
-  const containerRef = useMounted<HTMLDivElement>()
-  const glitchContainerRef = useRef<HTMLDivElement>(null)
+  const [isHovered, setIsHovered] = useState(false)
 
+  // Notify other components (like Header) about the hover state
   useEffect(() => {
-    // Dynamic will-change optimization for glitch effect
-    if (!glitchContainerRef.current) return
-
-    const glitchContainer = glitchContainerRef.current
-
-    // Use Intersection Observer to manage will-change
-    // Always enable when element is visible (even slightly) to ensure animations work
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // Element is visible - enable will-change for GPU optimization
-            glitchContainer.classList.add("glitch-active")
-          } else {
-            // Element not visible - disable will-change to save memory
-            glitchContainer.classList.remove("glitch-active")
-          }
-        })
-      },
-      {
-        threshold: [0, 0.1, 1],
-        rootMargin: "100px",
-      }
-    )
-
-    observer.observe(glitchContainer)
-
-    // Initial check - if element is already visible, activate immediately
-    // Also check immediately on mount
-    const checkVisibility = () => {
-      const rect = glitchContainer.getBoundingClientRect()
-      const isVisible = rect.top < window.innerHeight + 100 && rect.bottom > -100
-      if (isVisible) {
-        glitchContainer.classList.add("glitch-active")
-      }
-    }
-
-    checkVisibility()
-
-    // Also check after a short delay to ensure it's activated
-    setTimeout(checkVisibility, 100)
-
-    // Cleanup
-    return () => {
-      observer.disconnect()
-      glitchContainer.classList.remove("glitch-active")
-    }
-  }, [])
+    const event = new CustomEvent('logoHover', { detail: isHovered });
+    window.dispatchEvent(event);
+  }, [isHovered]);
 
   return (
-    <section id="inicio" className="relative w-full min-h-screen overflow-hidden hero-lightning scroll-mt-20 sm:scroll-mt-24">
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/8" />
-      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-background/40 via-background/20 to-transparent pointer-events-none z-0" />
+    <section id="inicio" className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden">
 
-      {/* Lightning effect that travels through hero */}
-      <div className="lightning-bolt" aria-hidden="true" />
+      {/* Background Gradient - Performance Optimized */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-neon-purple/20 rounded-full blur-[120px] -z-10 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-neon-cyan/20 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
-      <div ref={containerRef} className="relative z-10 container mx-auto px-4 sm:px-6 pt-28 sm:pt-32 pb-20 sm:pb-32" style={{ position: 'relative', zIndex: 10 }}>
-        <div className="max-w-4xl mx-auto text-center">
-          <p className="sr-only">
-            InZidium ofrece servicios de diseño web, desarrollo web, aplicaciones móviles y automatizaciones para negocios en Bogotá, Colombia. Especializados en crear páginas web profesionales que generan resultados reales, aumento de ventas y crecimiento de negocios.
-          </p>
-          <div className="mb-8 sm:mb-12 animate-on-mount" data-animation="fade-up" style={{ animationDelay: "0.2s" }}>
-            <div ref={glitchContainerRef} className="logo-glitch-container mx-auto h-36 sm:h-48 md:h-64 lg:h-72 w-auto inline-flex items-center justify-center">
+      <div className="relative z-10 container mx-auto px-4 pt-24 sm:pt-32 flex flex-col items-center justify-center">
+
+        {/* Logo Container */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{
+            duration: 0.8,
+            ease: [0, 0.71, 0.2, 1.01],
+            scale: {
+              type: "spring",
+              damping: 10,
+              stiffness: 100,
+              restDelta: 0.001
+            }
+          }}
+          className="relative mb-8 sm:mb-12"
+          onHoverStart={() => setIsHovered(true)}
+          onHoverEnd={() => setIsHovered(false)}
+        >
+          {/* Holographic Clones (Sci-Fi Effect) */}
+          {[1, 2, 3].map((i) => (
+            <motion.div
+              key={i}
+              className="absolute inset-0 z-0 pointer-events-none opacity-0"
+              animate={isHovered ? {
+                opacity: [0, 0.4, 0],
+                scale: [1, 1.2 + (i * 0.1), 0.8],
+                x: [0, (i % 2 === 0 ? 30 : -30) * i, 0],
+                y: [0, (i % 2 === 0 ? -20 : 20) * i, 0],
+                filter: [
+                  "blur(0px) brightness(1)",
+                  i % 2 === 0 ? "blur(4px) hue-rotate(90deg) brightness(2)" : "blur(4px) hue-rotate(-90deg) brightness(2)",
+                  "blur(10px) brightness(0)"
+                ]
+              } : { opacity: 0 }}
+              transition={{
+                duration: 1.2,
+                delay: i * 0.1,
+                ease: "easeOut"
+              }}
+            >
               <Image
-                src="/logo.webp"
-                alt="Logo InZidium - Resultados impulsados por tecnología"
-                width={864}
-                height={288}
-                className="h-full w-auto object-contain relative z-10"
-                sizes="(max-width: 640px) 432px, (max-width: 768px) 576px, (max-width: 1024px) 768px, 864px"
-                priority
-                quality={90}
+                src="/logo.png"
+                alt=""
+                width={200}
+                height={400}
+                className="h-48 sm:h-64 md:h-80 w-auto object-contain"
               />
-            </div>
-          </div>
+            </motion.div>
+          ))}
 
-          <h1 className="sr-only">Resultados impulsados por tecnología</h1>
-          <h2
-            className="text-glitch-title text-xl sm:text-2xl md:text-3xl font-medium mb-8 sm:mb-12 leading-relaxed max-w-2xl mx-auto text-foreground animate-on-mount"
-            data-animation="fade-up"
-            style={{ animationDelay: "0.4s" }}
+          <motion.div
+            animate={{
+              y: [0, -15, 0], // Floating effect
+              scale: isHovered ? 0.9 : 1, // Shrink on hover per user request
+            }}
+            transition={{
+              y: {
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut"
+              },
+              scale: { duration: 0.2 }
+            }}
+            style={{
+              filter: isHovered
+                ? "drop-shadow(0 0 25px rgba(34,211,238,0.6))"
+                : "drop-shadow(0 0 15px rgba(168,85,247,0.4))",
+              WebkitMaskImage: "url('/logo.png')",
+              WebkitMaskSize: "contain",
+              WebkitMaskRepeat: "no-repeat",
+              WebkitMaskPosition: "center",
+              maskImage: "url('/logo.png')",
+              maskSize: "contain",
+              maskRepeat: "no-repeat",
+              maskPosition: "center",
+            }}
+            whileHover={{
+              scale: 0.9,
+              transition: { duration: 0.3 }
+            }}
+            className="cursor-pointer relative shine-container group z-10"
           >
-            ¿Buscas una web que <span className="font-semibold">realmente genere clientes</span>?
-          </h2>
+            {/* Base Image */}
+            <Image
+              src="/logo.png"
+              alt="InZidium Logo"
+              width={200}
+              height={400}
+              className="h-48 sm:h-64 md:h-80 w-auto object-contain relative z-10"
+              priority
+              quality={100}
+            />
+          </motion.div>
+        </motion.div>
 
+        <div className="text-center space-y-4">
+          <motion.h1
+            animate={{
+              scale: isHovered ? 1.05 : 1,
+              filter: isHovered
+                ? "drop-shadow(0 0 20px rgba(34,211,238,0.4)) drop-shadow(0 0 40px rgba(168,85,247,0.2))"
+                : "drop-shadow(0 0 0px rgba(255,255,255,0))"
+            }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="font-orbitron text-5xl sm:text-7xl md:text-8xl font-medium tracking-[0.2em] sm:tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 pb-2"
+          >
+            INZIDIUM
+          </motion.h1>
+          <motion.p
+            animate={{
+              opacity: isHovered ? 1 : 0.8,
+              scale: isHovered ? 1.05 : 1,
+              color: isHovered ? "#ffffff" : "var(--muted-foreground)",
+              textShadow: isHovered ? "0 0 10px rgba(34,211,238,0.5)" : "none"
+            }}
+            className="text-sm sm:text-base tracking-widest uppercase"
+          >
+            Resultados impulsados por calidad y tecnología
+          </motion.p>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="mt-16 sm:mt-24 animate-bounce">
           <button
             onClick={() => scrollToId("sobre-mi")}
-            className="flex flex-col items-center gap-2 text-foreground/50 hover:text-primary transition-colors duration-300 mx-auto animate-on-mount"
-            data-animation="fade-up"
-            style={{ animationDelay: "1s" }}
+            className="p-2 opacity-60 hover:opacity-100 transition-opacity"
             aria-label="Scroll down"
           >
-            <span className="text-sm font-medium">Explorar más</span>
-            <ArrowDown className="h-5 w-5 animate-bounce" />
+            <ArrowDown className="h-6 w-6 text-white" />
           </button>
         </div>
+
       </div>
     </section>
   )

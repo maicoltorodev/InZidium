@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { Menu, X } from "lucide-react"
+import { motion } from "framer-motion"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { scrollToId } from "@/lib/utils"
@@ -17,40 +18,30 @@ const NAV_ITEMS = [
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [isVisible, setIsVisible] = useState(false)
+  const [isLogoHovered, setIsLogoHovered] = useState(false)
 
   useEffect(() => {
-    let lastScrollY = window.scrollY
-    let ticking = false
-
-    const updateScroll = () => {
-      // 5% de la altura de la ventana
-      const scrollThreshold = window.innerHeight * 0.05
-
-      setIsScrolled(lastScrollY > 20)
-      setIsVisible(lastScrollY > scrollThreshold)
-
-      ticking = false
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50)
     }
 
-    const onScroll = () => {
-      lastScrollY = window.scrollY
-      if (!ticking) {
-        requestAnimationFrame(updateScroll)
-        ticking = true
-      }
+    const handleLogoHover = (e: any) => {
+      setIsLogoHovered(e.detail)
     }
 
-    // Verificar estado inicial
-    updateScroll()
-
-    window.addEventListener("scroll", onScroll, { passive: true })
-    return () => window.removeEventListener("scroll", onScroll)
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    window.addEventListener("logoHover", handleLogoHover as EventListener)
+    handleScroll()
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      window.removeEventListener("logoHover", handleLogoHover as EventListener)
+    }
   }, [])
 
   const scrollToSection = useCallback((id: string) => {
     scrollToId(id)
     setIsMobileMenuOpen(false)
+    // Ensure navbar is visible after clicking (though scroll will trigger it)
   }, [])
 
   // Prevenir scroll cuando el menú está abierto (optimizado)
@@ -58,9 +49,6 @@ export function Header() {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden'
     } else {
-      document.body.style.overflow = ''
-    }
-    return () => {
       document.body.style.overflow = ''
     }
   }, [isMobileMenuOpen])
@@ -76,7 +64,6 @@ export function Header() {
       }
     }
 
-    // Usar setTimeout para evitar conflictos con el click que abre el menú
     const timeoutId = setTimeout(() => {
       document.addEventListener('click', handleClickOutside)
     }, 100)
@@ -89,51 +76,59 @@ export function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled ? "border-b border-primary/30 shadow-lg shadow-primary/10 bg-background/95 md:bg-background/50 md:backdrop-blur-md" : "bg-transparent"
-        } ${isVisible
-          ? "opacity-100 translate-y-0"
-          : "opacity-0 -translate-y-full pointer-events-none"
+      className={`fixed top-0 z-50 w-full transition-all duration-500 ease-in-out ${isScrolled ? "glass-panel bg-[#030014]/90 backdrop-blur-[40px] shadow-2xl" : "bg-transparent"
         }`}
     >
+      <div
+        className={`absolute bottom-0 left-0 w-full overflow-hidden opacity-90 transition-all duration-500 ${isLogoHovered ? "h-[4px]" : "h-[2px]"}`}
+      >
+        <motion.div
+          animate={{ backgroundPosition: ["0% 0%", "200% 0%"] }}
+          transition={{
+            duration: isLogoHovered ? 2 : 6,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          className="absolute inset-0 w-full h-full bg-[length:200%_100%]"
+          style={{
+            backgroundImage: "linear-gradient(to right, transparent, #22d3ee, #a855f7, #22d3ee, transparent)"
+          }}
+        />
+        {/* Subtle Glow Overlay */}
+        <div className={`absolute inset-0 pointer-events-none transition-all duration-500 ${isLogoHovered ? "shadow-[0_0_20px_rgba(34,211,238,0.8)]" : "shadow-[0_0_10px_rgba(34,211,238,0.4)]"}`} />
+      </div>
       <div className="container mx-auto px-4 sm:px-6 h-20 sm:h-24 flex items-center justify-between relative">
         <button
           onClick={() => scrollToSection("inicio")}
-          className="relative transition-transform duration-300 hover:scale-105 z-10"
+          className="relative transition-transform duration-300 hover:scale-105 z-10 group"
           aria-label="Ir al inicio"
         >
-          <Image
-            src="/logo.webp"
-            alt="Logo InZidium - Diseño Web y Desarrollo"
-            width={192}
-            height={64}
-            className="h-12 sm:h-16 w-auto object-contain"
-            sizes="(max-width: 640px) 144px, 192px"
-            priority
-            quality={90}
-          />
+          <span className="font-orbitron font-medium tracking-[0.3em] text-[14px] sm:text-[18px] text-white/90 transition-all duration-300 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-cyan-400 group-hover:to-purple-500 group-hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]">
+            INZIDIUM
+          </span>
         </button>
-
-        <div className="md:hidden absolute left-1/2 -translate-x-1/2 z-10">
-          <Button onClick={() => scrollToSection("contacto")} size="sm" className="text-xs sm:text-sm">
-            Contactar Ahora
-          </Button>
-        </div>
 
         <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
           {NAV_ITEMS.map((item) => (
             <button
               key={item.id}
               onClick={() => scrollToSection(item.id)}
-              className="text-base font-medium text-foreground/80 hover:text-primary transition-colors duration-300 relative group px-2 py-1"
+              className="text-[11px] font-medium text-white/50 hover:text-white transition-all duration-300 relative group px-2 py-1 uppercase tracking-[0.2em] font-orbitron hover:scale-110 active:scale-95"
             >
-              <span>{item.label}</span>
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full rounded-full" />
+              <span className="relative z-10">{item.label}</span>
+              <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-white transition-all duration-300 group-hover:w-full" />
+              <span className="absolute inset-0 bg-white/0 group-hover:bg-white/5 blur-md rounded-lg transition-all duration-300 -z-10" />
             </button>
           ))}
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <Button onClick={() => scrollToSection("contacto")}>Contactar Ahora</Button>
+          <button
+            onClick={() => scrollToSection("contacto")}
+            className="px-6 py-2 font-orbitron font-medium tracking-[0.2em] text-[11px] text-white border border-white/20 rounded-full backdrop-blur-md transition-all duration-500 hover:bg-white hover:text-black hover:border-white hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(255,255,255,0.2)] active:scale-95 uppercase"
+          >
+            Contactar Ahora
+          </button>
         </div>
 
         <button
@@ -147,11 +142,11 @@ export function Header() {
         >
           <div className="relative w-6 h-6">
             <Menu
-              className={`h-6 w-6 text-foreground absolute inset-0 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'
+              className={`h-6 w-6 text-white absolute inset-0 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0 rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100'
                 }`}
             />
             <X
-              className={`h-6 w-6 text-foreground absolute inset-0 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'
+              className={`h-6 w-6 text-white absolute inset-0 transition-all duration-300 ${isMobileMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-0'
                 }`}
             />
           </div>
@@ -161,14 +156,14 @@ export function Header() {
       {/* Menú móvil con animación */}
       {isMobileMenuOpen && (
         <nav
-          className={`fixed top-20 sm:top-24 left-0 right-0 z-40 md:hidden border-t border-primary/30 bg-gradient-to-b from-background/98 via-background/98 to-background/95 transform transition-transform duration-300 ease-out translate-y-0`}
+          className={`fixed top-20 sm:top-24 left-0 right-0 z-40 md:hidden border-t border-white/10 bg-background/95 backdrop-blur-xl transform transition-transform duration-300 ease-out translate-y-0`}
         >
-          <div className="container mx-auto px-4 py-6 flex flex-col">
-            {NAV_ITEMS.map((item, index) => (
-              <div key={item.id}>
+          <div className="container mx-auto px-4 py-8 flex flex-col items-center">
+            {NAV_ITEMS.slice(0, -1).map((item, index) => (
+              <div key={item.id} className="w-full text-center">
                 <button
                   onClick={() => scrollToSection(item.id)}
-                  className={`w-full text-center py-4 px-5 text-base font-medium text-foreground/90 hover:text-primary transition-all duration-300 transform hover:scale-105 ${isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+                  className={`w-full py-5 text-base font-orbitron font-medium tracking-[0.2em] text-white/70 hover:text-white transition-all duration-300 ${isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
                     }`}
                   style={{
                     transitionDelay: isMobileMenuOpen ? `${index * 50}ms` : '0ms'
@@ -176,14 +171,24 @@ export function Header() {
                 >
                   {item.label}
                 </button>
-                {index < NAV_ITEMS.length - 1 && (
-                  <div className={`h-px bg-gradient-to-r from-transparent via-border to-transparent transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'
+                {index < NAV_ITEMS.length - 2 && (
+                  <div className={`h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mx-auto w-1/2 transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'
                     }`} style={{
                       transitionDelay: isMobileMenuOpen ? `${index * 50 + 25}ms` : '0ms'
                     }} />
                 )}
               </div>
             ))}
+
+            {/* Contact Button inside Mobile Menu */}
+            <div className="mt-8 w-full flex justify-center">
+              <button
+                onClick={() => scrollToSection("contacto")}
+                className="w-full max-w-[280px] py-4 rounded-full font-orbitron font-bold tracking-[0.2em] text-[12px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.2)] uppercase transition-all duration-300 hover:bg-cyan-500/20"
+              >
+                Trabajemos Juntos
+              </button>
+            </div>
           </div>
         </nav>
       )}

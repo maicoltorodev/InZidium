@@ -70,101 +70,82 @@ const projects = [
 
 function ProjectCard({ project, index, isViewportActive, cardRef }: { project: (typeof projects)[0]; index: number; isViewportActive: boolean; cardRef: (el: HTMLDivElement | null) => void }) {
   const isFeatured = project.featured
+  const neonColor = 'var(--color-neon-purple)';
 
   return (
-    <article>
-      <Card
-        ref={cardRef}
+    <article
+      ref={cardRef}
+      className={`glass-panel rounded-3xl overflow-hidden relative group transition-all duration-300 hover:-translate-y-2 hover:border-neon-purple/50 hover:shadow-[0_0_40px_rgba(168,85,247,0.15)] ${isViewportActive ? "viewport-active" : ""}`}
+      style={{
+        animationDelay: `${0.2 + index * 0.1}s`,
+        borderColor: isViewportActive ? neonColor : ''
+      }}
+    >
+      {/* Glow behind the card on hover */}
+      <div className="absolute inset-0 bg-neon-purple/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl pointer-events-none" />
+
+      <div
         onClick={() => project.url && window.open(project.url, "_blank", "noopener,noreferrer")}
-        className={`group border border-border/50 bg-gradient-to-br from-card/95 to-card/80 overflow-hidden transition-all duration-500 cursor-pointer animate-on-mount relative ${isFeatured
-            ? "md:hover:scale-[1.01] hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/20"
-            : "hover:border-primary/40 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/10"
-          } ${isViewportActive ? "viewport-active" : ""}`}
-        data-animation="fade-up"
-        style={{ animationDelay: `${0.2 + index * 0.1}s` }}
+        className="cursor-pointer"
       >
         {/* Image container */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-primary/10 to-accent/10 h-64 sm:h-80">
-          {/* Transform container: scales image and overlays together as a unit */}
-          <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-110 origin-center">
+        <div className="relative overflow-hidden h-56 sm:h-64">
+          {/* Unified Transform Context for both Image and Overlay */}
+          <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
             {project.image && (
-              <div className="absolute inset-0 overflow-hidden">
-                <Image
-                  src={project.image}
-                  alt={`${project.title} - Proyecto web desarrollado por InZidium`}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 390px"
-                  loading={index < 3 ? "eager" : "lazy"}
-                  fetchPriority={index < 3 ? "high" : "low"}
-                  quality={85}
-                  placeholder="blur"
-                  blurDataURL={BLUR_PLACEHOLDER}
-                />
-              </div>
+              <Image
+                src={project.image}
+                alt={`${project.title} - Proyecto InZidium`}
+                fill
+                className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 390px"
+                quality={85}
+                placeholder="blur"
+                blurDataURL={BLUR_PLACEHOLDER}
+              />
             )}
-
-            {/* Gradient overlays - same transform context as image */}
-            <div className="absolute inset-0 z-[1] pointer-events-none">
-              {/* Gradient overlay for better text readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/60 to-transparent opacity-90" />
-              {/* Secondary gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-accent/0 group-hover:from-primary/20 group-hover:via-transparent group-hover:to-accent/20 transition-all duration-500" />
-            </div>
+            {/* Overlay - INSIDE the transform context to stay attached during zoom */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#030014] via-[#030014]/50 to-transparent opacity-90 group-hover:opacity-60 transition-opacity duration-500" />
           </div>
 
           {/* Featured badge */}
           {isFeatured && (
             <div className="absolute top-4 right-4 z-20">
-              <Badge className="font-bold px-3 py-1.5 bg-gradient-to-r from-primary to-accent text-primary-foreground border-primary/50 shadow-lg backdrop-blur-sm">
-                ⭐ Destacado
-              </Badge>
+              <span className="font-orbitron font-bold px-3 py-1 bg-neon-purple text-white text-xs rounded-full shadow-[0_0_15px_rgba(168,85,247,0.5)] tracking-wider">
+                PREMIUM
+              </span>
             </div>
           )}
 
           {/* View icon overlay */}
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10">
-            <div className="p-4 rounded-full bg-card/80 backdrop-blur-md border-2 border-primary/50 shadow-xl shadow-primary/30 group-hover:scale-110 transition-transform duration-500">
-              <ExternalLink className="h-6 w-6 text-primary" />
+            <div className="p-4 rounded-full bg-black/50 backdrop-blur-md border border-white/20 hover:bg-neon-purple hover:border-neon-purple transition-colors duration-300">
+              <ExternalLink className="h-6 w-6 text-white" />
             </div>
           </div>
         </div>
 
-        <CardContent className={`relative z-10 p-6 sm:p-8 ${isFeatured ? "space-y-4" : "space-y-3"
-          }`}>
-          <div className="flex items-start justify-between gap-4">
-            <h3 className={`font-bold text-foreground group-hover:text-primary transition-colors duration-500 ${isFeatured ? "text-2xl sm:text-3xl" : "text-xl sm:text-2xl"
-              }`}>
-              {project.title}
-            </h3>
-          </div>
+        <div className="p-6 sm:p-8 relative z-10">
+          <h3 className={`font-orbitron text-white mb-2 transition-colors duration-300 group-hover:text-neon-purple ${isFeatured ? "text-xl sm:text-2xl" : "text-lg sm:text-xl"}`}>
+            {project.title}
+          </h3>
 
-          <p className={`text-muted-foreground/80 leading-relaxed ${isFeatured ? "text-base sm:text-lg" : "text-sm sm:text-base"
-            }`}>
+          <p className="text-muted-foreground text-sm sm:text-base leading-relaxed mb-4 line-clamp-2">
             {project.description}
           </p>
 
-          <div className="flex flex-wrap gap-2 pt-2">
-            {project.features.map((feature) => (
-              <Badge
+          <div className="flex flex-wrap gap-2">
+            {project.features.slice(0, 3).map((feature) => (
+              <span
                 key={feature}
-                variant="secondary"
-                className="text-xs font-medium border-primary/30 bg-primary/5 group-hover:bg-primary/10 group-hover:border-primary/50 transition-colors duration-500"
+                className="text-[10px] sm:text-xs font-medium px-2 py-1 rounded bg-white/5 border border-white/10 text-white/70"
               >
                 {feature}
-              </Badge>
+              </span>
             ))}
           </div>
-
-          {/* Call to action button on hover */}
-          <div className="pt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-            <div className="inline-flex items-center gap-2 text-sm font-semibold text-primary">
-              Ver proyecto
-              <ExternalLink className="h-4 w-4" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </article>
   )
 }
