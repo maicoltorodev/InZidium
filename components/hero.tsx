@@ -96,6 +96,12 @@ export function Hero() {
               },
               scale: { duration: 0.2 }
             }}
+            onClick={() => {
+              if (isMobile) {
+                setIsHovered(true)
+                setTimeout(() => setIsHovered(false), 1500)
+              }
+            }}
             style={{
               filter: isHovered
                 ? "drop-shadow(0 0 25px rgba(34,211,238,0.6))"
@@ -115,8 +121,8 @@ export function Hero() {
               scale: 0.9,
               transition: { duration: 0.3 }
             }}
-            whileTap={{ scale: 0.85 }}
-            className="cursor-pointer relative shine-container group z-10 will-change-transform"
+            whileTap={{ scale: 0.95 }}
+            className="cursor-pointer relative shine-container group z-10"
           >
             {/* Base Image */}
             <Image
