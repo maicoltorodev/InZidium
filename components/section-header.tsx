@@ -1,12 +1,15 @@
+import { cn } from "@/lib/utils"
+
 type SectionHeaderProps = {
   titleLeft: string
   titleHighlight: string
   subtitle: string
+  className?: string
 }
 
-export function SectionHeader({ titleLeft, titleHighlight, subtitle }: SectionHeaderProps) {
+export function SectionHeader({ titleLeft, titleHighlight, subtitle, className }: SectionHeaderProps) {
   return (
-    <>
+    <div className={cn("flex flex-col", className)}>
       <h2 className="section-title-float text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold mb-6 sm:mb-8 tracking-tight leading-tight">
         <span className="text-foreground">{titleLeft}</span>{" "}
         <span className="text-primary bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
@@ -21,6 +24,6 @@ export function SectionHeader({ titleLeft, titleHighlight, subtitle }: SectionHe
         <div className="w-2 h-2 rounded-full bg-primary/40" />
         <div className="h-px flex-1 bg-gradient-to-l from-transparent via-border to-border" />
       </div>
-    </>
+    </div>
   )
 }
