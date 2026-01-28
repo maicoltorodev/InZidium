@@ -169,27 +169,31 @@ export function Header() {
               <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 blur-[80px] rounded-full" />
             </div>
 
-            <div className="container mx-auto px-6 py-12 flex flex-col items-center relative z-10">
+            <div className="container mx-auto px-6 py-10 flex flex-col items-center relative z-10">
               {NAV_ITEMS.map((item, index) => (
                 <motion.div
                   key={item.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.08, duration: 0.4 }}
-                  className="w-full"
+                  className="w-full flex flex-col items-center"
                 >
                   <button
                     onClick={() => scrollToSection(item.id)}
-                    className="group w-full py-6 flex items-center justify-between text-base font-orbitron font-medium tracking-[0.3em] text-white/60 hover:text-white transition-all duration-300 active:scale-[0.98]"
+                    className="group w-full py-7 flex items-center justify-center text-center text-[13px] font-orbitron font-medium tracking-[0.4em] text-white/50 hover:text-white transition-all duration-300 active:scale-[0.98]"
                   >
                     <span className="relative">
                       {item.label}
-                      <span className="absolute bottom-[-4px] left-0 w-0 h-[1px] bg-gradient-to-r from-cyan-400 to-purple-500 transition-all duration-300 group-hover:w-full" />
+                      <motion.span
+                        className="absolute bottom-[-8px] left-1/2 -translate-x-1/2 w-0 h-[2px] bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full"
+                        whileHover={{ width: "100%" }}
+                        transition={{ duration: 0.3 }}
+                      />
                     </span>
-                    <div className="w-8 h-[1px] bg-white/10 group-hover:bg-cyan-500/50 transition-all duration-300" />
                   </button>
+
                   {index < NAV_ITEMS.length - 1 && (
-                    <div className="h-[1px] bg-white/5 w-full" />
+                    <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
                   )}
                 </motion.div>
               ))}
