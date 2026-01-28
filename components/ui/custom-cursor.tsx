@@ -19,18 +19,17 @@ export function CustomCursor() {
     const handleMouseMove = useCallback((e: MouseEvent) => {
         mouseX.set(e.clientX)
         mouseY.set(e.clientY)
-
         if (!isVisible) setIsVisible(true)
+    }, [mouseX, mouseY, isVisible])
 
+    const handleMouseOver = useCallback((e: MouseEvent) => {
         const target = e.target as HTMLElement
         const isElementClickable =
             target.closest('a') ||
             target.closest('button') ||
-            target.closest('[role="button"]') ||
-            window.getComputedStyle(target).cursor === 'pointer'
-
+            target.closest('[role="button"]')
         setIsClickable(!!isElementClickable)
-    }, [mouseX, mouseY, isVisible])
+    }, [])
 
     const handleMouseLeave = () => setIsVisible(false)
     const handleMouseEnter = () => setIsVisible(true)
@@ -39,16 +38,19 @@ export function CustomCursor() {
         const isDesktop = window.matchMedia("(hover: hover) and (pointer: fine)").matches
         if (!isDesktop) return
 
-        window.addEventListener("mousemove", handleMouseMove)
+        window.addEventListener("mousemove", handleMouseMove, { passive: true })
+        window.addEventListener("mouseover", handleMouseOver, { passive: true })
         document.addEventListener("mouseleave", handleMouseLeave)
         document.addEventListener("mouseenter", handleMouseEnter)
 
         return () => {
             window.removeEventListener("mousemove", handleMouseMove)
+            window.removeEventListener("mouseover", handleMouseOver)
             document.removeEventListener("mouseleave", handleMouseLeave)
             document.removeEventListener("mouseenter", handleMouseEnter)
         }
-    }, [handleMouseMove])
+    }, [handleMouseMove, handleMouseOver])
+
 
     if (typeof window === "undefined") return null
 

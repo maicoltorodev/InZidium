@@ -5,6 +5,7 @@ import { PageSection } from "@/components/ui/page-section"
 import { BackgroundGradients } from "@/components/ui/background-gradients"
 import { useViewportActive } from "@/lib/hooks/use-viewport-active"
 import { cn } from "@/lib/utils"
+import { HighlightText } from "@/components/ui/highlight-text"
 
 const ABOUT_CARDS = [
   {
@@ -70,21 +71,21 @@ function AboutCard({ title, description, highlight, color }: typeof ABOUT_CARDS[
       className={cn(
         "glass-panel glass-card p-8 sm:p-10 rounded-3xl md:hover:bg-white/5 transition-all duration-400 group border border-white/10 will-change-transform",
         isActive && "viewport-active",
-        isPurple ? 'md:hover:border-neon-purple/50 md:hover:shadow-[0_0_30px_rgba(168,85,247,0.2)]' : 'md:hover:border-neon-cyan/50 md:hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]'
+        isPurple
+          ? 'md:hover:border-neon-purple/50 md:hover:shadow-[0_0_30px_rgba(168,85,247,0.2)]'
+          : 'md:hover:border-neon-cyan/50 md:hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]'
       )}
     >
-      <h3 className={`text-2xl sm:text-3xl font-orbitron mb-4 text-white transition-colors duration-200 
-        ${isPurple ? 'md:group-hover:text-neon-purple' : 'md:group-hover:text-neon-cyan'}`}>
+      <h3 className={cn(
+        "text-2xl sm:text-3xl font-orbitron mb-4 text-white transition-colors duration-200",
+        isPurple ? 'md:group-hover:text-neon-purple' : 'md:group-hover:text-neon-cyan'
+      )}>
         {title}
       </h3>
       <p className="text-muted-foreground text-lg leading-relaxed">
-        {description.split(highlight).map((part, i, arr) => (
-          <span key={i}>
-            {part}
-            {i < arr.length - 1 && <span className="text-white font-medium">{highlight}</span>}
-          </span>
-        ))}
+        <HighlightText text={description} highlight={highlight} />
       </p>
     </div>
   )
 }
+

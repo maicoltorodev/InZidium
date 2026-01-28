@@ -10,10 +10,13 @@ import { BackgroundGradients } from "@/components/ui/background-gradients"
 import { useViewportActive } from "@/lib/hooks/use-viewport-active"
 import { cn } from "@/lib/utils"
 
+import { HighlightText } from "@/components/ui/highlight-text"
+
 type Solution = {
   id: string
   title: string
   description: string
+  highlight?: string
   features: string[]
   icon: string
 }
@@ -23,6 +26,7 @@ const solutions: Solution[] = [
     id: "1",
     title: "Aplicaciones Móviles",
     description: "Desarrollamos aplicaciones móviles disponibles en Play Store y App Store que permiten a tus clientes acceder a tus servicios desde sus celulares.",
+    highlight: "Play Store y App Store",
     features: ["Android", "iPhone", "Play Store", "App Store"],
     icon: "📱",
   },
@@ -30,6 +34,7 @@ const solutions: Solution[] = [
     id: "2",
     title: "Sistemas Personalizados",
     description: "Creamos sistemas personalizados que automatizan tareas, optimizan procesos y mejoran la eficiencia de tu negocio según tus necesidades específicas.",
+    highlight: "automatizan tareas",
     features: ["Automatización", "Personalización", "Optimización", "Escalabilidad"],
     icon: "⚙️",
   },
@@ -37,6 +42,7 @@ const solutions: Solution[] = [
     id: "3",
     title: "Tiendas Online",
     description: "Desarrollamos tiendas virtuales completas donde tus clientes pueden ver productos, agregar al carrito y comprar de forma segura.",
+    highlight: "comprar de forma segura",
     features: ["Ventas online", "Pagos integrados", "Gestión de inventario", "Panel de control"],
     icon: "🛒",
   },
@@ -44,10 +50,12 @@ const solutions: Solution[] = [
     id: "4",
     title: "Sistemas de Reservas",
     description: "Creamos sistemas de reservas para restaurantes, salones, clínicas o cualquier negocio que necesite gestionar citas y reservas online.",
+    highlight: "gestionar citas y reservas online",
     features: ["Reservas automáticas", "Confirmaciones", "Gestión de horarios", "Recordatorios"],
     icon: "📅",
   },
 ]
+
 
 function SolutionCard({ solution, index }: { solution: Solution; index: number }) {
   const { elementRef, isActive } = useViewportActive<HTMLDivElement>();
@@ -80,7 +88,7 @@ function SolutionCard({ solution, index }: { solution: Solution; index: number }
         </h3>
 
         <p className="text-muted-foreground leading-relaxed mb-6">
-          {solution.description}
+          <HighlightText text={solution.description} highlight={solution.highlight || ""} />
         </p>
 
         <div className="flex flex-wrap gap-2">

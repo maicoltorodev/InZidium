@@ -13,16 +13,17 @@ export function Hero() {
 
   // Notify other components (like Header) about the hover state
   useEffect(() => {
-    const event = new CustomEvent('logoHover', { detail: isHovered });
-    window.dispatchEvent(event);
-  }, [isHovered]);
+    window.dispatchEvent(new CustomEvent('logoHover', { detail: isHovered }))
+  }, [isHovered])
 
-  // Mobile detection for performance
+  // Mobile detection for performance (optimized with matchMedia)
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768)
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+    const mediaQuery = window.matchMedia("(max-width: 768px)")
+    const handleMediaChange = (e: MediaQueryListEvent | MediaQueryList) => setIsMobile(e.matches)
+
+    handleMediaChange(mediaQuery)
+    mediaQuery.addEventListener("change", handleMediaChange)
+    return () => mediaQuery.removeEventListener("change", handleMediaChange)
   }, [])
 
   return (

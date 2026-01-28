@@ -19,57 +19,42 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isLogoHovered, setIsLogoHovered] = useState(false)
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
-    }
-
-    const handleLogoHover = (e: any) => {
-      setIsLogoHovered(e.detail)
-    }
-
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    window.addEventListener("logoHover", handleLogoHover as EventListener)
-    handleScroll()
-    return () => {
-      window.removeEventListener("scroll", handleScroll)
-      window.removeEventListener("logoHover", handleLogoHover as EventListener)
-    }
-  }, [])
-
   const scrollToSection = useCallback((id: string) => {
     scrollToId(id)
     setIsMobileMenuOpen(false)
-    // Ensure navbar is visible after clicking (though scroll will trigger it)
   }, [])
 
-  // Prevenir scroll cuando el menú está abierto (optimizado)
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50)
+    const handleLogoHover = (e: any) => setIsLogoHovered(e.detail)
+
+    // Combined scroll and custom events
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    window.addEventListener("logoHover", handleLogoHover as EventListener)
+
+    // Body scroll lock logic integrated
+    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : ''
+
+    // Initial check
+    handleScroll()
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      window.removeEventListener("logoHover", handleLogoHover as EventListener)
       document.body.style.overflow = ''
     }
   }, [isMobileMenuOpen])
 
-  // Cerrar menú al hacer click fuera (optimizado)
+  // Click outside logic simplified
   useEffect(() => {
     if (!isMobileMenuOpen) return
-
-    const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement
-      if (!target.closest('header')) {
-        setIsMobileMenuOpen(false)
-      }
+    const handleClick = (e: MouseEvent) => {
+      if (!(e.target as HTMLElement).closest('header')) setIsMobileMenuOpen(false)
     }
-
-    const timeoutId = setTimeout(() => {
-      document.addEventListener('click', handleClickOutside)
-    }, 100)
-
+    const timer = setTimeout(() => document.addEventListener('click', handleClick), 100)
     return () => {
-      clearTimeout(timeoutId)
-      document.removeEventListener('click', handleClickOutside)
+      clearTimeout(timer)
+      document.removeEventListener('click', handleClick)
     }
   }, [isMobileMenuOpen])
 

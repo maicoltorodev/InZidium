@@ -86,7 +86,6 @@
 
   body {
     @apply bg-background text-foreground;
-    background-color: #000000;
     position: relative;
     overflow-x: hidden;
   }
@@ -129,28 +128,25 @@
 
   ::-webkit-scrollbar-track {
     background: rgba(3, 0, 20, 0.1);
-    /* Very subtle track to avoid gray fallback */
     border-radius: 20px;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #a855f7;
-    /* Use solid hex for better compatibility */
-    background: rgba(168, 85, 247, 0.5);
-    /* Then apply transparency */
+    background: #22d3ee;
+    background: rgba(34, 211, 238, 0.5);
     border-radius: 20px;
-    border: 1px solid rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(34, 211, 238, 0.1);
     background-clip: padding-box;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(168, 85, 247, 0.8);
+    background: rgba(34, 211, 238, 0.8);
   }
 
   /* Support for Firefox and Standard Properties */
   * {
     scrollbar-width: thin;
-    scrollbar-color: #a855f7 transparent;
+    scrollbar-color: #22d3ee transparent;
   }
 
   /* Custom Text Selection */

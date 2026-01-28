@@ -8,29 +8,35 @@ import { BackgroundGradients } from "@/components/ui/background-gradients"
 import { useViewportActive } from "@/lib/hooks/use-viewport-active"
 import { cn } from "@/lib/utils"
 
+import { HighlightText } from "@/components/ui/highlight-text"
+
 const values = [
   {
     icon: Target,
     title: "Enfocado en Resultados",
     description: "Cada solución que creamos está diseñada para atraer más clientes y aumentar tus ingresos. No solo creamos páginas bonitas, creamos herramientas que venden.",
+    highlight: "atraer más clientes",
     badge: "ROI",
   },
   {
     icon: Zap,
     title: "Optimización Total",
     description: "Creamos sistemas que automatizan tareas, reducen costos operativos y hacen que tu negocio funcione de manera más eficiente y rentable.",
+    highlight: "automatizan tareas",
     badge: "Eficiencia",
   },
   {
     icon: Palette,
     title: "Experiencia Superior",
     description: "Tus clientes y tu equipo podrán usar todo sin complicaciones. Interfaces claras e intuitivas que cualquiera puede manejar.",
+    highlight: "Interfaces claras e intuitivas",
     badge: "UX Premium",
   },
   {
     icon: Rocket,
     title: "Presencia Digital",
     description: "Tus aplicaciones estarán disponibles en Google Play Store y Apple App Store, para el prestigio que necesita tu negocio.",
+    highlight: "disponibles en Play Store y App Store",
     badge: "Multiplataforma",
   },
 ]
@@ -79,7 +85,7 @@ function ValueCard({ value, index }: { value: (typeof values)[0]; index: number 
 
           {/* Description */}
           <p className="text-lg text-muted-foreground leading-relaxed max-w-md mx-auto">
-            {value.description}
+            <HighlightText text={value.description} highlight={value.highlight} />
           </p>
         </div>
       </div>

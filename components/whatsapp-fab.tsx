@@ -9,29 +9,28 @@ export function WhatsAppFAB() {
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768)
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
+    // Media Query for mobile detection
+    const mediaQuery = window.matchMedia("(max-width: 768px)")
+    const handleMediaChange = (e: MediaQueryListEvent | MediaQueryList) => setIsMobile(e.matches)
+    handleMediaChange(mediaQuery)
+    mediaQuery.addEventListener("change", handleMediaChange)
 
     const heroSection = document.getElementById("inicio")
     if (!heroSection) {
       setIsVisible(true)
-      return () => window.removeEventListener('resize', checkMobile)
+      return () => mediaQuery.removeEventListener("change", handleMediaChange)
     }
 
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          setIsVisible(!entry.isIntersecting)
-        })
-      },
+      ([entry]) => setIsVisible(!entry.isIntersecting),
       { threshold: 0, rootMargin: "-20% 0px 0px 0px" }
     )
 
     observer.observe(heroSection)
+
     return () => {
       observer.disconnect()
-      window.removeEventListener('resize', checkMobile)
+      mediaQuery.removeEventListener("change", handleMediaChange)
     }
   }, [])
 
