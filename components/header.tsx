@@ -125,9 +125,9 @@ export function Header() {
         <div className="hidden md:flex items-center gap-4">
           <button
             onClick={() => scrollToSection("contacto")}
-            className="px-6 py-2 font-orbitron font-medium tracking-[0.2em] text-[11px] text-white border border-white/20 rounded-full backdrop-blur-md transition-all duration-500 hover:bg-white hover:text-black hover:border-white hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(255,255,255,0.2)] active:scale-95 uppercase"
+            className="px-8 py-3 rounded-full font-orbitron font-bold tracking-[0.2em] text-[11px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.2)] uppercase transition-all duration-300 hover:bg-cyan-500/20 hover:scale-105 active:scale-95"
           >
-            Contactar Ahora
+            Trabajemos Juntos
           </button>
         </div>
 
