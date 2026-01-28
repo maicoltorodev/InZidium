@@ -78,7 +78,7 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
     <motion.article
       ref={elementRef}
       className={cn(
-        "glass-panel rounded-3xl overflow-hidden relative group will-change-transform",
+        "glass-panel glass-card rounded-3xl overflow-hidden relative group will-change-transform",
         isActive && "viewport-active"
       )}
       style={{

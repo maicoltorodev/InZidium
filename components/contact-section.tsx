@@ -42,7 +42,7 @@ export function ContactSection() {
               onClick={copyEmail}
               ref={contactRef1.elementRef}
               className={cn(
-                "glass-panel p-8 sm:p-10 rounded-3xl group border border-white/10 text-left relative will-change-transform",
+                "glass-panel glass-card p-8 sm:p-10 rounded-3xl group border border-white/10 text-left relative will-change-transform",
                 contactRef1.isActive && "viewport-active"
               )}
               style={{
@@ -75,7 +75,7 @@ export function ContactSection() {
               rel="noopener noreferrer"
               ref={contactRef2.elementRef}
               className={cn(
-                "glass-panel p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform",
+                "glass-panel glass-card p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform",
                 contactRef2.isActive && "viewport-active"
               )}
               style={{
@@ -98,7 +98,7 @@ export function ContactSection() {
             <div
               ref={contactRef3.elementRef}
               className={cn(
-                "glass-panel p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform",
+                "glass-panel glass-card p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform",
                 contactRef3.isActive && "viewport-active"
               )}
               style={{

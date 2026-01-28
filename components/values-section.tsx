@@ -43,7 +43,7 @@ function ValueCard({ value, index }: { value: (typeof values)[0]; index: number 
     <motion.div
       ref={elementRef}
       className={cn(
-        "glass-panel border-white/5 bg-white/5 rounded-3xl p-8 sm:p-10 relative overflow-hidden group will-change-transform",
+        "glass-panel glass-card border-white/5 bg-white/5 rounded-3xl p-8 sm:p-10 relative overflow-hidden group will-change-transform",
         isActive && "viewport-active"
       )}
       style={{
