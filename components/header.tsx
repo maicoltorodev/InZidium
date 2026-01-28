@@ -172,33 +172,42 @@ export function Header() {
       <AnimatePresence mode="wait">
         {isMobileMenuOpen && (
           <motion.nav
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed top-20 sm:top-24 left-0 right-0 z-40 md:hidden border-t border-white/10 bg-[#030014]/95 backdrop-blur-[40px]"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+            className="fixed top-20 sm:top-24 left-0 right-0 z-40 md:hidden overflow-hidden border-b border-white/10 bg-[#030014]/98 backdrop-blur-[100px]"
           >
-            <div className="container mx-auto px-4 py-10 flex flex-col items-center">
+            {/* Background Decorative Blurs */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-cyan-500/10 blur-[80px] rounded-full" />
+              <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 blur-[80px] rounded-full" />
+            </div>
+
+            <div className="container mx-auto px-6 py-12 flex flex-col items-center relative z-10">
               {NAV_ITEMS.map((item, index) => (
                 <motion.div
                   key={item.id}
-                  initial={{ opacity: 0, x: -10 }}
+                  initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="w-full text-center"
+                  transition={{ delay: index * 0.08, duration: 0.4 }}
+                  className="w-full"
                 >
                   <button
                     onClick={() => scrollToSection(item.id)}
-                    className="w-full py-5 text-base font-orbitron font-medium tracking-[0.2em] text-white/70 hover:text-white transition-all duration-300 active:scale-95"
+                    className="group w-full py-6 flex items-center justify-between text-base font-orbitron font-medium tracking-[0.3em] text-white/60 hover:text-white transition-all duration-300 active:scale-[0.98]"
                   >
-                    {item.label}
+                    <span className="relative">
+                      {item.label}
+                      <span className="absolute bottom-[-4px] left-0 w-0 h-[1px] bg-gradient-to-r from-cyan-400 to-purple-500 transition-all duration-300 group-hover:w-full" />
+                    </span>
+                    <div className="w-8 h-[1px] bg-white/10 group-hover:bg-cyan-500/50 transition-all duration-300" />
                   </button>
                   {index < NAV_ITEMS.length - 1 && (
-                    <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mx-auto w-1/2" />
+                    <div className="h-[1px] bg-white/5 w-full" />
                   )}
                 </motion.div>
               ))}
-
             </div>
           </motion.nav>
         )}

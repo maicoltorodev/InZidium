@@ -102,23 +102,25 @@ export function CustomCursor() {
 function TrailParticle({ x, y, index, isVisible }: { x: any, y: any, index: number, isVisible: boolean }) {
     // Alternate colors between cyan and purple for the gradient trail effect
     const isCyan = index % 2 === 0
-    const colorClass = isCyan ? "bg-cyan-500/30" : "bg-purple-500/30"
-    const shadowClass = isCyan ? "shadow-[0_0_8px_rgba(34,211,238,0.4)]" : "shadow-[0_0_8px_rgba(168,85,247,0.4)]"
+    const colorClass = isCyan ? "bg-cyan-400" : "bg-purple-500"
+    const shadowColor = isCyan ? "rgba(34,211,238,0.5)" : "rgba(168,85,247,0.5)"
 
     // Each particle has slightly different lag for a staggered effect
-    const springX = useSpring(x, { damping: 30 + index * 5, stiffness: 200 - index * 15 })
-    const springY = useSpring(y, { damping: 30 + index * 5, stiffness: 200 - index * 15 })
+    // Lower stiffness and higher damping for a more 'elastic' trail
+    const springX = useSpring(x, { damping: 40 + index * 10, stiffness: 150 - index * 20 })
+    const springY = useSpring(y, { damping: 40 + index * 10, stiffness: 150 - index * 20 })
 
     return (
         <motion.div
-            className={`fixed top-0 left-0 w-1 h-1 rounded-full blur-[0.5px] ${colorClass} ${shadowClass}`}
+            className={`fixed top-0 left-0 w-1.5 h-1.5 rounded-full z-[9998] ${colorClass}`}
             style={{
                 x: springX,
                 y: springY,
                 translateX: "-50%",
                 translateY: "-50%",
-                opacity: isVisible ? 0.8 / index : 0,
+                opacity: isVisible ? 0.6 / index : 0,
                 scale: 1 - (index * 0.1),
+                boxShadow: `0 0 10px ${shadowColor}`
             }}
         />
     )
