@@ -97,7 +97,7 @@ export function Header() {
           className="relative transition-transform duration-300 hover:scale-105 z-10 group"
           aria-label="Ir al inicio"
         >
-          <span className="font-orbitron font-medium tracking-[0.3em] text-[14px] sm:text-[18px] text-white/90 transition-all duration-300 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-cyan-400 group-hover:to-purple-500 group-hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]">
+          <span className="font-orbitron font-medium tracking-[0.3em] text-[14px] sm:text-[18px] text-white/90 transition-all duration-200 md:group-hover:text-transparent md:group-hover:bg-clip-text md:group-hover:bg-gradient-to-r md:group-hover:from-cyan-400 md:group-hover:to-purple-500 md:group-hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]">
             InZidium
           </span>
         </button>
@@ -107,11 +107,11 @@ export function Header() {
             <button
               key={item.id}
               onClick={() => scrollToSection(item.id)}
-              className="text-[11px] font-medium text-white/50 hover:text-white transition-all duration-300 relative group px-2 py-1 uppercase tracking-[0.2em] font-orbitron hover:scale-110 active:scale-95"
+              className="text-[11px] font-medium text-white/50 md:hover:text-white transition-all duration-200 relative group px-2 py-1 uppercase tracking-[0.2em] font-orbitron md:hover:scale-110 active:scale-95"
             >
               <span className="relative z-10">{item.label}</span>
-              <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-white transition-all duration-300 group-hover:w-full" />
-              <span className="absolute inset-0 bg-white/0 group-hover:bg-white/5 blur-md rounded-lg transition-all duration-300 -z-10" />
+              <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-white transition-all duration-200 md:group-hover:w-full" />
+              <span className="absolute inset-0 bg-white/0 md:group-hover:bg-white/5 blur-md rounded-lg transition-all duration-200 -z-10" />
             </button>
           ))}
         </nav>
@@ -119,7 +119,7 @@ export function Header() {
         <div className="hidden md:flex items-center gap-4">
           <button
             onClick={() => scrollToSection("contacto")}
-            className="px-8 py-3 rounded-full font-orbitron font-bold tracking-[0.2em] text-[11px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.2)] uppercase transition-all duration-300 hover:bg-cyan-500/20 hover:scale-105 active:scale-95"
+            className="px-8 py-3 rounded-full font-orbitron font-bold tracking-[0.2em] text-[11px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.2)] uppercase transition-all duration-200 md:hover:bg-cyan-500/20 md:hover:scale-105 active:scale-95"
           >
             Trabajemos Juntos
           </button>

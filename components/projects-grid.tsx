@@ -9,8 +9,6 @@ import { Badge } from "@/components/ui/badge"
 import { BLUR_PLACEHOLDER } from "@/lib/utils/image-optimization"
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
-import { useMounted } from "@/lib/hooks/use-mounted"
-import { useViewportHover } from "@/lib/hooks/use-viewport-hover"
 
 const projects = [
   {
@@ -69,15 +67,14 @@ const projects = [
   },
 ]
 
-function ProjectCard({ project, index, isViewportActive, cardRef }: { project: (typeof projects)[0]; index: number; isViewportActive: boolean; cardRef: (el: HTMLDivElement | null) => void }) {
+function ProjectCard({ project, index }: { project: (typeof projects)[0]; index: number }) {
   const isFeatured = project.featured
   const neonColor = 'var(--color-neon-purple)';
 
   return (
     <motion.article
-      ref={cardRef}
       whileTap={{ scale: 0.98 }}
-      className={`glass-panel rounded-3xl overflow-hidden relative group will-change-transform ${isViewportActive ? "viewport-active" : ""}`}
+      className="glass-panel rounded-3xl overflow-hidden relative group will-change-transform"
       style={{
         animationDelay: `${0.2 + index * 0.1}s`,
         "--active-border": "rgba(168,85,247,0.5)",
@@ -85,8 +82,7 @@ function ProjectCard({ project, index, isViewportActive, cardRef }: { project: (
         "--neon-glow": "rgba(168,85,247,0.15)"
       } as React.CSSProperties}
     >
-      {/* Glow behind the card on hover */}
-      <div className="absolute inset-0 bg-neon-purple/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl pointer-events-none" />
+      <div className="absolute inset-0 bg-neon-purple/5 opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 blur-xl pointer-events-none" />
 
       <div
         onClick={() => project.url && window.open(project.url, "_blank", "noopener,noreferrer")}
@@ -95,13 +91,13 @@ function ProjectCard({ project, index, isViewportActive, cardRef }: { project: (
         {/* Image container */}
         <div className="relative overflow-hidden h-56 sm:h-64">
           {/* Unified Transform Context for both Image and Overlay */}
-          <div className={`absolute inset-0 transition-transform duration-700 ease-out ${isViewportActive ? "scale-110" : "group-hover:scale-110"}`}>
+          <div className="absolute inset-0 transition-transform duration-500 ease-out md:group-hover:scale-110">
             {project.image && (
               <Image
                 src={project.image}
                 alt={`${project.title} - Proyecto InZidium`}
                 fill
-                className={`object-cover transition-opacity duration-500 ${isViewportActive ? "opacity-100" : "opacity-80 group-hover:opacity-100"}`}
+                className="object-cover opacity-80 md:group-hover:opacity-100 transition-opacity duration-200"
                 sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 390px"
                 quality={85}
                 placeholder="blur"
@@ -109,7 +105,7 @@ function ProjectCard({ project, index, isViewportActive, cardRef }: { project: (
               />
             )}
             {/* Overlay - INSIDE the transform context to stay attached during zoom */}
-            <div className={`absolute inset-0 bg-gradient-to-t from-[#030014] via-[#030014]/50 to-transparent transition-opacity duration-500 ${isViewportActive ? "opacity-60" : "opacity-90 group-hover:opacity-60"}`} />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#030014] via-[#030014]/50 to-transparent opacity-90 md:group-hover:opacity-60 transition-opacity duration-200" />
           </div>
 
           {/* Featured badge */}
@@ -122,15 +118,15 @@ function ProjectCard({ project, index, isViewportActive, cardRef }: { project: (
           )}
 
           {/* View icon overlay */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10">
-            <div className="p-4 rounded-full bg-black/50 backdrop-blur-md border border-white/20 hover:bg-neon-purple hover:border-neon-purple transition-colors duration-300">
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 z-10">
+            <div className="p-4 rounded-full bg-black/50 backdrop-blur-md border border-white/20 md:hover:bg-neon-purple md:hover:border-neon-purple transition-colors duration-200">
               <ExternalLink className="h-6 w-6 text-white" />
             </div>
           </div>
         </div>
 
         <div className="p-6 sm:p-8 relative z-10">
-          <h3 className={`font-orbitron text-white mb-2 transition-colors duration-300 group-hover:text-neon-purple ${isFeatured ? "text-xl sm:text-2xl" : "text-lg sm:text-xl"}`}>
+          <h3 className="font-orbitron text-white mb-2 transition-colors duration-200 md:group-hover:text-neon-purple text-lg sm:text-xl">
             {project.title}
           </h3>
 
@@ -155,9 +151,6 @@ function ProjectCard({ project, index, isViewportActive, cardRef }: { project: (
 }
 
 export function ProjectsGrid() {
-  const containerRef = useMounted<HTMLDivElement>()
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([])
-  const activeCardIndex = useViewportHover(cardRefs)
 
   return (
     <PageSection id="servicios" containerSize="lg">
@@ -167,7 +160,7 @@ export function ProjectsGrid() {
         <div className="absolute right-0 bottom-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
       </div>
 
-      <div ref={containerRef} className="relative z-10">
+      <div className="relative z-10">
         <div className="text-center mb-20 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-down">
           <SectionHeader titleLeft="Proyectos de" titleHighlight="Páginas Web" subtitle="Transformamos ideas en resultados reales" />
         </div>
@@ -179,10 +172,6 @@ export function ProjectsGrid() {
               key={project.id}
               project={project}
               index={index}
-              isViewportActive={activeCardIndex === index}
-              cardRef={(el) => {
-                cardRefs.current[index] = el
-              }}
             />
           ))}
         </div>

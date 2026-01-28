@@ -5,6 +5,7 @@ import Image from "next/image"
 import { ArrowDown } from "lucide-react"
 import { motion } from "framer-motion"
 import { scrollToId } from "@/lib/utils"
+import { BackgroundGradients } from "@/components/ui/background-gradients"
 
 export function Hero() {
   const [isHovered, setIsHovered] = useState(false)
@@ -27,9 +28,7 @@ export function Hero() {
   return (
     <section id="inicio" className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden">
 
-      {/* Background Gradient - Performance Optimized */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-neon-purple/20 rounded-full blur-[120px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-neon-cyan/20 rounded-full blur-[120px] -z-10 pointer-events-none" />
+      <BackgroundGradients />
 
       <div className="relative z-10 container mx-auto px-4 pt-16 sm:pt-32 flex flex-col items-center justify-center">
 

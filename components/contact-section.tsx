@@ -4,14 +4,10 @@ import { useState, useRef } from "react"
 import { Mail, Phone, MapPin } from "lucide-react"
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
-import { useMounted } from "@/lib/hooks/use-mounted"
-import { useViewportHover } from "@/lib/hooks/use-viewport-hover"
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
+import { BackgroundGradients } from "@/components/ui/background-gradients"
 
 export function ContactSection() {
-  const containerRef = useMounted<HTMLDivElement>()
-  const cardRefs = useRef<(HTMLElement | null)[]>([])
-  const activeCardIndex = useViewportHover(cardRefs)
   const [copied, setCopied] = useState(false)
 
   const copyEmail = () => {
@@ -45,11 +41,8 @@ export function ContactSection() {
 
   return (
     <PageSection id="contacto" className="relative overflow-hidden">
-      {/* Background Gradients */}
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-neon-purple/10 rounded-full blur-[120px] -z-10 pointer-events-none hide-on-mobile" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-neon-cyan/10 rounded-full blur-[120px] -z-10 pointer-events-none hide-on-mobile" />
-
-      <div ref={containerRef} className="relative z-10">
+      <BackgroundGradients purplePosition="top-left" cyanPosition="bottom-right" className="opacity-10" />
+      <div className="relative z-10">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center mb-16 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-down">
             <SectionHeader
@@ -63,8 +56,7 @@ export function ContactSection() {
             {/* Email Card - Now first */}
             <button
               onClick={copyEmail}
-              ref={(el) => { cardRefs.current[0] = (el as unknown as HTMLElement) }}
-              className={`glass-panel p-8 sm:p-10 rounded-3xl group border border-white/10 text-left relative will-change-transform ${activeCardIndex === 0 ? "viewport-active" : ""}`}
+              className="glass-panel p-8 sm:p-10 rounded-3xl group border border-white/10 text-left relative will-change-transform"
               style={{
                 "--active-border": "rgba(168,85,247,0.5)",
                 "--active-glow": "rgba(168,85,247,0.2)",
@@ -72,9 +64,9 @@ export function ContactSection() {
               } as React.CSSProperties}
             >
               <div className="text-4xl mb-6 bg-white/10 w-16 h-16 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/5 shadow-inner">
-                <Mail className="h-8 w-8 text-white group-hover:text-neon-purple transition-colors" />
+                <Mail className="h-8 w-8 text-white md:group-hover:text-neon-purple transition-colors duration-200" />
               </div>
-              <h3 className="text-2xl font-orbitron mb-4 text-white group-hover:text-neon-purple transition-colors">Email</h3>
+              <h3 className="text-2xl font-orbitron mb-4 text-white md:group-hover:text-neon-purple transition-colors duration-200">Email</h3>
               <p className="text-muted-foreground text-lg leading-relaxed mb-6">
                 Propuestas detalladas y soporte técnico especializado.
               </p>
@@ -90,11 +82,10 @@ export function ContactSection() {
 
             {/* WhatsApp Card - Now middle */}
             <a
-              ref={(el) => { cardRefs.current[3] = (el as unknown as HTMLElement) }}
               href="https://wa.me/573143855079"
               target="_blank"
               rel="noopener noreferrer"
-              className={`glass-panel p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform ${activeCardIndex === 3 ? "viewport-active" : ""}`}
+              className="glass-panel p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform"
               style={{
                 "--active-border": "rgba(34,211,238,0.5)",
                 "--active-glow": "rgba(34,211,238,0.2)",
@@ -102,9 +93,9 @@ export function ContactSection() {
               } as React.CSSProperties}
             >
               <div className="text-4xl mb-6 bg-white/10 w-16 h-16 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/5 shadow-inner">
-                <WhatsAppIcon className="h-8 w-8 text-white group-hover:text-neon-cyan transition-colors" />
+                <WhatsAppIcon className="h-8 w-8 text-white md:group-hover:text-neon-cyan transition-colors duration-200" />
               </div>
-              <h3 className="text-2xl font-orbitron mb-4 text-white group-hover:text-neon-cyan transition-colors">WhatsApp</h3>
+              <h3 className="text-2xl font-orbitron mb-4 text-white md:group-hover:text-neon-cyan transition-colors duration-200">WhatsApp</h3>
               <p className="text-muted-foreground text-lg leading-relaxed mb-6">
                 Respuesta inmediata para tus consultas y proyectos.
               </p>
@@ -113,8 +104,7 @@ export function ContactSection() {
 
             {/* Location Card */}
             <div
-              ref={(el) => { cardRefs.current[2] = (el as unknown as HTMLElement) }}
-              className={`glass-panel p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform ${activeCardIndex === 2 ? "viewport-active" : ""}`}
+              className="glass-panel p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform"
               style={{
                 "--active-border": "rgba(34,211,238,0.5)",
                 "--active-glow": "rgba(34,211,238,0.2)",
@@ -122,9 +112,9 @@ export function ContactSection() {
               } as React.CSSProperties}
             >
               <div className="text-4xl mb-6 bg-white/10 w-16 h-16 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/5 shadow-inner">
-                <MapPin className="h-8 w-8 text-white group-hover:text-neon-cyan transition-colors" />
+                <MapPin className="h-8 w-8 text-white md:group-hover:text-neon-cyan transition-colors duration-200" />
               </div>
-              <h3 className="text-2xl font-orbitron mb-4 text-white group-hover:text-neon-cyan transition-colors">Ubicación</h3>
+              <h3 className="text-2xl font-orbitron mb-4 text-white md:group-hover:text-neon-cyan transition-colors duration-200">Ubicación</h3>
               <p className="text-muted-foreground text-lg leading-relaxed">
                 Bogotá, Colombia.<br />
                 <span className="text-white/60">Servicio global para proyectos de alto impacto.</span>

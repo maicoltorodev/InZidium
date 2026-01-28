@@ -10,6 +10,14 @@ interface PageSectionProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 export function PageSection({ id, className, children, withBackground = true, containerSize = "default", ...props }: PageSectionProps) {
+  const sectionRef = React.useRef<HTMLElement>(null)
+
+  React.useEffect(() => {
+    if (sectionRef.current) {
+      sectionRef.current.classList.add("mounted")
+    }
+  }, [])
+
   const containerClasses = {
     default: "container mx-auto px-4 sm:px-6 lg:px-8",
     sm: "container mx-auto px-4 sm:px-6 max-w-4xl",
@@ -19,12 +27,13 @@ export function PageSection({ id, className, children, withBackground = true, co
   }
 
   return (
-    <section 
-      id={id} 
+    <section
+      id={id}
+      ref={sectionRef}
       className={cn(
-        "relative overflow-hidden scroll-mt-24 sm:scroll-mt-32 pt-28 sm:pt-40 lg:pt-48 pb-20 sm:pb-32 lg:pb-40", 
+        "relative overflow-hidden scroll-mt-24 sm:scroll-mt-32 pt-28 sm:pt-40 lg:pt-48 pb-20 sm:pb-32 lg:pb-40",
         className
-      )} 
+      )}
       {...props}
     >
       {withBackground && (

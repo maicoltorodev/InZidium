@@ -5,8 +5,6 @@ import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { SectionHeader } from "@/components/section-header"
-import { useMounted } from "@/lib/hooks/use-mounted"
-import { useViewportHover } from "@/lib/hooks/use-viewport-hover"
 
 type Solution = {
   id: string
@@ -47,14 +45,13 @@ const solutions: Solution[] = [
   },
 ]
 
-function SolutionCard({ solution, index, isViewportActive, cardRef }: { solution: Solution; index: number; isViewportActive: boolean; cardRef: (el: HTMLDivElement | null) => void }) {
+function SolutionCard({ solution, index }: { solution: Solution; index: number }) {
   const neonColor = index % 2 === 0 ? 'var(--color-neon-purple)' : 'var(--color-neon-cyan)';
 
   return (
     <motion.div
-      ref={cardRef}
       whileTap={{ scale: 0.98 }}
-      className={`glass-panel rounded-3xl p-8 relative overflow-hidden group will-change-transform ${isViewportActive ? "viewport-active" : ""}`}
+      className="glass-panel rounded-3xl p-8 relative overflow-hidden group will-change-transform"
       style={{
         animationDelay: `${0.2 + index * 0.1}s`,
         "--active-border": index % 2 === 0 ? "rgba(168,85,247,0.5)" : "rgba(34,211,238,0.5)",
@@ -62,7 +59,7 @@ function SolutionCard({ solution, index, isViewportActive, cardRef }: { solution
         "--neon-glow": index % 2 === 0 ? "rgba(168,85,247,0.15)" : "rgba(34,211,238,0.15)"
       } as React.CSSProperties}
     >
-      <div className={`absolute top-0 right-0 p-8 opacity-20 transition-opacity transform duration-500 ${isViewportActive ? "opacity-40 scale-110" : "group-hover:opacity-40 group-hover:scale-110"}`}>
+      <div className={`absolute top-0 right-0 p-8 opacity-20 transition-opacity transform duration-200 md:group-hover:opacity-40 md:group-hover:scale-110`}>
         <span className="text-6xl filter blur-[2px]">{solution.icon}</span>
       </div>
 
@@ -71,7 +68,7 @@ function SolutionCard({ solution, index, isViewportActive, cardRef }: { solution
           {solution.icon}
         </div>
 
-        <h3 className={`text-xl sm:text-2xl font-orbitron text-white mb-4 transition-colors ${isViewportActive ? "text-neon-cyan" : "group-hover:text-neon-cyan"}`}>
+        <h3 className="text-xl sm:text-2xl font-orbitron text-white mb-4 md:group-hover:text-neon-cyan transition-colors duration-200">
           {solution.title}
         </h3>
 
@@ -83,7 +80,7 @@ function SolutionCard({ solution, index, isViewportActive, cardRef }: { solution
           {solution.features.map((feature) => (
             <span
               key={feature}
-              className={`text-xs font-medium px-3 py-1 rounded-full bg-white/5 border border-white/10 transition-colors ${isViewportActive ? "border-neon-cyan/30" : "group-hover:border-neon-cyan/30"} text-white/80`}
+              className="text-xs font-medium px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/80 md:group-hover:border-neon-cyan/30 transition-colors duration-200"
             >
               {feature}
             </span>
@@ -95,9 +92,6 @@ function SolutionCard({ solution, index, isViewportActive, cardRef }: { solution
 }
 
 export function OtherSolutions() {
-  const containerRef = useMounted<HTMLDivElement>()
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([])
-  const activeCardIndex = useViewportHover(cardRefs)
 
   return (
     <section id="otras-soluciones" className="scroll-mt-24 sm:scroll-mt-32 pt-28 sm:pt-40 pb-20 sm:pb-32 relative overflow-hidden">
@@ -107,7 +101,7 @@ export function OtherSolutions() {
         <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-neon-cyan/10 rounded-full blur-[100px]" />
       </div>
 
-      <div ref={containerRef} className="container mx-auto px-4 sm:px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <div className="text-center mb-20 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-down">
           <SectionHeader
             titleLeft="Otras"
@@ -122,10 +116,6 @@ export function OtherSolutions() {
               key={solution.id}
               solution={solution}
               index={index}
-              isViewportActive={activeCardIndex === index}
-              cardRef={(el) => {
-                cardRefs.current[index] = el
-              }}
             />
           ))}
         </div>
