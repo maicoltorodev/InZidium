@@ -175,6 +175,23 @@
   transform: scale(1);
 }
 
+/* Simulation of hover on mobile (centered in viewport) */
+.viewport-active {
+  transition: all 0.4s ease;
+}
+
+@media (max-width: 768px) {
+  .viewport-active {
+    border-color: rgba(168, 85, 247, 0.4) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    /* No transformation or heavy shadow for max performance on mobile center focus */
+  }
+
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
+
 /* Performance Utilities */
 .will-change-transform {
   will-change: transform;
@@ -350,4 +367,24 @@
 
 .shine-container:hover::after {
   animation-duration: 3s;
+}
+
+@keyframes energy-flow {
+  from {
+    background-position: 0% 0%;
+  }
+
+  to {
+    background-position: 200% 0%;
+  }
+}
+
+.energy-flow-css {
+  animation: energy-flow 6s linear infinite;
+  will-change: background-position;
+}
+
+.energy-flow-css-fast {
+  animation: energy-flow 2s linear infinite;
+  will-change: background-position;
 }

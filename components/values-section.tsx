@@ -43,7 +43,7 @@ function ValueCard({ value, index, isViewportActive, cardRef }: { value: (typeof
   return (
     <div
       ref={cardRef}
-      className={`glass-panel border-white/5 bg-white/5 rounded-3xl p-8 sm:p-10 relative overflow-hidden group transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl will-change-transform ${isViewportActive ? "viewport-active scale-[1.02] -translate-y-2 shadow-2xl" : ""}`}
+      className={`glass-panel border-white/5 bg-white/5 rounded-3xl p-8 sm:p-10 relative overflow-hidden group transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl will-change-transform ${isViewportActive ? "viewport-active" : ""}`}
       style={{
         boxShadow: isViewportActive ? `0 0 30px ${neonColor}20` : '',
         borderColor: isViewportActive ? `${neonColor}50` : ''

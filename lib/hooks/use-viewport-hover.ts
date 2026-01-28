@@ -11,61 +11,38 @@ import { useEffect, useState, useCallback, useRef } from "react"
  */
 export function useViewportHover(cardRefs: React.MutableRefObject<(HTMLElement | null)[]>) {
   const [activeCardIndex, setActiveCardIndex] = useState<number | null>(null)
-  const rafIdRef = useRef<number | null>(null)
-  const currentActiveIndexRef = useRef<number | null>(null)
-
-  const findClosestToCenter = useCallback(() => {
-    const viewportCenter = window.innerHeight / 2
-    let closestIndex: number | null = null
-    let closestDistance = Infinity
-
-    cardRefs.current.forEach((card, index) => {
-      if (!card) return
-
-      const rect = card.getBoundingClientRect()
-      const cardCenter = rect.top + rect.height / 2
-      const distance = Math.abs(viewportCenter - cardCenter)
-      const isInViewport = rect.top < viewportCenter && rect.bottom > viewportCenter
-
-      if (isInViewport && distance < closestDistance) {
-        closestDistance = distance
-        closestIndex = index
-      }
-    })
-
-    if (closestIndex !== currentActiveIndexRef.current) {
-      currentActiveIndexRef.current = closestIndex
-      setActiveCardIndex(closestIndex)
-    }
-  }, [cardRefs])
 
   useEffect(() => {
     // Solo activar en dispositivos móviles (touch devices)
-    const mediaQuery = window.matchMedia("(max-width: 768px) and (hover: none)")
+    const mediaQuery = window.matchMedia("(max-width: 768px)")
     if (!mediaQuery.matches) return
 
-    const onScroll = () => {
-      if (rafIdRef.current !== null) return
-
-      rafIdRef.current = requestAnimationFrame(() => {
-        findClosestToCenter()
-        rafIdRef.current = null
-      })
-    }
-
-    // Verificación inicial
-    findClosestToCenter()
-
-    window.addEventListener("scroll", onScroll, { passive: true })
-
-    return () => {
-      window.removeEventListener("scroll", onScroll)
-      if (rafIdRef.current !== null) {
-        cancelAnimationFrame(rafIdRef.current)
-        rafIdRef.current = null
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            // Encontrar el índice del elemento que entró al viewport
+            const index = cardRefs.current.findIndex(ref => ref === entry.target)
+            if (index !== -1) {
+              setActiveCardIndex(index)
+            }
+          }
+        })
+      },
+      {
+        root: null,
+        // Usar un margen que se concentre en el centro del viewport
+        rootMargin: "-40% 0px -40% 0px",
+        threshold: 0
       }
-    }
-  }, [findClosestToCenter])
+    )
+
+    cardRefs.current.forEach((card) => {
+      if (card) observer.observe(card)
+    })
+
+    return () => observer.disconnect()
+  }, [cardRefs])
 
   return activeCardIndex
 }

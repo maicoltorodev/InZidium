@@ -75,7 +75,7 @@ function ProjectCard({ project, index, isViewportActive, cardRef }: { project: (
   return (
     <article
       ref={cardRef}
-      className={`glass-panel rounded-3xl overflow-hidden relative group transition-all duration-300 hover:-translate-y-2 hover:border-neon-purple/50 hover:shadow-[0_0_40px_rgba(168,85,247,0.15)] will-change-transform ${isViewportActive ? "viewport-active scale-[1.02] -translate-y-2 border-neon-purple/50 shadow-[0_0_40px_rgba(168,85,247,0.15)]" : ""}`}
+      className={`glass-panel rounded-3xl overflow-hidden relative group transition-all duration-300 hover:-translate-y-2 hover:border-neon-purple/50 hover:shadow-[0_0_40px_rgba(168,85,247,0.15)] will-change-transform ${isViewportActive ? "viewport-active" : ""}`}
       style={{
         animationDelay: `${0.2 + index * 0.1}s`,
         borderColor: isViewportActive ? neonColor : ''
@@ -158,7 +158,7 @@ export function ProjectsGrid() {
   return (
     <PageSection id="servicios" containerSize="lg">
       {/* Background decorative elements */}
-      <div className="absolute inset-0 opacity-30">
+      <div className="absolute inset-0 opacity-30 hide-on-mobile">
         <div className="absolute left-0 top-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute right-0 bottom-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
       </div>

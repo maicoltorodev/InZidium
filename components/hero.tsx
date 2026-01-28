@@ -8,12 +8,21 @@ import { scrollToId } from "@/lib/utils"
 
 export function Hero() {
   const [isHovered, setIsHovered] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
   // Notify other components (like Header) about the hover state
   useEffect(() => {
     const event = new CustomEvent('logoHover', { detail: isHovered });
     window.dispatchEvent(event);
   }, [isHovered]);
+
+  // Mobile detection for performance
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   return (
     <section id="inicio" className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden">
@@ -42,8 +51,8 @@ export function Hero() {
           onHoverStart={() => setIsHovered(true)}
           onHoverEnd={() => setIsHovered(false)}
         >
-          {/* Holographic Clones (Sci-Fi Effect) */}
-          {[1, 2, 3].map((i) => (
+          {/* Holographic Clones (Sci-Fi Effect) - Disabled on mobile for performance */}
+          {!isMobile && [1, 2, 3].map((i) => (
             <motion.div
               key={i}
               className="absolute inset-0 z-0 pointer-events-none opacity-0 will-change-transform"
@@ -104,6 +113,7 @@ export function Hero() {
               scale: 0.9,
               transition: { duration: 0.3 }
             }}
+            whileTap={{ scale: 0.85 }}
             className="cursor-pointer relative shine-container group z-10 will-change-transform"
           >
             {/* Base Image */}
@@ -114,7 +124,7 @@ export function Hero() {
               height={400}
               className="h-48 sm:h-64 md:h-80 w-auto object-contain relative z-10"
               priority
-              quality={100}
+              quality={isMobile ? 80 : 100}
             />
           </motion.div>
         </motion.div>

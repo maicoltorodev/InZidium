@@ -46,8 +46,8 @@ export function ContactSection() {
   return (
     <PageSection id="contacto" className="relative overflow-hidden">
       {/* Background Gradients */}
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-neon-purple/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-neon-cyan/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
+      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-neon-purple/10 rounded-full blur-[120px] -z-10 pointer-events-none hide-on-mobile" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-neon-cyan/10 rounded-full blur-[120px] -z-10 pointer-events-none hide-on-mobile" />
 
       <div ref={containerRef} className="relative z-10">
         <div className="container mx-auto px-4 sm:px-6">
@@ -64,7 +64,7 @@ export function ContactSection() {
             <button
               onClick={copyEmail}
               ref={(el) => { cardRefs.current[0] = (el as unknown as HTMLElement) }}
-              className={`glass-panel p-8 sm:p-10 rounded-3xl group transition-all duration-300 hover:-translate-y-2 border border-white/10 hover:border-neon-purple/50 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)] text-left relative will-change-transform ${activeCardIndex === 0 ? "scale-[1.02] -translate-y-2 border-neon-purple/50 shadow-[0_0_30px_rgba(168,85,247,0.2)]" : ""}`}
+              className={`glass-panel p-8 sm:p-10 rounded-3xl group transition-all duration-300 hover:-translate-y-2 border border-white/10 hover:border-neon-purple/50 hover:shadow-[0_0_30px_rgba(168,85,247,0.2)] text-left relative will-change-transform ${activeCardIndex === 0 ? "viewport-active" : ""}`}
             >
               <div className="text-4xl mb-6 bg-white/10 w-16 h-16 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/5 shadow-inner">
                 <Mail className="h-8 w-8 text-white group-hover:text-neon-purple transition-colors" />
@@ -89,7 +89,7 @@ export function ContactSection() {
               href="https://wa.me/573143855079"
               target="_blank"
               rel="noopener noreferrer"
-              className={`glass-panel p-8 sm:p-10 rounded-3xl group transition-all duration-300 hover:-translate-y-2 border border-white/10 hover:border-neon-cyan/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)] will-change-transform ${activeCardIndex === 3 ? "scale-[1.02] -translate-y-2 border-neon-cyan/50 shadow-[0_0_30px_rgba(34,211,238,0.2)]" : ""}`}
+              className={`glass-panel p-8 sm:p-10 rounded-3xl group transition-all duration-300 hover:-translate-y-2 border border-white/10 hover:border-neon-cyan/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)] will-change-transform ${activeCardIndex === 3 ? "viewport-active" : ""}`}
             >
               <div className="text-4xl mb-6 bg-white/10 w-16 h-16 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/5 shadow-inner">
                 <WhatsAppIcon className="h-8 w-8 text-white group-hover:text-neon-cyan transition-colors" />
@@ -104,7 +104,7 @@ export function ContactSection() {
             {/* Location Card */}
             <div
               ref={(el) => { cardRefs.current[2] = (el as unknown as HTMLElement) }}
-              className={`glass-panel p-8 sm:p-10 rounded-3xl group transition-all duration-300 hover:-translate-y-2 border border-white/10 hover:border-neon-cyan/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)] will-change-transform ${activeCardIndex === 2 ? "scale-[1.02] -translate-y-2 border-neon-cyan/50 shadow-[0_0_30px_rgba(34,211,238,0.2)]" : ""}`}
+              className={`glass-panel p-8 sm:p-10 rounded-3xl group transition-all duration-300 hover:-translate-y-2 border border-white/10 hover:border-neon-cyan/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.2)] will-change-transform ${activeCardIndex === 2 ? "viewport-active" : ""}`}
             >
               <div className="text-4xl mb-6 bg-white/10 w-16 h-16 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/5 shadow-inner">
                 <MapPin className="h-8 w-8 text-white group-hover:text-neon-cyan transition-colors" />

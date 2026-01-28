@@ -6,12 +6,17 @@ import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
 
 export function WhatsAppFAB() {
   const [isVisible, setIsVisible] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+
     const heroSection = document.getElementById("inicio")
     if (!heroSection) {
       setIsVisible(true)
-      return
+      return () => window.removeEventListener('resize', checkMobile)
     }
 
     const observer = new IntersectionObserver(
@@ -24,7 +29,10 @@ export function WhatsAppFAB() {
     )
 
     observer.observe(heroSection)
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', checkMobile)
+    }
   }, [])
 
   return (
@@ -50,7 +58,7 @@ export function WhatsAppFAB() {
           aria-label="Contactar por WhatsApp"
         >
           {/* Cosmic Glow Base */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#a855f7] via-transparent to-[#22d3ee] opacity-30 blur-3xl group-hover:opacity-60 transition-opacity duration-700 animate-pulse" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#a855f7] via-transparent to-[#22d3ee] opacity-30 blur-3xl group-hover:opacity-60 transition-opacity duration-700 animate-pulse hide-on-mobile" />
 
           {/* Floating Physics Layer */}
           <motion.div
@@ -67,19 +75,21 @@ export function WhatsAppFAB() {
             {/* The Main Holographic Body */}
             <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full flex items-center justify-center relative overflow-hidden border border-white/20 bg-white/[0.03] backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] group-hover:border-white/50 transition-colors duration-500 will-change-transform">
 
-              {/* Internal Liquid Gradient */}
-              <motion.div
-                animate={{
-                  rotate: [0, 360],
-                  scale: [1, 1.3, 1],
-                }}
-                transition={{
-                  duration: 8,
-                  repeat: Infinity,
-                  ease: "linear",
-                }}
-                className="absolute inset-[-60%] bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.3)_0%,transparent_50%),radial-gradient(circle_at_center,rgba(34,211,238,0.3)_0%,transparent_70%)] opacity-40 blur-2xl mix-blend-screen group-hover:opacity-60"
-              />
+              {/* Internal Liquid Gradient - Disabled on mobile for performance */}
+              {!isMobile && (
+                <motion.div
+                  animate={{
+                    rotate: [0, 360],
+                    scale: [1, 1.3, 1],
+                  }}
+                  transition={{
+                    duration: 8,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
+                  className="absolute inset-[-60%] bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.3)_0%,transparent_50%),radial-gradient(circle_at_center,rgba(34,211,238,0.3)_0%,transparent_70%)] opacity-40 blur-2xl mix-blend-screen group-hover:opacity-60"
+                />
+              )}
 
               {/* High-Frequency Outer Glow Ring */}
               <div className="absolute inset-0 rounded-full border border-white/10 opacity-50 group-hover:opacity-100">

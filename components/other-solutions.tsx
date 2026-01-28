@@ -52,7 +52,7 @@ function SolutionCard({ solution, index, isViewportActive, cardRef }: { solution
   return (
     <div
       ref={cardRef}
-      className={`glass-panel rounded-3xl p-8 relative overflow-hidden group transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(34,211,238,0.15)] hover:border-neon-cyan/50 will-change-transform ${isViewportActive ? "viewport-active scale-[1.02] -translate-y-2 shadow-[0_0_30px_rgba(34,211,238,0.15)]" : ""}`}
+      className={`glass-panel rounded-3xl p-8 relative overflow-hidden group transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_0_30px_rgba(34,211,238,0.15)] hover:border-neon-cyan/50 will-change-transform ${isViewportActive ? "viewport-active" : ""}`}
       style={{
         animationDelay: `${0.2 + index * 0.1}s`,
         borderColor: isViewportActive ? neonColor : ''
@@ -98,7 +98,7 @@ export function OtherSolutions() {
   return (
     <section id="otras-soluciones" className="scroll-mt-24 sm:scroll-mt-32 pt-28 sm:pt-40 pb-20 sm:pb-32 relative overflow-hidden">
       {/* Ambience */}
-      <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none hide-on-mobile">
         <div className="absolute top-1/2 left-1/4 w-[600px] h-[600px] bg-neon-purple/10 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-neon-cyan/10 rounded-full blur-[100px]" />
       </div>

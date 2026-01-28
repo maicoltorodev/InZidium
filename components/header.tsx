@@ -81,14 +81,8 @@ export function Header() {
       <div
         className={`absolute bottom-0 left-0 w-full overflow-hidden opacity-90 transition-all duration-500 ${isLogoHovered ? "h-[4px]" : "h-[2px]"}`}
       >
-        <motion.div
-          animate={{ backgroundPosition: ["0% 0%", "200% 0%"] }}
-          transition={{
-            duration: isLogoHovered ? 2 : 6,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute inset-0 w-full h-full bg-[length:100%_100%]"
+        <div
+          className={`absolute inset-0 w-full h-full bg-[length:100%_100%] ${isLogoHovered ? "energy-flow-css-fast" : "energy-flow-css"}`}
           style={{
             backgroundImage: "linear-gradient(to right, #22d3ee, #a855f7, #22d3ee, #a855f7, #22d3ee)",
             backgroundSize: "200% 100%"
