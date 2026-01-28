@@ -99,7 +99,9 @@ export function Hero() {
             style={{
               filter: isHovered
                 ? "drop-shadow(0 0 25px rgba(34,211,238,0.6))"
-                : "drop-shadow(0 0 15px rgba(168,85,247,0.4))",
+                : isMobile
+                  ? "drop-shadow(0 0 10px rgba(168,85,247,0.3))"
+                  : "drop-shadow(0 0 15px rgba(168,85,247,0.4))",
               WebkitMaskImage: "url('/logo.webp')",
               WebkitMaskSize: "contain",
               WebkitMaskRepeat: "no-repeat",
@@ -140,7 +142,7 @@ export function Hero() {
               color: isHovered ? "transparent" : "#ffffff",
               filter: isHovered
                 ? "drop-shadow(0 0 20px rgba(34,211,238,0.4)) drop-shadow(0 0 40px rgba(168,85,247,0.2))"
-                : "drop-shadow(0 0 0px rgba(255,255,255,0))"
+                : isMobile ? "none" : "drop-shadow(0 0 0px rgba(255,255,255,0))"
             }}
             transition={{
               opacity: { duration: 0.3 },

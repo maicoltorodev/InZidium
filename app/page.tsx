@@ -1,12 +1,15 @@
+import dynamic from "next/dynamic"
 import { Header } from "@/components/header"
 import { Hero } from "@/components/hero"
-import { AboutSection } from "@/components/about-section"
-import { ProjectsGrid } from "@/components/projects-grid"
-import { OtherSolutions } from "@/components/other-solutions"
-import { ValuesSection } from "@/components/values-section"
-import { ContactSection } from "@/components/contact-section"
-import { Footer } from "@/components/footer"
-import { WhatsAppFAB } from "@/components/whatsapp-fab"
+
+// Lazy load off-screen sections
+const AboutSection = dynamic(() => import("@/components/about-section").then(mod => mod.AboutSection))
+const ProjectsGrid = dynamic(() => import("@/components/projects-grid").then(mod => mod.ProjectsGrid))
+const OtherSolutions = dynamic(() => import("@/components/other-solutions").then(mod => mod.OtherSolutions))
+const ValuesSection = dynamic(() => import("@/components/values-section").then(mod => mod.ValuesSection))
+const ContactSection = dynamic(() => import("@/components/contact-section").then(mod => mod.ContactSection))
+const Footer = dynamic(() => import("@/components/footer").then(mod => mod.Footer))
+const WhatsAppFAB = dynamic(() => import("@/components/whatsapp-fab").then(mod => mod.WhatsAppFAB))
 
 export default function Home() {
   return (

@@ -2,6 +2,7 @@
 
 import { useRef } from "react"
 import Image from "next/image"
+import { motion } from "framer-motion"
 import { ExternalLink } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -73,8 +74,9 @@ function ProjectCard({ project, index, isViewportActive, cardRef }: { project: (
   const neonColor = 'var(--color-neon-purple)';
 
   return (
-    <article
+    <motion.article
       ref={cardRef}
+      whileTap={{ scale: 0.98 }}
       className={`glass-panel rounded-3xl overflow-hidden relative group will-change-transform ${isViewportActive ? "viewport-active" : ""}`}
       style={{
         animationDelay: `${0.2 + index * 0.1}s`,
@@ -93,13 +95,13 @@ function ProjectCard({ project, index, isViewportActive, cardRef }: { project: (
         {/* Image container */}
         <div className="relative overflow-hidden h-56 sm:h-64">
           {/* Unified Transform Context for both Image and Overlay */}
-          <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-110">
+          <div className={`absolute inset-0 transition-transform duration-700 ease-out ${isViewportActive ? "scale-110" : "group-hover:scale-110"}`}>
             {project.image && (
               <Image
                 src={project.image}
                 alt={`${project.title} - Proyecto InZidium`}
                 fill
-                className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                className={`object-cover transition-opacity duration-500 ${isViewportActive ? "opacity-100" : "opacity-80 group-hover:opacity-100"}`}
                 sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 390px"
                 quality={85}
                 placeholder="blur"
@@ -107,7 +109,7 @@ function ProjectCard({ project, index, isViewportActive, cardRef }: { project: (
               />
             )}
             {/* Overlay - INSIDE the transform context to stay attached during zoom */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#030014] via-[#030014]/50 to-transparent opacity-90 group-hover:opacity-60 transition-opacity duration-500" />
+            <div className={`absolute inset-0 bg-gradient-to-t from-[#030014] via-[#030014]/50 to-transparent transition-opacity duration-500 ${isViewportActive ? "opacity-60" : "opacity-90 group-hover:opacity-60"}`} />
           </div>
 
           {/* Featured badge */}
@@ -148,7 +150,7 @@ function ProjectCard({ project, index, isViewportActive, cardRef }: { project: (
           </div>
         </div>
       </div>
-    </article>
+    </motion.article>
   )
 }
 

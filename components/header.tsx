@@ -75,7 +75,7 @@ export function Header() {
 
   return (
     <header
-      className={`fixed top-0 z-50 w-full transition-all duration-500 ease-in-out ${isScrolled || isMobileMenuOpen ? "glass-panel bg-[#030014]/90 backdrop-blur-[40px] shadow-2xl" : "bg-transparent"
+      className={`fixed top-0 z-50 w-full transition-all duration-500 ease-in-out ${isScrolled || isMobileMenuOpen ? "glass-panel bg-[#030014]/90 backdrop-blur-md md:backdrop-blur-[40px] shadow-2xl" : "bg-transparent"
         }`}
     >
       <div

@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef } from "react"
+import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { SectionHeader } from "@/components/section-header"
@@ -50,8 +51,9 @@ function SolutionCard({ solution, index, isViewportActive, cardRef }: { solution
   const neonColor = index % 2 === 0 ? 'var(--color-neon-purple)' : 'var(--color-neon-cyan)';
 
   return (
-    <div
+    <motion.div
       ref={cardRef}
+      whileTap={{ scale: 0.98 }}
       className={`glass-panel rounded-3xl p-8 relative overflow-hidden group will-change-transform ${isViewportActive ? "viewport-active" : ""}`}
       style={{
         animationDelay: `${0.2 + index * 0.1}s`,
@@ -60,7 +62,7 @@ function SolutionCard({ solution, index, isViewportActive, cardRef }: { solution
         "--neon-glow": index % 2 === 0 ? "rgba(168,85,247,0.15)" : "rgba(34,211,238,0.15)"
       } as React.CSSProperties}
     >
-      <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:opacity-40 transition-opacity transform group-hover:scale-110 duration-500">
+      <div className={`absolute top-0 right-0 p-8 opacity-20 transition-opacity transform duration-500 ${isViewportActive ? "opacity-40 scale-110" : "group-hover:opacity-40 group-hover:scale-110"}`}>
         <span className="text-6xl filter blur-[2px]">{solution.icon}</span>
       </div>
 
@@ -69,7 +71,7 @@ function SolutionCard({ solution, index, isViewportActive, cardRef }: { solution
           {solution.icon}
         </div>
 
-        <h3 className="text-xl sm:text-2xl font-orbitron text-white mb-4 group-hover:text-neon-cyan transition-colors">
+        <h3 className={`text-xl sm:text-2xl font-orbitron text-white mb-4 transition-colors ${isViewportActive ? "text-neon-cyan" : "group-hover:text-neon-cyan"}`}>
           {solution.title}
         </h3>
 
@@ -81,14 +83,14 @@ function SolutionCard({ solution, index, isViewportActive, cardRef }: { solution
           {solution.features.map((feature) => (
             <span
               key={feature}
-              className="text-xs font-medium px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/80 group-hover:border-neon-cyan/30 transition-colors"
+              className={`text-xs font-medium px-3 py-1 rounded-full bg-white/5 border border-white/10 transition-colors ${isViewportActive ? "border-neon-cyan/30" : "group-hover:border-neon-cyan/30"} text-white/80`}
             >
               {feature}
             </span>
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

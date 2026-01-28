@@ -2,6 +2,7 @@
 
 import { useRef } from "react"
 import { Target, Zap, Palette, Rocket } from "lucide-react"
+import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { SectionHeader } from "@/components/section-header"
@@ -41,8 +42,9 @@ function ValueCard({ value, index, isViewportActive, cardRef }: { value: (typeof
   const neonColor = index % 2 === 0 ? 'var(--color-neon-purple)' : 'var(--color-neon-cyan)';
 
   return (
-    <div
+    <motion.div
       ref={cardRef}
+      whileTap={{ scale: 0.98 }}
       className={`glass-panel border-white/5 bg-white/5 rounded-3xl p-8 sm:p-10 relative overflow-hidden group will-change-transform ${isViewportActive ? "viewport-active" : ""}`}
       style={{
         "--active-border": index % 2 === 0 ? "rgba(168,85,247,0.5)" : "rgba(34,211,238,0.5)",
@@ -56,20 +58,20 @@ function ValueCard({ value, index, isViewportActive, cardRef }: { value: (typeof
       <div className="flex flex-col items-center text-center space-y-6 relative z-10">
         {/* Icon with glass background */}
         <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-br from-neon-purple to-neon-cyan blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500" />
-          <div className="p-5 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 group-hover:border-white/20 transition-all duration-500 relative">
-            <Icon className="h-10 w-10 text-white group-hover:text-neon-cyan transition-colors duration-300" />
+          <div className={`absolute inset-0 bg-gradient-to-br from-neon-purple to-neon-cyan blur-xl transition-opacity duration-500 ${isViewportActive ? "opacity-40" : "opacity-20 group-hover:opacity-40"}`} />
+          <div className={`p-5 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 transition-all duration-500 relative ${isViewportActive ? "border-white/20" : "group-hover:border-white/20"}`}>
+            <Icon className={`h-10 w-10 text-white transition-colors duration-300 ${isViewportActive ? "text-neon-cyan" : "group-hover:text-neon-cyan"}`} />
           </div>
         </div>
 
         {/* Title and Badge */}
         <div className="space-y-4">
           <div className="flex flex-col items-center gap-3">
-            <h3 className="text-2xl sm:text-3xl font-orbitron text-white group-hover:text-neon-purple transition-colors duration-500">
+            <h3 className={`text-2xl sm:text-3xl font-orbitron text-white transition-colors duration-500 ${isViewportActive ? "text-neon-purple" : "group-hover:text-neon-purple"}`}>
               {value.title}
             </h3>
             {value.badge && (
-              <span className="text-xs font-bold px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/50 group-hover:text-white group-hover:border-neon-purple/50 transition-colors uppercase tracking-wider">
+              <span className={`text-xs font-bold px-3 py-1 rounded-full bg-white/5 border border-white/10 transition-colors uppercase tracking-wider ${isViewportActive ? "text-white border-neon-purple/50" : "text-white/50 group-hover:text-white group-hover:border-neon-purple/50"}`}>
                 {value.badge}
               </span>
             )}
@@ -81,7 +83,7 @@ function ValueCard({ value, index, isViewportActive, cardRef }: { value: (typeof
           </p>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

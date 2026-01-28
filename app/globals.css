@@ -124,17 +124,24 @@
 /* Mobile-first Glass Panel Optimization */
 .glass-panel {
   background: rgba(255, 255, 255, 0.03);
+  /* Reduced blur for mobile performance */
   backdrop-filter: blur(8px) saturate(180%) contrast(90%);
   -webkit-backdrop-filter: blur(8px) saturate(180%) contrast(90%);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
-  transition: backdrop-filter 0.5s ease-in-out, background 0.3s ease, border 0.3s ease, transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.4);
+  transition:
+    backdrop-filter 0.5s ease-in-out,
+    background 0.3s ease,
+    border 0.3s ease,
+    transform 0.5s cubic-bezier(0.33, 1, 0.68, 1),
+    box-shadow 0.5s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
 @media (min-width: 768px) {
   .glass-panel {
     backdrop-filter: blur(24px) saturate(180%) contrast(90%);
     -webkit-backdrop-filter: blur(24px) saturate(180%) contrast(90%);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
   }
 }
 
@@ -182,16 +189,21 @@
 
 /* Simulation of hover on mobile (centered in viewport) */
 .viewport-active {
-  transition: all 0.4s ease;
+  transition:
+    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   will-change: transform, border-color, background, box-shadow;
 }
 
 @media (max-width: 768px) {
   .viewport-active {
     border-color: var(--active-border, rgba(168, 85, 247, 0.4)) !important;
-    background: rgba(255, 255, 255, 0.08) !important;
-    transform: scale(1.02);
-    box-shadow: 0 0 20px var(--active-glow, rgba(168, 85, 247, 0.2)) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    transform: scale(1.03) translateY(-4px);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 15px var(--active-glow, rgba(168, 85, 247, 0.2)) !important;
+    z-index: 10;
   }
 
   .hide-on-mobile {
