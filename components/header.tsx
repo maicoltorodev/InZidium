@@ -98,7 +98,7 @@ export function Header() {
           aria-label="Ir al inicio"
         >
           <span className="font-orbitron font-medium tracking-[0.3em] text-[14px] sm:text-[18px] text-white/90 transition-all duration-300 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-cyan-400 group-hover:to-purple-500 group-hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]">
-            INZIDIUM
+            InZidium
           </span>
         </button>
 

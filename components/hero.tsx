@@ -141,7 +141,7 @@ export function Hero() {
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="font-orbitron text-5xl sm:text-7xl md:text-8xl font-medium tracking-[0.2em] sm:tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 pb-2"
           >
-            INZIDIUM
+            InZidium
           </motion.h1>
           <motion.p
             animate={{
