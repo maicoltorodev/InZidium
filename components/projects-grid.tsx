@@ -154,7 +154,7 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
 export function ProjectsGrid() {
 
   return (
-    <PageSection id="servicios" containerSize="lg">
+    <PageSection id="servicios" containerSize="lg" withBackground={false}>
       <BackgroundGradients purplePosition="top-left" cyanPosition="bottom-right" className="opacity-10" />
 
       <div className="relative z-10">

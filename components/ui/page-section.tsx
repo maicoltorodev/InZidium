@@ -31,15 +31,15 @@ export function PageSection({ id, className, children, withBackground = true, co
       id={id}
       ref={sectionRef}
       className={cn(
-        "relative overflow-hidden scroll-mt-28 sm:scroll-mt-40 pt-36 sm:pt-52 lg:pt-64 pb-20 sm:pb-32 lg:pb-40",
+        "relative overflow-hidden scroll-mt-28 sm:scroll-mt-40 pt-36 sm:pt-52 lg:pt-64 pb-20 sm:pb-32 lg:pb-40 section-optimize",
         className
       )}
       {...props}
     >
       {withBackground && (
         <>
-          <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-card/30" />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5 opacity-50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/20 to-card/30" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5 opacity-30" />
         </>
       )}
       <div className="relative z-10">

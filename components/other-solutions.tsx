@@ -95,7 +95,7 @@ function SolutionCard({ solution, index }: { solution: Solution; index: number }
 
 export function OtherSolutions() {
   return (
-    <PageSection id="otras-soluciones" containerSize="xl">
+    <PageSection id="otras-soluciones" containerSize="xl" withBackground={false}>
       <BackgroundGradients purplePosition="bottom-right" cyanPosition="top-left" opacity="opacity-10" />
 
       <div className="relative z-10">

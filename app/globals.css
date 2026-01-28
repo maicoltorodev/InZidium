@@ -104,8 +104,6 @@
     pointer-events: none;
   }
 
-
-
   html {
     scroll-behavior: smooth;
   }
@@ -144,34 +142,23 @@
 
 /* Utilities */
 
-/* The Blue Flare / Point Light visible at the bottom of the symbol */
-
-
-/* The vertical beam effect */
-
-
-/* Utilities */
-
 /* Mobile-first Glass Panel Optimization */
 .glass-panel {
   background: rgba(255, 255, 255, 0.03);
-  /* Reduced blur for mobile performance */
-  backdrop-filter: blur(8px) saturate(180%) contrast(90%);
-  -webkit-backdrop-filter: blur(8px) saturate(180%) contrast(90%);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.4);
-  transition:
-    backdrop-filter 0.5s ease-in-out,
-    background 0.3s ease,
-    border 0.3s ease,
-    transform 0.5s cubic-bezier(0.33, 1, 0.68, 1),
-    box-shadow 0.5s cubic-bezier(0.33, 1, 0.68, 1);
+  /* GPU Acceleration */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  will-change: transform, opacity;
 }
 
 @media (min-width: 768px) {
   .glass-panel {
-    backdrop-filter: blur(24px) saturate(180%) contrast(90%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%) contrast(90%);
+    backdrop-filter: blur(16px) saturate(180%) contrast(90%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%) contrast(90%);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
   }
 }
@@ -181,7 +168,7 @@
   .glass-panel:hover {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    transform: translateY(-8px);
+    transform: translateY(-8px) translateZ(0);
     box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5), 0 0 20px var(--neon-glow, transparent);
   }
 }
@@ -198,15 +185,15 @@
 }
 
 [data-animation="fade-up"] {
-  transform: translateY(30px);
+  transform: translateY(20px);
 }
 
 [data-animation="fade-down"] {
-  transform: translateY(-30px);
+  transform: translateY(-20px);
 }
 
 [data-animation="fade-in"] {
-  transform: scale(0.95);
+  transform: scale(0.98);
 }
 
 .mounted [data-animation="fade-up"],
@@ -293,7 +280,6 @@
   z-index: 20;
 }
 
-
 .shine-container:hover::after {
   animation-duration: 3s;
 }
@@ -309,11 +295,29 @@
 }
 
 .energy-flow-css {
-  animation: energy-flow 6s linear infinite;
+  animation: energy-flow 10s linear infinite;
   will-change: background-position;
 }
 
+@media (min-width: 768px) {
+  .energy-flow-css {
+    animation: energy-flow 6s linear infinite;
+  }
+}
+
 .energy-flow-css-fast {
-  animation: energy-flow 2s linear infinite;
+  animation: energy-flow 4s linear infinite;
   will-change: background-position;
+}
+
+@media (min-width: 768px) {
+  .energy-flow-css-fast {
+    animation: energy-flow 2s linear infinite;
+  }
+}
+
+/* Rendering performance for long pages */
+.section-optimize {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
 }

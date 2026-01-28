@@ -94,13 +94,34 @@ export function Header() {
       <div className="container mx-auto px-4 sm:px-6 h-20 sm:h-24 flex items-center justify-between relative">
         <button
           onClick={() => scrollToSection("inicio")}
-          className="relative transition-transform duration-300 hover:scale-105 z-10 group"
+          className="relative transition-transform duration-300 hover:scale-105 z-20 group flex items-center"
           aria-label="Ir al inicio"
         >
-          <span className="font-orbitron font-medium tracking-[0.3em] text-[14px] sm:text-[18px] text-white/90 transition-all duration-200 md:group-hover:text-transparent md:group-hover:bg-clip-text md:group-hover:bg-gradient-to-r md:group-hover:from-cyan-400 md:group-hover:via-purple-500 md:group-hover:to-cyan-400 md:group-hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.4)] energy-flow-css bg-[length:200%_auto]">
+          {/* Logo image for mobile, text for desktop (or keep both consistent with user request) */}
+          <div className="md:hidden">
+            <Image
+              src="/logo.webp"
+              alt="InZidium"
+              width={40}
+              height={40}
+              className="h-10 w-auto object-contain"
+              priority
+            />
+          </div>
+          <span className="hidden md:block font-orbitron font-medium tracking-[0.3em] text-[18px] text-white/90 transition-all duration-200 md:group-hover:text-transparent md:group-hover:bg-clip-text md:group-hover:bg-gradient-to-r md:group-hover:from-cyan-400 md:group-hover:via-purple-500 md:group-hover:to-cyan-400 md:group-hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.4)] energy-flow-css bg-[length:200%_auto]">
             InZidium
           </span>
         </button>
+
+        {/* Mobile-only Centered CTA */}
+        <div className="md:hidden absolute left-1/2 -translate-x-1/2 z-10">
+          <button
+            onClick={() => scrollToSection("contacto")}
+            className="px-5 py-2.5 rounded-full font-orbitron font-bold tracking-[0.1em] text-[9px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_15px_rgba(34,211,238,0.2)] uppercase active:scale-95 whitespace-nowrap"
+          >
+            Trabajemos Juntos
+          </button>
+        </div>
 
         <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
           {NAV_ITEMS.map((item) => (
@@ -178,19 +199,6 @@ export function Header() {
                 </motion.div>
               ))}
 
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 }}
-                className="mt-10 w-full flex justify-center"
-              >
-                <button
-                  onClick={() => scrollToSection("contacto")}
-                  className="w-full max-w-[280px] py-4 rounded-full font-orbitron font-bold tracking-[0.2em] text-[12px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.2)] uppercase transition-all duration-300 active:scale-95"
-                >
-                  Trabajemos Juntos
-                </button>
-              </motion.div>
             </div>
           </motion.nav>
         )}

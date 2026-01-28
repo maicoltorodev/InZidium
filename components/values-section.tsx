@@ -88,7 +88,7 @@ function ValueCard({ value, index }: { value: (typeof values)[0]; index: number 
 export function ValuesSection() {
 
   return (
-    <PageSection id="valores" containerSize="lg">
+    <PageSection id="valores" containerSize="lg" withBackground={false}>
       <BackgroundGradients purplePosition="top-left" cyanPosition="bottom-right" className="opacity-10" />
       <div className="relative">
         <div className="text-center mb-20 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-down">

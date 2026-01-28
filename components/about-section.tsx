@@ -33,7 +33,7 @@ const ABOUT_CARDS = [
 
 export function AboutSection() {
   return (
-    <PageSection id="sobre-mi" containerSize="lg">
+    <PageSection id="sobre-mi" containerSize="lg" withBackground={false}>
       <BackgroundGradients />
       <div className="relative">
 
