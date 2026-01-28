@@ -6,7 +6,7 @@ export function JSONLDSchema() {
     "@type": "Organization",
     "name": "InZidium",
     "url": baseUrl,
-    "logo": `${baseUrl}/logo.png`,
+    "logo": `${baseUrl}/logo.webp`,
     "description": "Resultados impulsados por tecnología. Diseño, Desarrollo Web, Apps y Automatizaciones para negocios.",
     "contactPoint": {
       "@type": "ContactPoint",
@@ -24,7 +24,7 @@ export function JSONLDSchema() {
     "@type": "LocalBusiness",
     "@id": `${baseUrl}#localbusiness`,
     "name": "InZidium",
-    "image": `${baseUrl}/logo.png`,
+    "image": `${baseUrl}/logo.webp`,
     "description": "Servicios de diseño web, desarrollo web, aplicaciones móviles y automatizaciones para negocios en Bogotá, Colombia.",
     "address": {
       "@type": "PostalAddress",

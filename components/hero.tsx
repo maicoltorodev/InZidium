@@ -74,7 +74,7 @@ export function Hero() {
               }}
             >
               <Image
-                src="/logo.png"
+                src="/logo.webp"
                 alt=""
                 width={200}
                 height={400}
@@ -100,11 +100,11 @@ export function Hero() {
               filter: isHovered
                 ? "drop-shadow(0 0 25px rgba(34,211,238,0.6))"
                 : "drop-shadow(0 0 15px rgba(168,85,247,0.4))",
-              WebkitMaskImage: "url('/logo.png')",
+              WebkitMaskImage: "url('/logo.webp')",
               WebkitMaskSize: "contain",
               WebkitMaskRepeat: "no-repeat",
               WebkitMaskPosition: "center",
-              maskImage: "url('/logo.png')",
+              maskImage: "url('/logo.webp')",
               maskSize: "contain",
               maskRepeat: "no-repeat",
               maskPosition: "center",
@@ -118,7 +118,7 @@ export function Hero() {
           >
             {/* Base Image */}
             <Image
-              src="/logo.png"
+              src="/logo.webp"
               alt="InZidium Logo"
               width={200}
               height={400}

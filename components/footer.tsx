@@ -14,7 +14,7 @@ export function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10">
           <div className="logo-premium-glow">
             <Image
-              src="/logo.png"
+              src="/logo.webp"
               alt="Logo InZidium"
               width={120}
               height={40}

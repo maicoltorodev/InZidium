@@ -60,7 +60,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/logo.png",
+        source: "/logo.webp",
         headers: [
           {
             key: "Cache-Control",
