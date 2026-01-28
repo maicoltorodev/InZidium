@@ -54,7 +54,7 @@ export function WhatsAppFAB() {
           href="https://wa.me/573143855079"
           target="_blank"
           rel="noopener noreferrer"
-          className="fixed bottom-8 right-8 z-50 group"
+          className="fixed bottom-8 right-8 z-50 group mb-[env(safe-area-inset-bottom)]"
           aria-label="Contactar por WhatsApp"
         >
           {/* Cosmic Glow Base */}

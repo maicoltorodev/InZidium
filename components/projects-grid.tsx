@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { BLUR_PLACEHOLDER } from "@/lib/utils/image-optimization"
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
+import { BackgroundGradients } from "@/components/ui/background-gradients"
 
 const projects = [
   {
@@ -154,11 +155,7 @@ export function ProjectsGrid() {
 
   return (
     <PageSection id="servicios" containerSize="lg">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 opacity-30 hide-on-mobile">
-        <div className="absolute left-0 top-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute right-0 bottom-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
-      </div>
+      <BackgroundGradients purplePosition="top-left" cyanPosition="bottom-right" className="opacity-10" />
 
       <div className="relative z-10">
         <div className="text-center mb-20 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-down">

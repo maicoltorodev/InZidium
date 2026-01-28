@@ -31,7 +31,7 @@ export function PageSection({ id, className, children, withBackground = true, co
       id={id}
       ref={sectionRef}
       className={cn(
-        "relative overflow-hidden scroll-mt-24 sm:scroll-mt-32 pt-28 sm:pt-40 lg:pt-48 pb-20 sm:pb-32 lg:pb-40",
+        "relative overflow-hidden scroll-mt-28 sm:scroll-mt-40 pt-36 sm:pt-52 lg:pt-64 pb-20 sm:pb-32 lg:pb-40",
         className
       )}
       {...props}

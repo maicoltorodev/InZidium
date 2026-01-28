@@ -5,6 +5,8 @@ import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { SectionHeader } from "@/components/section-header"
+import { PageSection } from "@/components/ui/page-section"
+import { BackgroundGradients } from "@/components/ui/background-gradients"
 
 type Solution = {
   id: string
@@ -92,16 +94,11 @@ function SolutionCard({ solution, index }: { solution: Solution; index: number }
 }
 
 export function OtherSolutions() {
-
   return (
-    <section id="otras-soluciones" className="scroll-mt-24 sm:scroll-mt-32 pt-28 sm:pt-40 pb-20 sm:pb-32 relative overflow-hidden">
-      {/* Ambience */}
-      <div className="absolute inset-0 pointer-events-none hide-on-mobile">
-        <div className="absolute top-1/2 left-1/4 w-[600px] h-[600px] bg-neon-purple/10 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2" />
-        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-neon-cyan/10 rounded-full blur-[100px]" />
-      </div>
+    <PageSection id="otras-soluciones" containerSize="xl">
+      <BackgroundGradients purplePosition="bottom-right" cyanPosition="top-left" opacity="opacity-10" />
 
-      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+      <div className="relative z-10">
         <div className="text-center mb-20 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-down">
           <SectionHeader
             titleLeft="Otras"
@@ -112,14 +109,15 @@ export function OtherSolutions() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {solutions.map((solution, index) => (
-            <SolutionCard
-              key={solution.id}
-              solution={solution}
-              index={index}
-            />
+            <div key={solution.id} className="animate-on-mount" data-animation="fade-up" style={{ animationDelay: `${0.2 + index * 0.1}s` }}>
+              <SolutionCard
+                solution={solution}
+                index={index}
+              />
+            </div>
           ))}
         </div>
       </div>
-    </section>
+    </PageSection>
   )
 }

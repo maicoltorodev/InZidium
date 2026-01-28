@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
+import { BackgroundGradients } from "@/components/ui/background-gradients"
 
 const values = [
   {
@@ -88,6 +89,7 @@ export function ValuesSection() {
 
   return (
     <PageSection id="valores" containerSize="lg">
+      <BackgroundGradients purplePosition="top-left" cyanPosition="bottom-right" className="opacity-10" />
       <div className="relative">
         <div className="text-center mb-20 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-down">
           <SectionHeader titleLeft="Nuestros" titleHighlight="Valores" subtitle="Principios que guían cada proyecto y garantizan resultados excepcionales" />

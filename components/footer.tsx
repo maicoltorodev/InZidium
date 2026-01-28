@@ -5,7 +5,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="relative w-full py-12 sm:py-16 border-t border-white/5 overflow-hidden">
+    <footer className="relative w-full py-16 sm:py-20 border-t border-white/5 overflow-hidden pb-[calc(4rem+env(safe-area-inset-bottom))] sm:pb-20">
       {/* Lights Background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(168,85,247,0.1)_0%,transparent_50%)] pointer-events-none" />
 

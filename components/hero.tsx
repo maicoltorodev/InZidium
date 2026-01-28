@@ -148,7 +148,7 @@ export function Hero() {
               y: { duration: 0.3 },
               default: { duration: 0.3, ease: "easeOut" }
             }}
-            className="font-orbitron text-5xl sm:text-7xl md:text-8xl font-medium tracking-[0.15em] sm:tracking-[0.2em] bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 pb-2"
+            className="font-orbitron text-5xl sm:text-7xl md:text-8xl font-medium tracking-[0.15em] sm:tracking-[0.2em] bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-cyan-400 pb-2 energy-flow-css bg-[length:200%_auto]"
           >
             InZidium
           </motion.h1>
@@ -164,6 +164,24 @@ export function Hero() {
             Resultados impulsados por calidad y tecnología
           </motion.p>
         </div>
+
+        {/* Main CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+          className="mt-12 sm:mt-16"
+        >
+          <button
+            onClick={() => scrollToId("contacto")}
+            className="group relative px-12 py-5 rounded-full font-orbitron font-bold tracking-[0.3em] text-[12px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_25px_rgba(34,211,238,0.2)] uppercase transition-all duration-300 hover:bg-cyan-500/20 hover:scale-105 active:scale-95 overflow-hidden"
+          >
+            <span className="relative z-10">TRABAJEMOS JUNTOS</span>
+            {/* Animated background glow */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-25deg] -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+            <div className="absolute inset-0 rounded-full bg-cyan-400/5 blur-xl group-hover:bg-cyan-400/20 transition-all duration-300 -z-10" />
+          </button>
+        </motion.div>
 
         {/* Scroll Indicator */}
         <div className="mt-16 sm:mt-24 animate-bounce">
