@@ -75,7 +75,7 @@ export function Header() {
 
   return (
     <header
-      className={`fixed top-0 z-50 w-full transition-all duration-500 ease-in-out ${isScrolled ? "glass-panel bg-[#030014]/90 backdrop-blur-[40px] shadow-2xl" : "bg-transparent"
+      className={`fixed top-0 z-50 w-full transition-all duration-500 ease-in-out ${isScrolled || isMobileMenuOpen ? "glass-panel bg-[#030014]/90 backdrop-blur-[40px] shadow-2xl" : "bg-transparent"
         }`}
     >
       <div
@@ -161,7 +161,7 @@ export function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="fixed top-20 sm:top-24 left-0 right-0 z-40 md:hidden border-t border-white/10 bg-[#030014]/fb backdrop-blur-2xl"
+            className="fixed top-20 sm:top-24 left-0 right-0 z-40 md:hidden border-t border-white/10 bg-[#030014]/95 backdrop-blur-[40px]"
           >
             <div className="container mx-auto px-4 py-10 flex flex-col items-center">
               {NAV_ITEMS.map((item, index) => (
