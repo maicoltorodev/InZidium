@@ -1,13 +1,12 @@
 "use client"
 
-import { useRef } from "react"
 import { Target, Zap, Palette, Rocket } from "lucide-react"
 import { motion } from "framer-motion"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
 import { BackgroundGradients } from "@/components/ui/background-gradients"
+import { useViewportActive } from "@/lib/hooks/use-viewport-active"
+import { cn } from "@/lib/utils"
 
 const values = [
   {
@@ -38,12 +37,15 @@ const values = [
 
 function ValueCard({ value, index }: { value: (typeof values)[0]; index: number }) {
   const Icon = value.icon
-  const neonColor = index % 2 === 0 ? 'var(--color-neon-purple)' : 'var(--color-neon-cyan)';
+  const { elementRef, isActive } = useViewportActive<HTMLDivElement>();
 
   return (
     <motion.div
-      whileTap={{ scale: 0.98 }}
-      className="glass-panel border-white/5 bg-white/5 rounded-3xl p-8 sm:p-10 relative overflow-hidden group will-change-transform"
+      ref={elementRef}
+      className={cn(
+        "glass-panel border-white/5 bg-white/5 rounded-3xl p-8 sm:p-10 relative overflow-hidden group will-change-transform",
+        isActive && "viewport-active"
+      )}
       style={{
         "--active-border": index % 2 === 0 ? "rgba(168,85,247,0.5)" : "rgba(34,211,238,0.5)",
         "--active-glow": index % 2 === 0 ? "rgba(168,85,247,0.2)" : "rgba(34,211,238,0.2)",

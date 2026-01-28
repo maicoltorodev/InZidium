@@ -3,6 +3,8 @@
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
 import { BackgroundGradients } from "@/components/ui/background-gradients"
+import { useViewportActive } from "@/lib/hooks/use-viewport-active"
+import { cn } from "@/lib/utils"
 
 const ABOUT_CARDS = [
   {
@@ -60,11 +62,17 @@ export function AboutSection() {
 
 function AboutCard({ title, description, highlight, color }: typeof ABOUT_CARDS[0]) {
   const isPurple = color === "neon-purple";
+  const { elementRef, isActive } = useViewportActive<HTMLDivElement>();
 
   return (
-    <div className={`glass-panel p-8 sm:p-10 rounded-3xl md:hover:bg-white/5 transition-all duration-200 group border border-white/10 
-      ${isPurple ? 'md:hover:border-neon-purple/50 md:hover:shadow-[0_0_30px_rgba(168,85,247,0.2)]' : 'md:hover:border-neon-cyan/50 md:hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]'} 
-      will-change-transform`}>
+    <div
+      ref={elementRef}
+      className={cn(
+        "glass-panel p-8 sm:p-10 rounded-3xl md:hover:bg-white/5 transition-all duration-400 group border border-white/10 will-change-transform",
+        isActive && "viewport-active",
+        isPurple ? 'md:hover:border-neon-purple/50 md:hover:shadow-[0_0_30px_rgba(168,85,247,0.2)]' : 'md:hover:border-neon-cyan/50 md:hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]'
+      )}
+    >
       <h3 className={`text-2xl sm:text-3xl font-orbitron mb-4 text-white transition-colors duration-200 
         ${isPurple ? 'md:group-hover:text-neon-purple' : 'md:group-hover:text-neon-cyan'}`}>
         {title}

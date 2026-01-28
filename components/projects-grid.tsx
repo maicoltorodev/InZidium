@@ -10,6 +10,8 @@ import { BLUR_PLACEHOLDER } from "@/lib/utils/image-optimization"
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
 import { BackgroundGradients } from "@/components/ui/background-gradients"
+import { useViewportActive } from "@/lib/hooks/use-viewport-active"
+import { cn } from "@/lib/utils"
 
 const projects = [
   {
@@ -70,12 +72,15 @@ const projects = [
 
 function ProjectCard({ project, index }: { project: (typeof projects)[0]; index: number }) {
   const isFeatured = project.featured
-  const neonColor = 'var(--color-neon-purple)';
+  const { elementRef, isActive } = useViewportActive<HTMLElement>();
 
   return (
     <motion.article
-      whileTap={{ scale: 0.98 }}
-      className="glass-panel rounded-3xl overflow-hidden relative group will-change-transform"
+      ref={elementRef}
+      className={cn(
+        "glass-panel rounded-3xl overflow-hidden relative group will-change-transform",
+        isActive && "viewport-active"
+      )}
       style={{
         animationDelay: `${0.2 + index * 0.1}s`,
         "--active-border": "rgba(168,85,247,0.5)",

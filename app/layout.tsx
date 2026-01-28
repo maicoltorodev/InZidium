@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono, Orbitron } from "next/font/google"
 import "./globals.css"
 import { JSONLDSchema } from "./components/json-ld-schema"
+import { CustomCursor } from "@/components/ui/custom-cursor"
 
 const geist = Geist({
   subsets: ["latin"],
@@ -121,6 +122,7 @@ export default function RootLayout({
       </head>
       <body className={`${geist.variable} ${geistMono.variable} ${orbitron.variable} font-sans antialiased`}>
         <JSONLDSchema />
+        <CustomCursor />
         {children}
       </body>
     </html>

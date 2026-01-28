@@ -1,62 +1,50 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState } from "react"
 import { Mail, Phone, MapPin } from "lucide-react"
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
 import { BackgroundGradients } from "@/components/ui/background-gradients"
+import { useViewportActive } from "@/lib/hooks/use-viewport-active"
+import { cn } from "@/lib/utils"
 
 export function ContactSection() {
   const [copied, setCopied] = useState(false)
+  const contactRef1 = useViewportActive<HTMLButtonElement>();
+  const contactRef2 = useViewportActive<HTMLAnchorElement>();
+  const contactRef3 = useViewportActive<HTMLDivElement>();
 
   const copyEmail = () => {
     const email = "maicoltorodev@gmail.com"
-
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(email).then(() => {
-        setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
-      })
-    } else {
-      // Fallback para contextos no seguros o navegadores que no soportan Clipboard API
-      const textArea = document.createElement("textarea")
-      textArea.value = email
-      textArea.style.position = "fixed"
-      textArea.style.left = "-9999px"
-      textArea.style.top = "-9999px"
-      document.body.appendChild(textArea)
-      textArea.focus()
-      textArea.select()
-      try {
-        document.execCommand("copy")
-        setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
-      } catch (err) {
-        console.error("Error al copiar email:", err)
-      }
-      document.body.removeChild(textArea)
-    }
+    navigator.clipboard.writeText(email)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   return (
-    <PageSection id="contacto" className="relative overflow-hidden">
-      <BackgroundGradients purplePosition="top-left" cyanPosition="bottom-right" className="opacity-10" />
-      <div className="relative z-10">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="text-center mb-16 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-down">
-            <SectionHeader
-              titleLeft="Trabajemos"
-              titleHighlight="Juntos"
-              subtitle="Transformamos tu visión en una realidad digital de alto rendimiento"
-            />
-          </div>
+    <PageSection id="contacto" className="relative overflow-hidden" withBackground={false}>
+      <BackgroundGradients />
+      <div className="relative">
+        <div className="text-center mb-16 sm:mb-24 animate-on-mount" data-animation="fade-down">
+          <SectionHeader
+            titleLeft="¿Tienes un"
+            titleHighlight="Proyecto?"
+            subtitle="Agenda una sesión estratégica o escríbenos directamente para empezar a construir tu visión."
+            className="text-foreground"
+          />
+        </div>
 
+        <div className="mb-20 sm:mb-32 animate-on-mount" data-animation="fade-up" style={{ animationDelay: "0.2s" }}>
           <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {/* Email Card - Now first */}
             <button
               onClick={copyEmail}
-              className="glass-panel p-8 sm:p-10 rounded-3xl group border border-white/10 text-left relative will-change-transform"
+              ref={contactRef1.elementRef}
+              className={cn(
+                "glass-panel p-8 sm:p-10 rounded-3xl group border border-white/10 text-left relative will-change-transform",
+                contactRef1.isActive && "viewport-active"
+              )}
               style={{
                 "--active-border": "rgba(168,85,247,0.5)",
                 "--active-glow": "rgba(168,85,247,0.2)",
@@ -85,7 +73,11 @@ export function ContactSection() {
               href="https://wa.me/573143855079"
               target="_blank"
               rel="noopener noreferrer"
-              className="glass-panel p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform"
+              ref={contactRef2.elementRef}
+              className={cn(
+                "glass-panel p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform",
+                contactRef2.isActive && "viewport-active"
+              )}
               style={{
                 "--active-border": "rgba(34,211,238,0.5)",
                 "--active-glow": "rgba(34,211,238,0.2)",
@@ -104,7 +96,11 @@ export function ContactSection() {
 
             {/* Location Card */}
             <div
-              className="glass-panel p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform"
+              ref={contactRef3.elementRef}
+              className={cn(
+                "glass-panel p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform",
+                contactRef3.isActive && "viewport-active"
+              )}
               style={{
                 "--active-border": "rgba(34,211,238,0.5)",
                 "--active-glow": "rgba(34,211,238,0.2)",

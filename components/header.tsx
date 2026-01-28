@@ -94,7 +94,7 @@ export function Header() {
       <div className="container mx-auto px-4 sm:px-6 h-20 sm:h-24 flex items-center justify-between relative">
         <button
           onClick={() => scrollToSection("inicio")}
-          className="relative transition-transform duration-300 hover:scale-105 z-20 group flex items-center"
+          className="relative transition-transform duration-300 hover:scale-105 z-20 group flex items-center select-none"
           aria-label="Ir al inicio"
         >
           {/* Logo image for mobile, text for desktop (or keep both consistent with user request) */}

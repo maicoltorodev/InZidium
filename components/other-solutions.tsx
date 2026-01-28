@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge"
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
 import { BackgroundGradients } from "@/components/ui/background-gradients"
+import { useViewportActive } from "@/lib/hooks/use-viewport-active"
+import { cn } from "@/lib/utils"
 
 type Solution = {
   id: string
@@ -48,12 +50,15 @@ const solutions: Solution[] = [
 ]
 
 function SolutionCard({ solution, index }: { solution: Solution; index: number }) {
-  const neonColor = index % 2 === 0 ? 'var(--color-neon-purple)' : 'var(--color-neon-cyan)';
+  const { elementRef, isActive } = useViewportActive<HTMLDivElement>();
 
   return (
     <motion.div
-      whileTap={{ scale: 0.98 }}
-      className="glass-panel rounded-3xl p-8 relative overflow-hidden group will-change-transform"
+      ref={elementRef}
+      className={cn(
+        "glass-panel rounded-3xl p-8 relative overflow-hidden group will-change-transform",
+        isActive && "viewport-active"
+      )}
       style={{
         animationDelay: `${0.2 + index * 0.1}s`,
         "--active-border": index % 2 === 0 ? "rgba(168,85,247,0.5)" : "rgba(34,211,238,0.5)",

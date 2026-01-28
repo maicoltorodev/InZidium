@@ -26,7 +26,7 @@ export function Hero() {
   }, [])
 
   return (
-    <section id="inicio" className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden">
+    <section id="inicio" className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden select-none">
 
       <BackgroundGradients />
 
