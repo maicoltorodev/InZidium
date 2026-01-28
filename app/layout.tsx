@@ -116,6 +116,8 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        {/* Prioritize Logo Loading */}
+        <link rel="preload" href="/logo.webp" as="image" type="image/webp" fetchPriority="high" />
       </head>
       <body className={`${geist.variable} ${geistMono.variable} ${orbitron.variable} font-sans antialiased`}>
         <JSONLDSchema />

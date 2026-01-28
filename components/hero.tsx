@@ -35,15 +35,15 @@ export function Hero() {
 
         {/* Logo Container */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
+          initial={{ opacity: 0.1, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{
-            duration: 0.8,
-            ease: [0, 0.71, 0.2, 1.01],
+            duration: 0.4,
+            ease: "easeOut",
             scale: {
               type: "spring",
-              damping: 10,
-              stiffness: 100,
+              damping: 20,
+              stiffness: 200,
               restDelta: 0.001
             }
           }}
@@ -124,7 +124,7 @@ export function Hero() {
               height={400}
               className="h-48 sm:h-64 md:h-80 w-auto object-contain relative z-10"
               priority
-              quality={isMobile ? 80 : 100}
+              quality={90}
             />
           </motion.div>
         </motion.div>
@@ -132,14 +132,21 @@ export function Hero() {
         {/* Text Branding */}
         <div className="text-center space-y-4 will-change-transform">
           <motion.h1
+            initial={{ opacity: 0, y: 10 }}
             animate={{
+              opacity: 1,
+              y: 0,
               scale: isHovered ? 1.05 : 1,
               color: isHovered ? "transparent" : "#ffffff",
               filter: isHovered
                 ? "drop-shadow(0 0 20px rgba(34,211,238,0.4)) drop-shadow(0 0 40px rgba(168,85,247,0.2))"
                 : "drop-shadow(0 0 0px rgba(255,255,255,0))"
             }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
+            transition={{
+              opacity: { duration: 0.3 },
+              y: { duration: 0.3 },
+              default: { duration: 0.3, ease: "easeOut" }
+            }}
             className="font-orbitron text-5xl sm:text-7xl md:text-8xl font-medium tracking-[0.15em] sm:tracking-[0.2em] bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 pb-2"
           >
             InZidium
