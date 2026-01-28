@@ -134,12 +134,13 @@ export function Hero() {
           <motion.h1
             animate={{
               scale: isHovered ? 1.05 : 1,
+              color: isHovered ? "transparent" : "#ffffff",
               filter: isHovered
                 ? "drop-shadow(0 0 20px rgba(34,211,238,0.4)) drop-shadow(0 0 40px rgba(168,85,247,0.2))"
                 : "drop-shadow(0 0 0px rgba(255,255,255,0))"
             }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="font-orbitron text-5xl sm:text-7xl md:text-8xl font-medium tracking-[0.2em] sm:tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 pb-2"
+            className="font-orbitron text-5xl sm:text-7xl md:text-8xl font-medium tracking-[0.15em] sm:tracking-[0.2em] bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500 pb-2"
           >
             InZidium
           </motion.h1>
