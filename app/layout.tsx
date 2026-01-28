@@ -70,7 +70,7 @@ export const metadata: Metadata = {
     description: "Diseño · Desarrollo Web · Apps · Automatizaciones",
     images: [
       {
-        url: 'https://www.inzidium.com/imagen-metadata.jpg?v=3',
+        url: 'https://www.inzidium.com/imagen-metadata.jpg?v=4',
         width: 1280,
         height: 800,
         alt: "InZidium - Resultados impulsados por calidad y tecnología",
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "InZidium | Resultados impulsados por calidad y tecnología",
     description: "Diseño · Desarrollo Web · Apps · Automatizaciones",
-    images: ['https://www.inzidium.com/imagen-metadata.jpg?v=3'],
+    images: ['https://www.inzidium.com/imagen-metadata.jpg?v=4'],
     creator: "@inzidium",
   },
   alternates: {
