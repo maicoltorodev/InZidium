@@ -140,7 +140,7 @@ export function Hero() {
               color: isHovered ? "#ffffff" : "var(--muted-foreground)",
               textShadow: isHovered ? "0 0 10px rgba(34,211,238,0.5)" : "none"
             }}
-            className="text-sm sm:text-base tracking-widest uppercase will-change-[opacity,transform,color]"
+            className="text-sm sm:text-base tracking-widest will-change-[opacity,transform,color]"
           >
             Resultados impulsados por calidad y tecnología
           </motion.p>
