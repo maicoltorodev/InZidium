@@ -22,7 +22,7 @@ export function Hero() {
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-neon-purple/20 rounded-full blur-[120px] -z-10 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-neon-cyan/20 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
-      <div className="relative z-10 container mx-auto px-4 pt-24 sm:pt-32 flex flex-col items-center justify-center">
+      <div className="relative z-10 container mx-auto px-4 pt-16 sm:pt-32 flex flex-col items-center justify-center">
 
         {/* Logo Container */}
         <motion.div
@@ -46,7 +46,7 @@ export function Hero() {
           {[1, 2, 3].map((i) => (
             <motion.div
               key={i}
-              className="absolute inset-0 z-0 pointer-events-none opacity-0"
+              className="absolute inset-0 z-0 pointer-events-none opacity-0 will-change-transform"
               animate={isHovered ? {
                 opacity: [0, 0.4, 0],
                 scale: [1, 1.2 + (i * 0.1), 0.8],
@@ -104,7 +104,7 @@ export function Hero() {
               scale: 0.9,
               transition: { duration: 0.3 }
             }}
-            className="cursor-pointer relative shine-container group z-10"
+            className="cursor-pointer relative shine-container group z-10 will-change-transform"
           >
             {/* Base Image */}
             <Image
@@ -119,7 +119,8 @@ export function Hero() {
           </motion.div>
         </motion.div>
 
-        <div className="text-center space-y-4">
+        {/* Text Branding */}
+        <div className="text-center space-y-4 will-change-transform">
           <motion.h1
             animate={{
               scale: isHovered ? 1.05 : 1,
@@ -139,7 +140,7 @@ export function Hero() {
               color: isHovered ? "#ffffff" : "var(--muted-foreground)",
               textShadow: isHovered ? "0 0 10px rgba(34,211,238,0.5)" : "none"
             }}
-            className="text-sm sm:text-base tracking-widest uppercase"
+            className="text-sm sm:text-base tracking-widest uppercase will-change-[opacity,transform,color]"
           >
             Resultados impulsados por calidad y tecnología
           </motion.p>

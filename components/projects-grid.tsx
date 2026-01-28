@@ -75,7 +75,7 @@ function ProjectCard({ project, index, isViewportActive, cardRef }: { project: (
   return (
     <article
       ref={cardRef}
-      className={`glass-panel rounded-3xl overflow-hidden relative group transition-all duration-300 hover:-translate-y-2 hover:border-neon-purple/50 hover:shadow-[0_0_40px_rgba(168,85,247,0.15)] ${isViewportActive ? "viewport-active" : ""}`}
+      className={`glass-panel rounded-3xl overflow-hidden relative group transition-all duration-300 hover:-translate-y-2 hover:border-neon-purple/50 hover:shadow-[0_0_40px_rgba(168,85,247,0.15)] will-change-transform ${isViewportActive ? "viewport-active scale-[1.02] -translate-y-2 border-neon-purple/50 shadow-[0_0_40px_rgba(168,85,247,0.15)]" : ""}`}
       style={{
         animationDelay: `${0.2 + index * 0.1}s`,
         borderColor: isViewportActive ? neonColor : ''

@@ -121,17 +121,67 @@
 
 /* Utilities */
 
+/* Mobile-first Glass Panel Optimization */
 .glass-panel {
   background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(24px) saturate(180%) contrast(90%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%) contrast(90%);
+  backdrop-filter: blur(8px) saturate(180%) contrast(90%);
+  -webkit-backdrop-filter: blur(8px) saturate(180%) contrast(90%);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+  transition: backdrop-filter 0.5s ease-in-out, background 0.3s ease, border 0.3s ease, transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (min-width: 768px) {
+  .glass-panel {
+    backdrop-filter: blur(24px) saturate(180%) contrast(90%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%) contrast(90%);
+  }
 }
 
 .glass-panel:hover {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Scroll Animations Definitions */
+.animate-on-mount {
+  opacity: 0;
+  transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.mounted .animate-on-mount {
+  opacity: 1;
+}
+
+[data-animation="fade-up"] {
+  transform: translateY(30px);
+}
+
+[data-animation="fade-down"] {
+  transform: translateY(-30px);
+}
+
+[data-animation="fade-in"] {
+  transform: scale(0.95);
+}
+
+.mounted [data-animation="fade-up"],
+.mounted [data-animation="fade-down"] {
+  transform: translateY(0);
+}
+
+.mounted [data-animation="fade-in"] {
+  transform: scale(1);
+}
+
+/* Performance Utilities */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
 }
 
 .neon-text-purple {

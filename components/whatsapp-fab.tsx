@@ -62,10 +62,10 @@ export function WhatsAppFAB() {
               repeat: Infinity,
               ease: "easeInOut",
             }}
-            className="relative"
+            className="relative will-change-transform"
           >
             {/* The Main Holographic Body */}
-            <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full flex items-center justify-center relative overflow-hidden border border-white/20 bg-white/[0.03] backdrop-blur-3xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] group-hover:border-white/50 transition-colors duration-500">
+            <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full flex items-center justify-center relative overflow-hidden border border-white/20 bg-white/[0.03] backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] group-hover:border-white/50 transition-colors duration-500 will-change-transform">
 
               {/* Internal Liquid Gradient */}
               <motion.div

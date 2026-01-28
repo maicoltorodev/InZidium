@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { Menu, X } from "lucide-react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { scrollToId } from "@/lib/utils"
@@ -12,7 +12,6 @@ const NAV_ITEMS = [
   { id: "servicios", label: "Proyectos" },
   { id: "otras-soluciones", label: "Soluciones" },
   { id: "valores", label: "Valores" },
-  { id: "contacto", label: "Trabajemos" },
 ] as const
 
 export function Header() {
@@ -89,9 +88,10 @@ export function Header() {
             repeat: Infinity,
             ease: "linear"
           }}
-          className="absolute inset-0 w-full h-full bg-[length:200%_100%]"
+          className="absolute inset-0 w-full h-full bg-[length:100%_100%]"
           style={{
-            backgroundImage: "linear-gradient(to right, transparent, #22d3ee, #a855f7, #22d3ee, transparent)"
+            backgroundImage: "linear-gradient(to right, #22d3ee, #a855f7, #22d3ee, #a855f7, #22d3ee)",
+            backgroundSize: "200% 100%"
           }}
         />
         {/* Subtle Glow Overlay */}
@@ -153,45 +153,54 @@ export function Header() {
         </button>
       </div>
 
-      {/* Menú móvil con animación */}
-      {isMobileMenuOpen && (
-        <nav
-          className={`fixed top-20 sm:top-24 left-0 right-0 z-40 md:hidden border-t border-white/10 bg-background/95 backdrop-blur-xl transform transition-transform duration-300 ease-out translate-y-0`}
-        >
-          <div className="container mx-auto px-4 py-8 flex flex-col items-center">
-            {NAV_ITEMS.slice(0, -1).map((item, index) => (
-              <div key={item.id} className="w-full text-center">
-                <button
-                  onClick={() => scrollToSection(item.id)}
-                  className={`w-full py-5 text-base font-orbitron font-medium tracking-[0.2em] text-white/70 hover:text-white transition-all duration-300 ${isMobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
-                    }`}
-                  style={{
-                    transitionDelay: isMobileMenuOpen ? `${index * 50}ms` : '0ms'
-                  }}
+      {/* Menú móvil con AnimatePresence */}
+      <AnimatePresence mode="wait">
+        {isMobileMenuOpen && (
+          <motion.nav
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="fixed top-20 sm:top-24 left-0 right-0 z-40 md:hidden border-t border-white/10 bg-[#030014]/fb backdrop-blur-2xl"
+          >
+            <div className="container mx-auto px-4 py-10 flex flex-col items-center">
+              {NAV_ITEMS.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="w-full text-center"
                 >
-                  {item.label}
-                </button>
-                {index < NAV_ITEMS.length - 2 && (
-                  <div className={`h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mx-auto w-1/2 transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'
-                    }`} style={{
-                      transitionDelay: isMobileMenuOpen ? `${index * 50 + 25}ms` : '0ms'
-                    }} />
-                )}
-              </div>
-            ))}
+                  <button
+                    onClick={() => scrollToSection(item.id)}
+                    className="w-full py-5 text-base font-orbitron font-medium tracking-[0.2em] text-white/70 hover:text-white transition-all duration-300 active:scale-95"
+                  >
+                    {item.label}
+                  </button>
+                  {index < NAV_ITEMS.length - 1 && (
+                    <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mx-auto w-1/2" />
+                  )}
+                </motion.div>
+              ))}
 
-            {/* Contact Button inside Mobile Menu */}
-            <div className="mt-8 w-full flex justify-center">
-              <button
-                onClick={() => scrollToSection("contacto")}
-                className="w-full max-w-[280px] py-4 rounded-full font-orbitron font-bold tracking-[0.2em] text-[12px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.2)] uppercase transition-all duration-300 hover:bg-cyan-500/20"
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+                className="mt-10 w-full flex justify-center"
               >
-                Trabajemos Juntos
-              </button>
+                <button
+                  onClick={() => scrollToSection("contacto")}
+                  className="w-full max-w-[280px] py-4 rounded-full font-orbitron font-bold tracking-[0.2em] text-[12px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.2)] uppercase transition-all duration-300 active:scale-95"
+                >
+                  Trabajemos Juntos
+                </button>
+              </motion.div>
             </div>
-          </div>
-        </nav>
-      )}
+          </motion.nav>
+        )}
+      </AnimatePresence>
     </header>
   )
 }
