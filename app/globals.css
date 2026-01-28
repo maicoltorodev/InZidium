@@ -114,30 +114,43 @@
     scroll-behavior: smooth;
   }
 
-  /* Custom Scrollbar */
+  /* Custom Scrollbar Global */
   ::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
   }
 
   @media (min-width: 768px) {
     ::-webkit-scrollbar {
       width: 10px;
+      height: 10px;
     }
   }
 
   ::-webkit-scrollbar-track {
-    background: transparent;
+    background: rgba(3, 0, 20, 0.1);
+    /* Very subtle track to avoid gray fallback */
+    border-radius: 20px;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(168, 85, 247, 0.3);
+    background: #a855f7;
+    /* Use solid hex for better compatibility */
+    background: rgba(168, 85, 247, 0.5);
+    /* Then apply transparency */
     border-radius: 20px;
-    border: 1px solid rgba(3, 0, 20, 0.5);
-    transition: background 0.3s ease;
+    border: 1px solid rgba(168, 85, 247, 0.1);
+    background-clip: padding-box;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(168, 85, 247, 0.6);
+    background: rgba(168, 85, 247, 0.8);
+  }
+
+  /* Support for Firefox and Standard Properties */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #a855f7 transparent;
   }
 
   /* Custom Text Selection */
