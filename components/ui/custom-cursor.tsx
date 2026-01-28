@@ -11,11 +11,6 @@ export function CustomCursor() {
     const mouseX = useMotionValue(0)
     const mouseY = useMotionValue(0)
 
-    // Main spring config for the dot
-    const dotConfig = { damping: 20, stiffness: 250 }
-    const dotX = useSpring(mouseX, dotConfig)
-    const dotY = useSpring(mouseY, dotConfig)
-
     // Lagged spring config for the ring and trail
     const ringConfig = { damping: 25, stiffness: 150 }
     const ringX = useSpring(mouseX, ringConfig)
@@ -41,7 +36,6 @@ export function CustomCursor() {
     const handleMouseEnter = () => setIsVisible(true)
 
     useEffect(() => {
-        // Only enable on high-accuracy pointer devices (desktop)
         const isDesktop = window.matchMedia("(hover: hover) and (pointer: fine)").matches
         if (!isDesktop) return
 
@@ -60,59 +54,66 @@ export function CustomCursor() {
 
     return (
         <div className="fixed inset-0 pointer-events-none z-[9999] hidden lg:block">
-            {/* Precision Dot */}
+            {/* Precision Dot - Zero Lag */}
             <motion.div
-                className="fixed top-0 left-0 w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_10px_rgba(34,211,238,0.8)]"
+                className="fixed top-0 left-0 w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_12px_rgba(34,211,238,1)]"
                 style={{
-                    x: dotX,
-                    y: dotY,
+                    x: mouseX,
+                    y: mouseY,
                     translateX: "-50%",
                     translateY: "-50%",
                     opacity: isVisible ? 1 : 0,
                 }}
             />
 
-            {/* Lagged Outer Ring */}
+            {/* Lagged Outer Ring - Technical Look */}
             <motion.div
-                className="fixed top-0 left-0 rounded-full border border-purple-500/50 bg-purple-500/5"
+                className="fixed top-0 left-0 rounded-full border border-cyan-500/30"
                 animate={{
-                    width: isClickable ? 45 : 30,
-                    height: isClickable ? 45 : 30,
-                    scale: isClickable ? 1.2 : 1,
-                    borderWidth: isClickable ? "2px" : "1px",
-                    backgroundColor: isClickable ? "rgba(168, 85, 247, 0.1)" : "rgba(168, 85, 247, 0.05)",
+                    width: isClickable ? 48 : 32,
+                    height: isClickable ? 48 : 32,
+                    scale: isClickable ? 1.1 : 1,
+                    backgroundColor: isClickable ? "rgba(34, 211, 238, 0.05)" : "rgba(168, 85, 247, 0.02)",
+                    borderColor: isClickable ? "rgba(34, 211, 238, 0.6)" : "rgba(168, 85, 247, 0.3)",
                 }}
                 style={{
                     x: ringX,
                     y: ringY,
                     translateX: "-50%",
                     translateY: "-50%",
-                    opacity: isVisible ? 0.8 : 0,
+                    opacity: isVisible ? 0.6 : 0,
                 }}
-            />
+            >
+                {/* Internal Crosshair bits for technical feel */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-full h-[1px] bg-cyan-500/10 scale-x-[0.2]" />
+                    <div className="absolute w-[1px] h-full bg-cyan-500/10 scale-y-[0.2]" />
+                </div>
+            </motion.div>
 
-            {/* Subtle Ghost Trail (The Path) */}
-            {[1, 2, 3].map((i) => (
-                <TrailDot key={i} x={mouseX} y={mouseY} delay={i * 2} isVisible={isVisible} />
+            {/* Digital Dust Trail */}
+            {[1, 2, 3, 4, 5].map((i) => (
+                <TrailParticle key={i} x={mouseX} y={mouseY} index={i} isVisible={isVisible} />
             ))}
         </div>
     )
 }
 
-function TrailDot({ x, y, delay, isVisible }: { x: any, y: any, delay: number, isVisible: boolean }) {
-    const springX = useSpring(x, { damping: 40 + delay, stiffness: 200 - delay * 10 })
-    const springY = useSpring(y, { damping: 40 + delay, stiffness: 200 - delay * 10 })
+function TrailParticle({ x, y, index, isVisible }: { x: any, y: any, index: number, isVisible: boolean }) {
+    // Each particle has slightly different lag for a staggered effect
+    const springX = useSpring(x, { damping: 30 + index * 5, stiffness: 200 - index * 15 })
+    const springY = useSpring(y, { damping: 30 + index * 5, stiffness: 200 - index * 15 })
 
     return (
         <motion.div
-            className="fixed top-0 left-0 w-1 h-1 bg-purple-400/40 rounded-full blur-[1px]"
+            className="fixed top-0 left-0 w-1 h-1 bg-purple-500/30 rounded-full blur-[0.5px]"
             style={{
                 x: springX,
                 y: springY,
                 translateX: "-50%",
                 translateY: "-50%",
-                opacity: isVisible ? 1 - (delay * 0.15) : 0,
-                scale: 1 - (delay * 0.1),
+                opacity: isVisible ? 0.8 / index : 0,
+                scale: 1 - (index * 0.1),
             }}
         />
     )
