@@ -32,7 +32,7 @@ const orbitron = Orbitron({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://inzidium.com'),
+  metadataBase: new URL('https://www.inzidium.com'),
   title: {
     default: "InZidium | Resultados impulsados por tecnología",
     template: "%s | InZidium",
@@ -63,13 +63,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "es_CO",
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://inzidium.com',
+    url: 'https://www.inzidium.com',
     siteName: "InZidium",
     title: "InZidium | Resultados impulsados por tecnología",
     description: "Diseño · Desarrollo Web · Apps · Automatizaciones",
     images: [
       {
-        url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://inzidium.com'}/imagen-metadata.jpg`,
+        url: 'https://www.inzidium.com/imagen-metadata.jpg',
         width: 1280,
         height: 800,
         alt: "InZidium - Resultados impulsados por tecnología",
@@ -80,16 +80,25 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "InZidium | Resultados impulsados por tecnología",
     description: "Diseño · Desarrollo Web · Apps · Automatizaciones",
-    images: [`${process.env.NEXT_PUBLIC_SITE_URL || 'https://inzidium.com'}/imagen-metadata.jpg`],
+    images: ['https://www.inzidium.com/imagen-metadata.jpg'],
     creator: "@inzidium",
   },
   alternates: {
-    canonical: process.env.NEXT_PUBLIC_SITE_URL || 'https://inzidium.com',
+    canonical: 'https://www.inzidium.com',
     languages: {
-      "es-CO": process.env.NEXT_PUBLIC_SITE_URL || 'https://inzidium.com',
+      "es-CO": 'https://www.inzidium.com',
     },
   },
   category: "Desarrollo Web",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
 }
 
 export default function RootLayout({
