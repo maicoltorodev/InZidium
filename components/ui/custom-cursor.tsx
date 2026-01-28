@@ -56,25 +56,33 @@ export function CustomCursor() {
         <div className="fixed inset-0 pointer-events-none z-[9999] hidden lg:block">
             {/* Precision Dot - Zero Lag */}
             <motion.div
-                className="fixed top-0 left-0 w-1.5 h-1.5 bg-cyan-400 rounded-full shadow-[0_0_12px_rgba(34,211,238,1)]"
+                className="fixed top-0 left-0 bg-cyan-400 z-[9999]"
+                animate={{
+                    scale: isClickable ? 1.5 : 1,
+                    borderRadius: isClickable ? "2px" : "50%",
+                    backgroundColor: isClickable ? "#ffffff" : "#22d3ee",
+                }}
                 style={{
+                    width: "6px",
+                    height: "6px",
                     x: mouseX,
                     y: mouseY,
                     translateX: "-50%",
                     translateY: "-50%",
                     opacity: isVisible ? 1 : 0,
+                    boxShadow: isClickable ? "0 0 15px #fff" : "0 0 12px rgba(34,211,238,1)",
                 }}
             />
 
             {/* Lagged Outer Ring - Technical Look */}
             <motion.div
-                className="fixed top-0 left-0 rounded-full border border-cyan-500/30"
+                className="fixed top-0 left-0 rounded-full border"
                 animate={{
                     width: isClickable ? 48 : 32,
                     height: isClickable ? 48 : 32,
                     scale: isClickable ? 1.1 : 1,
-                    backgroundColor: isClickable ? "rgba(34, 211, 238, 0.05)" : "rgba(168, 85, 247, 0.02)",
-                    borderColor: isClickable ? "rgba(34, 211, 238, 0.6)" : "rgba(168, 85, 247, 0.3)",
+                    backgroundColor: isClickable ? "rgba(34, 211, 238, 0.1)" : "rgba(255, 255, 255, 0.05)",
+                    borderColor: isClickable ? "rgba(34, 211, 238, 0.8)" : "rgba(255, 255, 255, 0.3)",
                 }}
                 style={{
                     x: ringX,

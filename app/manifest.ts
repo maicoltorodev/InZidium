@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'InZidium | Resultados impulsados por tecnología',
+        name: 'InZidium | Resultados impulsados por calidad y tecnología',
         short_name: 'InZidium',
         description: 'Diseño · Desarrollo Web · Apps · Automatizaciones',
         start_url: '/',

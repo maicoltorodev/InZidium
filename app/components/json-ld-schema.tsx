@@ -7,7 +7,7 @@ export function JSONLDSchema() {
     "name": "InZidium",
     "url": baseUrl,
     "logo": `${baseUrl}/logo.webp`,
-    "description": "Resultados impulsados por tecnología. Diseño, Desarrollo Web, Apps y Automatizaciones para negocios.",
+    "description": "Resultados impulsados por calidad y tecnología. Diseño, Desarrollo Web, Apps y Automatizaciones para negocios.",
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": "+57-314-385-5079",
@@ -49,7 +49,7 @@ export function JSONLDSchema() {
     "@type": "WebSite",
     "name": "InZidium",
     "url": baseUrl,
-    "description": "Resultados impulsados por tecnología. Diseño, Desarrollo Web, Apps y Automatizaciones.",
+    "description": "Resultados impulsados por calidad y tecnología. Diseño, Desarrollo Web, Apps y Automatizaciones.",
     "publisher": {
       "@type": "Organization",
       "name": "InZidium"

@@ -35,7 +35,7 @@ const orbitron = Orbitron({
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.inzidium.com'),
   title: {
-    default: "InZidium | Resultados impulsados por tecnología",
+    default: "InZidium | Resultados impulsados por calidad y tecnología",
     template: "%s | InZidium",
   },
   description: "Diseño · Desarrollo Web · Apps · Automatizaciones",
@@ -66,22 +66,22 @@ export const metadata: Metadata = {
     locale: "es_CO",
     url: 'https://www.inzidium.com',
     siteName: "InZidium",
-    title: "InZidium | Resultados impulsados por tecnología",
+    title: "InZidium | Resultados impulsados por calidad y tecnología",
     description: "Diseño · Desarrollo Web · Apps · Automatizaciones",
     images: [
       {
-        url: 'https://www.inzidium.com/imagen-metadata.jpg',
+        url: 'https://www.inzidium.com/imagen-metadata.jpg?v=2',
         width: 1280,
         height: 800,
-        alt: "InZidium - Resultados impulsados por tecnología",
+        alt: "InZidium - Resultados impulsados por calidad y tecnología",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "InZidium | Resultados impulsados por tecnología",
+    title: "InZidium | Resultados impulsados por calidad y tecnología",
     description: "Diseño · Desarrollo Web · Apps · Automatizaciones",
-    images: ['https://www.inzidium.com/imagen-metadata.jpg'],
+    images: ['https://www.inzidium.com/imagen-metadata.jpg?v=2'],
     creator: "@inzidium",
   },
   alternates: {
