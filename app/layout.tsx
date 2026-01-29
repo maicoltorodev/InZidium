@@ -117,12 +117,10 @@ export default function RootLayout({
         {/* Desactivar traducción automática de Google Chrome/Safari */}
         <meta name="google" content="notranslate" />
         <meta name="googlebot" content="notranslate" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-        {/* Prioritize Logo Loading */}
-        <link rel="preload" href="/logo.webp" as="image" type="image/webp" fetchPriority="high" />
       </head>
       <body className={`${geist.variable} ${geistMono.variable} ${orbitron.variable} font-sans antialiased`}>
         <JSONLDSchema />

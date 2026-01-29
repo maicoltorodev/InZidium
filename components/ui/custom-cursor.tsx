@@ -6,6 +6,7 @@ import { motion, useSpring, useMotionValue } from "framer-motion"
 export function CustomCursor() {
     const [isVisible, setIsVisible] = useState(false)
     const [isClickable, setIsClickable] = useState(false)
+    const [mounted, setMounted] = useState(false)
 
     // Motion values for smooth tracking
     const mouseX = useMotionValue(0)
@@ -35,6 +36,10 @@ export function CustomCursor() {
     const handleMouseEnter = () => setIsVisible(true)
 
     useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    useEffect(() => {
         const isDesktop = window.matchMedia("(hover: hover) and (pointer: fine)").matches
         if (!isDesktop) return
 
@@ -52,7 +57,7 @@ export function CustomCursor() {
     }, [handleMouseMove, handleMouseOver])
 
 
-    if (typeof window === "undefined") return null
+    if (!mounted) return null
 
     return (
         <div className="fixed inset-0 pointer-events-none z-[9999] hidden lg:block">
