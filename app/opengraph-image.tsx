@@ -92,7 +92,6 @@ export default async function Image() {
                                 fontSize: '28px',
                                 fontWeight: 900,
                                 letterSpacing: '0.3em',
-                                textTransform: 'uppercase',
                                 background: 'linear-gradient(to right, #38bdf8, #818cf8)',
                                 backgroundClip: 'text',
                                 WebkitBackgroundClip: 'text',

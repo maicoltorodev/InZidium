@@ -105,6 +105,7 @@ export default function RootLayout({
         {/* Desactivar traducción automática de Google Chrome/Safari */}
         <meta name="google" content="notranslate" />
         <meta name="googlebot" content="notranslate" />
+        <meta property="og:logo" content="https://www.inzidium.com/icon.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
