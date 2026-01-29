@@ -69,11 +69,20 @@ export const metadata: Metadata = {
     siteName: "InZidium",
     title: "InZidium · Diseño y Desarrollo Web de Alto Impacto",
     description: "Impulsa tu negocio con InZidium. Especialistas en diseño web profesional, desarrollo de apps y automatizaciones inteligentes para resultados excepcionales.",
+    images: [
+      {
+        url: 'https://www.inzidium.com/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: "InZidium · Diseño y Desarrollo Web de Alto Impacto",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "InZidium · Diseño y Desarrollo Web de Alto Impacto",
     description: "Impulsa tu negocio con InZidium. Especialistas en diseño web profesional, desarrollo de apps y automatizaciones inteligentes para resultados excepcionales.",
+    images: ['https://www.inzidium.com/twitter-image'],
     creator: "@inzidium",
   },
   alternates: {
@@ -92,6 +101,9 @@ export const metadata: Metadata = {
       { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
     ],
   },
+  other: {
+    "og:logo": "https://www.inzidium.com/icon.png",
+  },
 }
 
 export default function RootLayout({
@@ -105,7 +117,6 @@ export default function RootLayout({
         {/* Desactivar traducción automática de Google Chrome/Safari */}
         <meta name="google" content="notranslate" />
         <meta name="googlebot" content="notranslate" />
-        <meta property="og:logo" content="https://www.inzidium.com/icon.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
