@@ -25,11 +25,11 @@ export function BackgroundGradients({
     return (
         <div className={cn("absolute inset-0 -z-10 pointer-events-none overflow-hidden", className)}>
             <div className={cn(
-                "absolute w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] bg-neon-purple/20 rounded-full blur-[80px] sm:blur-[120px] translate-z-0 will-change-transform",
+                "absolute w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] bg-neon-purple/20 rounded-full blur-[80px] sm:blur-[120px] translate-z-0 will-change-transform backface-hidden",
                 positions[purplePosition]
             )} />
             <div className={cn(
-                "absolute w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] bg-neon-cyan/20 rounded-full blur-[80px] sm:blur-[120px] translate-z-0 will-change-transform",
+                "absolute w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] bg-neon-cyan/20 rounded-full blur-[80px] sm:blur-[120px] translate-z-0 will-change-transform backface-hidden",
                 positions[cyanPosition]
             )} />
         </div>

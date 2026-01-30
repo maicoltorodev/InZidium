@@ -19,11 +19,14 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isLogoHovered, setIsLogoHovered] = useState(false)
 
-  const scrollToSection = useCallback((id: string) => {
-    scrollToId(id)
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault()
     setIsMobileMenuOpen(false)
-  }, [])
-
+    // Small timeout to allow state updates and potential body unlock to process
+    setTimeout(() => {
+      scrollToId(id)
+    }, 10)
+  }
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50)
     const handleLogoHover = (e: any) => setIsLogoHovered(e.detail)
@@ -64,7 +67,7 @@ export function Header() {
         }`}
     >
       <div
-        className={`absolute bottom-0 left-0 w-full overflow-hidden opacity-90 transition-all duration-500 ${isLogoHovered ? "h-[4px]" : "h-[2px]"}`}
+        className={`absolute bottom-0 left-0 w-full overflow-hidden opacity-90 transition-all duration-500 pointer-events-none ${isLogoHovered ? "h-[4px]" : "h-[2px]"}`}
       >
         <div
           className={`absolute inset-0 w-full h-full bg-[length:100%_100%] ${isLogoHovered ? "energy-flow-css-fast" : "energy-flow-css"}`}
@@ -77,9 +80,10 @@ export function Header() {
         <div className={`absolute inset-0 pointer-events-none transition-all duration-500 ${isLogoHovered ? "shadow-[0_0_20px_rgba(34,211,238,0.8)]" : "shadow-[0_0_10px_rgba(34,211,238,0.4)]"}`} />
       </div>
       <div className="container mx-auto px-4 sm:px-6 h-20 sm:h-24 flex items-center justify-between relative">
-        <button
-          onClick={() => scrollToSection("inicio")}
-          className="relative transition-transform duration-300 hover:scale-105 z-20 group flex items-center select-none"
+        <a
+          href="#inicio"
+          onClick={(e) => handleNavClick(e, "inicio")}
+          className="relative transition-transform duration-300 hover:scale-105 z-20 group flex items-center select-none cursor-pointer"
           aria-label="Ir al inicio"
         >
           {/* Logo image for mobile, text for desktop (or keep both consistent with user request) */}
@@ -90,45 +94,49 @@ export function Header() {
               width={40}
               height={40}
               className="h-10 w-auto object-contain"
+              sizes="40px"
               priority
             />
           </div>
           <span className="hidden md:block font-orbitron font-medium tracking-[0.3em] text-[18px] text-white/90 transition-all duration-200 md:group-hover:text-transparent md:group-hover:bg-clip-text md:group-hover:bg-gradient-to-r md:group-hover:from-cyan-400 md:group-hover:via-purple-500 md:group-hover:to-cyan-400 md:group-hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.4)] energy-flow-css bg-[length:200%_auto]">
             InZidium
           </span>
-        </button>
+        </a>
 
         {/* Mobile-only Centered CTA */}
         <div className="md:hidden absolute left-1/2 -translate-x-1/2 z-10">
-          <button
-            onClick={() => scrollToSection("contacto")}
-            className="px-5 py-2.5 rounded-full font-orbitron font-bold tracking-[0.1em] text-[9px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_15px_rgba(34,211,238,0.2)] uppercase active:scale-95 whitespace-nowrap"
+          <a
+            href="#contacto"
+            onClick={(e) => handleNavClick(e, "contacto")}
+            className="inline-block px-5 py-2.5 rounded-full font-orbitron font-bold tracking-[0.1em] text-[9px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_15px_rgba(34,211,238,0.2)] uppercase active:scale-95 whitespace-nowrap cursor-pointer"
           >
             Trabajemos Juntos
-          </button>
+          </a>
         </div>
 
         <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
           {NAV_ITEMS.map((item) => (
-            <button
+            <a
               key={item.id}
-              onClick={() => scrollToSection(item.id)}
-              className="text-[11px] font-medium text-white/50 md:hover:text-white transition-all duration-200 relative group px-2 py-1 uppercase tracking-[0.2em] font-orbitron md:hover:scale-110 active:scale-95"
+              href={`#${item.id}`}
+              onClick={(e) => handleNavClick(e, item.id)}
+              className="text-[11px] font-medium text-white/50 md:hover:text-white transition-all duration-200 relative group px-2 py-1 uppercase tracking-[0.2em] font-orbitron md:hover:scale-110 active:scale-95 cursor-pointer"
             >
               <span className="relative z-10">{item.label}</span>
               <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-white transition-all duration-200 md:group-hover:w-full" />
               <span className="absolute inset-0 bg-white/0 md:group-hover:bg-white/5 blur-md rounded-lg transition-all duration-200 -z-10" />
-            </button>
+            </a>
           ))}
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <button
-            onClick={() => scrollToSection("contacto")}
-            className="px-8 py-3 rounded-full font-orbitron font-bold tracking-[0.2em] text-[11px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.2)] uppercase transition-all duration-200 md:hover:bg-cyan-500/20 md:hover:scale-105 active:scale-95"
+          <a
+            href="#contacto"
+            onClick={(e) => handleNavClick(e, "contacto")}
+            className="px-8 py-3 rounded-full font-orbitron font-bold tracking-[0.2em] text-[11px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.2)] uppercase transition-all duration-200 md:hover:bg-cyan-500/20 md:hover:scale-105 active:scale-95 cursor-pointer"
           >
             Trabajemos Juntos
-          </button>
+          </a>
         </div>
 
         <button
@@ -161,12 +169,12 @@ export function Header() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-            className="fixed top-20 sm:top-24 left-0 right-0 z-40 md:hidden overflow-hidden border-b border-white/10 bg-[#030014]/98 backdrop-blur-[100px]"
+            className="absolute top-full left-0 right-0 z-[100] md:hidden overflow-hidden border-b border-white/10 bg-[#030014]/98 backdrop-blur-xl"
           >
-            {/* Background Decorative Blurs */}
-            <div className="absolute inset-0 pointer-events-none overflow-hidden">
-              <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-cyan-500/10 blur-[80px] rounded-full" />
-              <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 blur-[80px] rounded-full" />
+            {/* Minimal Background Decoration for mobile performance */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
+              <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-cyan-500/10 blur-[40px] rounded-full" />
+              <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/10 blur-[40px] rounded-full" />
             </div>
 
             <div className="container mx-auto px-6 py-10 flex flex-col items-center relative z-10">
@@ -178,9 +186,10 @@ export function Header() {
                   transition={{ delay: index * 0.08, duration: 0.4 }}
                   className="w-full flex flex-col items-center"
                 >
-                  <button
-                    onClick={() => scrollToSection(item.id)}
-                    className="group w-full py-7 flex items-center justify-center text-center text-[13px] font-orbitron font-medium tracking-[0.4em] text-white/50 hover:text-white transition-all duration-300 active:scale-[0.98]"
+                  <a
+                    href={`#${item.id}`}
+                    onClick={(e) => handleNavClick(e, item.id)}
+                    className="group w-full py-7 flex items-center justify-center text-center text-[13px] font-orbitron font-medium tracking-[0.4em] text-white/50 hover:text-white transition-all duration-300 active:scale-[0.98] cursor-pointer relative z-[101]"
                   >
                     <span className="relative">
                       {item.label}
@@ -190,7 +199,7 @@ export function Header() {
                         transition={{ duration: 0.3 }}
                       />
                     </span>
-                  </button>
+                  </a>
 
                   {index < NAV_ITEMS.length - 1 && (
                     <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />

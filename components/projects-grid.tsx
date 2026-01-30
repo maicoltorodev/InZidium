@@ -78,7 +78,7 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
     <motion.article
       ref={elementRef}
       className={cn(
-        "glass-panel glass-card rounded-3xl overflow-hidden relative group will-change-transform",
+        "glass-panel glass-card rounded-3xl overflow-hidden relative group will-change-transform translate-z-0 backface-hidden",
         isActive && "viewport-active"
       )}
       style={{
@@ -88,7 +88,7 @@ function ProjectCard({ project, index }: { project: (typeof projects)[0]; index:
         "--neon-glow": "rgba(168,85,247,0.15)"
       } as React.CSSProperties}
     >
-      <div className="absolute inset-0 bg-neon-purple/5 opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 blur-xl pointer-events-none" />
+      <div className="absolute inset-0 bg-neon-purple/5 opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 blur-xl pointer-events-none translate-z-0" />
 
       <div
         onClick={() => project.url && window.open(project.url, "_blank", "noopener,noreferrer")}

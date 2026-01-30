@@ -69,7 +69,7 @@ function AboutCard({ title, description, highlight, color }: typeof ABOUT_CARDS[
     <div
       ref={elementRef}
       className={cn(
-        "glass-panel glass-card p-8 sm:p-10 rounded-3xl md:hover:bg-white/5 transition-all duration-400 group border border-white/10 will-change-transform",
+        "glass-panel glass-card p-8 sm:p-10 rounded-3xl md:hover:bg-white/5 transition-all duration-400 group border border-white/10 will-change-transform translate-z-0 backface-hidden",
         isActive && "viewport-active",
         isPurple
           ? 'md:hover:border-neon-purple/50 md:hover:shadow-[0_0_30px_rgba(168,85,247,0.2)]'

@@ -64,7 +64,7 @@ function SolutionCard({ solution, index }: { solution: Solution; index: number }
     <motion.div
       ref={elementRef}
       className={cn(
-        "glass-panel glass-card rounded-3xl p-8 relative overflow-hidden group will-change-transform",
+        "glass-panel glass-card rounded-3xl p-8 relative overflow-hidden group will-change-transform translate-z-0 backface-hidden",
         isActive && "viewport-active"
       )}
       style={{

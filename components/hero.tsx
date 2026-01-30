@@ -116,7 +116,7 @@ export function Hero() {
               transition: { duration: 0.3 }
             }}
             whileTap={{ scale: 0.85 }}
-            className="cursor-pointer relative shine-container group z-10 will-change-transform"
+            className="cursor-pointer relative shine-container group z-10 will-change-transform translate-z-0 backface-hidden"
           >
             {/* Base Image */}
             <Image
@@ -125,6 +125,7 @@ export function Hero() {
               width={200}
               height={400}
               className="h-48 sm:h-64 md:h-80 w-auto object-contain relative z-10"
+              sizes="(max-width: 768px) 192px, (max-width: 1280px) 256px, 320px"
               priority
               quality={90}
             />

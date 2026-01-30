@@ -254,6 +254,16 @@
   will-change: opacity;
 }
 
+.translate-z-0 {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
