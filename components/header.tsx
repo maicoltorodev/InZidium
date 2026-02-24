@@ -9,7 +9,6 @@ import { scrollToId } from "@/lib/utils"
 
 const NAV_ITEMS = [
   { id: "sobre-mi", label: "Nosotros" },
-  { id: "servicios", label: "Proyectos" },
   { id: "otras-soluciones", label: "Soluciones" },
   { id: "valores", label: "Valores" },
 ] as const

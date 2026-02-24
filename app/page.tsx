@@ -4,7 +4,6 @@ import { Hero } from "@/components/hero"
 
 // Lazy load off-screen sections
 const AboutSection = dynamic(() => import("@/components/about-section").then(mod => mod.AboutSection))
-const ProjectsGrid = dynamic(() => import("@/components/projects-grid").then(mod => mod.ProjectsGrid))
 const OtherSolutions = dynamic(() => import("@/components/other-solutions").then(mod => mod.OtherSolutions))
 const ValuesSection = dynamic(() => import("@/components/values-section").then(mod => mod.ValuesSection))
 const ContactSection = dynamic(() => import("@/components/contact-section").then(mod => mod.ContactSection))
@@ -17,7 +16,6 @@ export default function Home() {
       <Header />
       <Hero />
       <AboutSection />
-      <ProjectsGrid />
       <OtherSolutions />
       <ValuesSection />
       <ContactSection />
