@@ -35,7 +35,7 @@ const orbitron = Orbitron({
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.inzidium.com'),
   title: {
-    default: "InZidium · Diseño y Desarrollo Web de Alto Impacto",
+    default: "InZidium · Diseño y Desarrollo de sistemas de software conectado",
     template: "%s | InZidium",
   },
   description: "Impulsa tu negocio con InZidium. Especialistas en diseño web profesional, desarrollo de apps y automatizaciones inteligentes para resultados excepcionales.",
@@ -67,20 +67,20 @@ export const metadata: Metadata = {
     locale: "es_CO",
     url: 'https://www.inzidium.com',
     siteName: "InZidium",
-    title: "InZidium · Diseño y Desarrollo Web de Alto Impacto",
+    title: "InZidium · Diseño y Desarrollo de sistemas de software conectado",
     description: "Impulsa tu negocio con InZidium. Especialistas en diseño web profesional, desarrollo de apps y automatizaciones inteligentes para resultados excepcionales.",
     images: [
       {
         url: 'https://www.inzidium.com/opengraph-image',
         width: 1200,
         height: 630,
-        alt: "InZidium · Diseño y Desarrollo Web de Alto Impacto",
+        alt: "InZidium · Diseño y Desarrollo de sistemas de software conectado",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "InZidium · Diseño y Desarrollo Web de Alto Impacto",
+    title: "InZidium · Diseño y Desarrollo de sistemas de software conectado",
     description: "Impulsa tu negocio con InZidium. Especialistas en diseño web profesional, desarrollo de apps y automatizaciones inteligentes para resultados excepcionales.",
     images: ['https://www.inzidium.com/twitter-image'],
     creator: "@inzidium",
