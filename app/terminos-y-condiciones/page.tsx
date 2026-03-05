@@ -35,9 +35,12 @@ export default function TerminosCondiciones() {
                         </section>
 
                         <section>
-                            <h3 className="text-2xl font-semibold text-white mb-4">2. Servicios Ofrecidos</h3>
+                            <h3 className="text-2xl font-semibold text-white mb-4">2. Servicios Ofrecidos y Herramientas Automatizadas</h3>
+                            <p className="leading-relaxed mb-4">
+                                InZidium es una iniciativa y agencia digital operada por <strong>Maicol Stiven Toro Aguirre</strong>. Ofrecemos servicios de diseño web profesional, desarrollo de aplicaciones y automatizaciones tecnológicas.
+                            </p>
                             <p className="leading-relaxed">
-                                InZidium es una iniciativa y agencia digital operada por <strong>Maicol Stiven Toro Aguirre</strong>. Ofrecemos servicios de diseño web profesional, desarrollo de aplicaciones y automatizaciones tecnológicas. Las características específicas, entregables, plazos y presupuestos de cada proyecto serán materializados y acordados de forma privada con cada cliente mediante un contrato o cotización formal.
+                                <strong>Uso de Bots e IA:</strong> Como parte de nuestros canales de atención, disponemos de herramientas informativas automatizadas a través de WhatsApp (utilizando integraciones de Meta Cloud API e Inteligencia Artificial). El uso de este servicio de mensajería implica tu aceptación explícita de interactuar con un sistema automatizado para primera atención, el cual está sujeto a nuestras <a href="/politica-de-privacidad" className="text-neon-cyan hover:underline">Políticas de Privacidad</a>.
                             </p>
                         </section>
 

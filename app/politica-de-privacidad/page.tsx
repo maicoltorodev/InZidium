@@ -18,7 +18,7 @@ export default function PoliticaPrivacidad() {
       <div className="flex-1 pt-32 pb-20 relative overflow-hidden">
         {/* Decorative background similar to generic page sections */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(168,85,247,0.1)_0%,transparent_50%)] pointer-events-none" />
-        
+
         <div className="relative z-10 container mx-auto px-4 sm:px-6 max-w-4xl">
           <SectionHeader
             titleLeft="Política de"
@@ -26,7 +26,7 @@ export default function PoliticaPrivacidad() {
             subtitle="Conoce cómo protegemos y gestionamos tus datos personales."
             className="mb-12"
           />
-          
+
           <div className="glass-panel glass-card p-8 md:p-12 rounded-3xl border border-white/10 text-muted-foreground space-y-8 shadow-2xl">
             <section>
               <h3 className="text-2xl font-semibold text-white mb-4">1. Identidad del Responsable</h3>
@@ -36,9 +36,12 @@ export default function PoliticaPrivacidad() {
             </section>
 
             <section>
-              <h3 className="text-2xl font-semibold text-white mb-4">2. Recolección de Datos</h3>
+              <h3 className="text-2xl font-semibold text-white mb-4">2. Recolección de Datos y Uso de WhatsApp</h3>
               <p className="leading-relaxed mb-4">
-                Recolectamos información personal que nos proporcionas voluntariamente al contactarnos vía WhatsApp, correo electrónico o formularios en nuestro sitio. Esta información puede incluir tu nombre, número de teléfono, dirección de correo electrónico y detalles de tu proyecto.
+                Recolectamos información personal que nos proporcionas voluntariamente al contactarnos vía WhatsApp, correo electrónico o formularios en nuestro sitio. Esta información incluye tu número de teléfono, nombre y el contenido de los mensajes.
+              </p>
+              <p className="leading-relaxed mb-4">
+                <strong>Uso de WhatsApp Cloud API:</strong> Nuestra comunicación por WhatsApp es operada a través de la infraestructura oficial de WhatsApp Cloud API de Meta. Los mensajes pueden ser procesados mediante herramientas de Inteligencia Artificial de terceros para brindar respuestas automatizadas, rápidas y precisas relacionadas exclusivamente con nuestros servicios de desarrollo de software conectado.
               </p>
               <p className="leading-relaxed">
                 Adicionalmente, utilizamos cookies y tecnologías de seguimiento similares (como el Píxel de Meta) para recopilar datos de navegación anónimos que nos ayudan a mejorar la experiencia de usuario y medir la efectividad de nuestras campañas publicitarias.
@@ -59,22 +62,35 @@ export default function PoliticaPrivacidad() {
             </section>
 
             <section>
-              <h3 className="text-2xl font-semibold text-white mb-4">4. Protección de Datos</h3>
+              <h3 className="text-2xl font-semibold text-white mb-4">4. Protección, Terceros y Retención</h3>
+              <p className="leading-relaxed mb-4">
+                Implementamos medidas de seguridad técnicas y organizativas adecuadas para proteger tu información. No vendemos, alquilamos ni comercializamos tus datos personales a terceros bajo ninguna circunstancia.
+              </p>
               <p className="leading-relaxed">
-                Implementamos medidas de seguridad técnicas y organizativas adecuadas para proteger tu información contra acceso no autorizado, alteración, divulgación o destrucción, siguiendo siempre los lineamientos de privacidad en la provisión de software conectado.
+                Los datos son alojados y procesados utilizando la infraestructura segura de Meta (WhatsApp Cloud API) y nuestros proveedores de servicios de Inteligencia Artificial autorizados, estrictamente para el funcionamiento del bot y la atención al cliente.
               </p>
             </section>
 
             <section>
-              <h3 className="text-2xl font-semibold text-white mb-4">5. Derechos del Usuario</h3>
+              <h3 className="text-2xl font-semibold text-white mb-4">5. Políticas de Mensajería y Cancelación (Opt-out)</h3>
+              <p className="leading-relaxed mb-4">
+                Cumplimos estrictamente con las Políticas de Mensajería de WhatsApp. Al enviarnos un mensaje, aceptas recibir respuestas por el mismo canal para gestionar tu consulta.
+              </p>
+              <p className="leading-relaxed font-semibold text-neon-cyan">
+                Importante: Puedes optar por no recibir más mensajes automatizados o promocionales en cualquier momento enviando la palabra "STOP" o "CANCELAR" a nuestro número de WhatsApp. Una vez recibido este comando, cancelaremos el envío de comunicaciones no esenciales.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="text-2xl font-semibold text-white mb-4">6. Derechos del Usuario</h3>
               <p className="leading-relaxed">
-                En cumplimiento de las normativas de protección de datos aplicables, tienes derecho a conocer, actualizar, rectificar y suprimir tus datos personales, así como a revocar el consentimiento otorgado para su tratamiento. 
+                En cumplimiento de las normativas de protección de datos aplicables, tienes derecho a conocer, actualizar, rectificar y suprimir tus datos personales, así como a revocar el consentimiento otorgado para su tratamiento.
                 Para ejercer estos derechos, puedes enviar una solicitud al correo electrónico: <strong>maicoltorodev@gmail.com</strong>.
               </p>
             </section>
 
             <section>
-              <h3 className="text-2xl font-semibold text-white mb-4">6. Cambios a esta Política</h3>
+              <h3 className="text-2xl font-semibold text-white mb-4">7. Cambios a esta Política</h3>
               <p className="leading-relaxed">
                 Nos reservamos el derecho de modificar esta Política de Privacidad en cualquier momento. Cualquier actualización será reflejada en esta misma página identificando la fecha de la modificación más reciente.
               </p>
