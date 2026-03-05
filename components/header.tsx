@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { Menu, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
+import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { scrollToId } from "@/lib/utils"
 
@@ -17,10 +18,19 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isLogoHovered, setIsLogoHovered] = useState(false)
+  const pathname = usePathname()
+  const router = useRouter()
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault()
     setIsMobileMenuOpen(false)
+
+    // Si no estamos en la página de inicio, navegamos a la de inicio con el hash
+    if (pathname !== "/") {
+      router.push(`/#${id}`)
+      return
+    }
+
     // Small timeout to allow state updates and potential body unlock to process
     setTimeout(() => {
       scrollToId(id)
@@ -80,7 +90,7 @@ export function Header() {
       </div>
       <div className="container mx-auto px-4 sm:px-6 h-20 sm:h-24 flex items-center justify-between relative">
         <a
-          href="#inicio"
+          href={pathname === "/" ? "#inicio" : "/#inicio"}
           onClick={(e) => handleNavClick(e, "inicio")}
           className="relative transition-transform duration-300 hover:scale-105 z-20 group flex items-center select-none cursor-pointer"
           aria-label="Ir al inicio"
@@ -105,7 +115,7 @@ export function Header() {
         {/* Mobile-only Centered CTA */}
         <div className="md:hidden absolute left-1/2 -translate-x-1/2 z-10">
           <a
-            href="#contacto"
+            href={pathname === "/" ? "#contacto" : "/#contacto"}
             onClick={(e) => handleNavClick(e, "contacto")}
             className="inline-block px-5 py-2.5 rounded-full font-orbitron font-bold tracking-[0.1em] text-[9px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_15px_rgba(34,211,238,0.2)] uppercase active:scale-95 whitespace-nowrap cursor-pointer"
           >
@@ -117,7 +127,7 @@ export function Header() {
           {NAV_ITEMS.map((item) => (
             <a
               key={item.id}
-              href={`#${item.id}`}
+              href={pathname === "/" ? `#${item.id}` : `/#${item.id}`}
               onClick={(e) => handleNavClick(e, item.id)}
               className="text-[11px] font-medium text-white/50 md:hover:text-white transition-all duration-200 relative group px-2 py-1 uppercase tracking-[0.2em] font-orbitron md:hover:scale-110 active:scale-95 cursor-pointer"
             >
@@ -130,7 +140,7 @@ export function Header() {
 
         <div className="hidden md:flex items-center gap-4">
           <a
-            href="#contacto"
+            href={pathname === "/" ? "#contacto" : "/#contacto"}
             onClick={(e) => handleNavClick(e, "contacto")}
             className="px-8 py-3 rounded-full font-orbitron font-bold tracking-[0.2em] text-[11px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.2)] uppercase transition-all duration-200 md:hover:bg-cyan-500/20 md:hover:scale-105 active:scale-95 cursor-pointer"
           >
@@ -186,7 +196,7 @@ export function Header() {
                   className="w-full flex flex-col items-center"
                 >
                   <a
-                    href={`#${item.id}`}
+                    href={pathname === "/" ? `#${item.id}` : `/#${item.id}`}
                     onClick={(e) => handleNavClick(e, item.id)}
                     className="group w-full py-7 flex items-center justify-center text-center text-[13px] font-orbitron font-medium tracking-[0.4em] text-white/50 hover:text-white transition-all duration-300 active:scale-[0.98] cursor-pointer relative z-[101]"
                   >
