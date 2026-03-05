@@ -54,7 +54,10 @@ export function Footer() {
         </div>
 
         <div className="flex justify-center border-t border-white/5 pt-8 text-sm text-muted-foreground font-light text-center">
-          <span>© {currentYear} InZidium. Todos los derechos reservados.</span>
+          <span>
+            {currentYear} InZidium © Todos los derechos reservados.<br />
+            Representante Legal: Maicol Stiven Toro Aguirre.
+          </span>
         </div>
       </div>
     </footer>
