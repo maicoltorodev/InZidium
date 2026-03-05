@@ -28,7 +28,7 @@ export function Footer() {
               />
             </div>
             <p className="text-sm text-muted-foreground font-light max-w-xs">
-              Diseño y desarrollo de sistemas de software conectado y de alto impacto.
+              Resultados impulsados por tecnología.
             </p>
           </div>
 
