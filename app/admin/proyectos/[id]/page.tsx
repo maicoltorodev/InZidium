@@ -429,7 +429,7 @@ export default function ProyectoDetalle() {
 
   // --- RENDER ---
   return (
-    <div className="min-h-screen text-white overflow-hidden flex flex-col font-sans selection:bg-[#22d3ee] selection:text-black">
+    <div className="text-white flex flex-col font-sans selection:bg-[#22d3ee] selection:text-black lg:min-h-screen lg:overflow-hidden">
       {/* TOP BAR / HEADER */}
       <header className="border-b border-white/5 bg-[#060214]/80 backdrop-blur-xl flex flex-col lg:flex-row lg:items-center lg:justify-between lg:h-20 px-4 sm:px-6 lg:px-8 py-3 lg:py-0 gap-3 lg:gap-4 shrink-0 z-50">
         <div className="flex items-center gap-4 lg:gap-6 min-w-0">
@@ -510,7 +510,7 @@ export default function ProyectoDetalle() {
       </header>
 
       {/* MAIN WORKSPACE LAYOUT */}
-      <div className="flex flex-1 overflow-hidden relative">
+      <div className="flex flex-col lg:flex-row lg:flex-1 lg:overflow-hidden relative">
         {/* BACKGROUND FX */}
         <div
           className={`absolute top-[-50%] left-[-20%] w-[50%] h-[100%] rounded-full bg-gradient-to-br ${projectPlan.color} opacity-[0.03] blur-[150px] pointer-events-none`}
@@ -597,9 +597,9 @@ export default function ProyectoDetalle() {
         </aside>
 
         {/* CONTENT AREA */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+        <main className="lg:flex-1 lg:overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
           {/* Mobile/tablet horizontal tabs */}
-          <div className="lg:hidden sticky top-0 z-30 bg-[#060214]/90 backdrop-blur-xl border-b border-white/5">
+          <div className="lg:hidden sticky top-14 z-30 bg-[#060214]/90 backdrop-blur-xl border-b border-white/5">
             <nav className="flex gap-1 overflow-x-auto px-3 py-2 scrollbar-none">
               {[
                 { key: "overview", label: "Resumen", icon: Grid, color: "text-blue-400" },
