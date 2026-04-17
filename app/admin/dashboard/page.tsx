@@ -8,7 +8,6 @@ import {
   ChevronRight,
   Gamepad2,
   Zap,
-  Target,
   Database,
   Cloud,
   Lock,
@@ -82,7 +81,7 @@ export default function AdminDashboard() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
         >
-          <div className="flex items-center gap-3 text-[#FFD700] mb-2">
+          <div className="flex items-center gap-3 text-[#22d3ee] mb-2">
             <Gamepad2 className="w-5 h-5 animate-pulse" />
             <span className="text-[10px] font-black uppercase tracking-[0.4em] font-[family-name:var(--font-orbitron)]">
               Panel de control
@@ -90,7 +89,7 @@ export default function AdminDashboard() {
           </div>
           <h1 className="text-5xl font-black tracking-tighter">
             Nuestro{" "}
-            <span className="bg-gradient-to-r from-[#FFD700] via-[#a855f7] to-[#22d3ee] bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
+            <span className="bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
               Ecosistema
             </span>
           </h1>
@@ -108,7 +107,7 @@ export default function AdminDashboard() {
           icon={TrendingUp}
           label="Proyectos Totales"
           value={stats.projects}
-          color="#FFD700"
+          color="#e879f9"
         />
         <StatCard
           icon={Users}
@@ -124,12 +123,12 @@ export default function AdminDashboard() {
         />
       </motion.div>
 
-      {/* REAL Health Monitor Banner - FULL WIDTH */}
+      {/* Health Monitor Banner */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35 }}
-        className="relative group bg-[#0a0a0a]/50 backdrop-blur-3xl border border-white/5 rounded-[3rem] p-10 overflow-hidden"
+        className="relative group bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-10 overflow-hidden"
       >
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 blur-[100px] -z-10" />
         <div className="flex flex-row items-center justify-between gap-12">
@@ -168,15 +167,15 @@ export default function AdminDashboard() {
         </div>
       </motion.div>
 
-      {/* Main Content - Expanded Project Table */}
+      {/* Recent Projects Table */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
         className="relative group"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-[#FFD700]/5 to-purple-500/5 blur-3xl rounded-[3rem] -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-        <div className="bg-[#0a0a0a]/50 backdrop-blur-3xl border border-white/5 rounded-[3rem] overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#22d3ee]/5 via-[#a855f7]/5 to-[#e879f9]/5 blur-3xl rounded-3xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+        <div className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl overflow-hidden">
           <div className="p-8 border-b border-white/5 text-center">
             <h2 className="text-xl font-bold font-[family-name:var(--font-orbitron)]">
               Últimos proyectos
@@ -190,7 +189,6 @@ export default function AdminDashboard() {
               <table className="w-full text-left">
                 <tbody>
                   {recentProjects.map((proj, idx) => {
-                    // Búsqueda más robusta por ID o Título
                     const projectPlan =
                       PLANS_ARRAY.find((p) => p.title === proj.plan) ||
                       PLANS_ARRAY[0];
@@ -235,7 +233,6 @@ export default function AdminDashboard() {
                                 transition={{ duration: 1.5, ease: "circOut" }}
                                 className={`h-full bg-gradient-to-r ${projectPlan.color} rounded-full relative overflow-hidden`}
                               >
-                                {/* Energy Stripes Animation */}
                                 <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.15)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.15)_50%,rgba(255,255,255,0.15)_75%,transparent_75%,transparent)] bg-[size:1rem_1rem] opacity-30 animate-[move-bg_3s_linear_infinite]" />
                               </motion.div>
                             </div>
@@ -244,7 +241,7 @@ export default function AdminDashboard() {
                         <td className="px-10 py-8 text-right">
                           <Link
                             href={`/admin/proyectos/${proj.id}`}
-                            className={`inline-flex h-14 w-14 items-center justify-center bg-white/5 rounded-2xl border border-white/5 group-hover/row:border-white/20 transition-all text-gray-500 group-hover/row:text-white group-hover/row:bg-gradient-to-br ${projectPlan.color} group-hover/row:scale-105 active:scale-95 shadow-lg group-hover/row:shadow-current/20`}
+                            className={`inline-flex h-14 w-14 items-center justify-center bg-white/5 rounded-2xl border border-white/5 group-hover/row:border-white/20 transition-all text-gray-500 group-hover/row:text-white group-hover/row:bg-gradient-to-br ${projectPlan.color} group-hover/row:scale-105 active:scale-95 shadow-lg`}
                           >
                             <ChevronRight className="w-6 h-6" />
                           </Link>
@@ -267,7 +264,7 @@ export default function AdminDashboard() {
                 </p>
                 <Link
                   href="/admin/proyectos"
-                  className="px-8 py-4 bg-[#FFD700] text-black font-black uppercase tracking-widest text-[10px] rounded-2xl hover:scale-105 transition-all active:scale-95 shadow-[0_10px_30px_rgba(255,215,0,0.2)]"
+                  className="px-8 py-4 bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] text-white font-black uppercase tracking-widest text-[10px] rounded-2xl hover:scale-105 transition-all active:scale-95 shadow-[0_10px_30px_rgba(168,85,247,0.15),_0_10px_30px_rgba(34,211,238,0.1)]"
                 >
                   Crear proyecto
                 </Link>
@@ -326,7 +323,7 @@ function StatCard({ icon: Icon, label, value, color }: any) {
   return (
     <motion.div
       variants={item}
-      className="bg-[#0a0a0a]/50 backdrop-blur-xl border border-white/5 p-8 rounded-[2.5rem] group hover:border-white/10 transition-all cursor-default relative overflow-hidden"
+      className="bg-white/[0.04] backdrop-blur-xl border border-white/8 p-8 rounded-3xl group hover:border-white/15 transition-all cursor-default relative overflow-hidden"
     >
       <div className="absolute top-0 right-0 w-24 h-24 bg-white/[0.02] rounded-full -mr-8 -mt-8 group-hover:scale-150 transition-transform duration-700" />
       <div className="relative z-10">

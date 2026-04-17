@@ -1,10 +1,8 @@
 import Link from "next/link"
-import { BackgroundGradients } from "@/components/ui/background-gradients"
 
 export default function NotFound() {
     return (
-        <main className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-[#030014]">
-            <BackgroundGradients />
+        <main className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden">
 
             <div className="relative z-10 text-center px-4">
                 <h1 className="font-orbitron text-[120px] sm:text-[180px] font-black leading-none bg-gradient-to-b from-white to-white/10 bg-clip-text text-transparent">

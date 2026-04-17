@@ -47,7 +47,7 @@ export function TabOverview({
       <FasePanel project={project} />
 
       {/* SECCIÓN PROGRESS ENGINE */}
-      <section className="bg-[#0a0a0a]/50 border border-white/5 rounded-[3rem] p-10 relative overflow-hidden">
+      <section className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-10 relative overflow-hidden">
         <div className="flex flex-row items-center justify-between gap-12">
           {/* Circular Progress & Value */}
           <div className="flex items-center gap-8">
@@ -160,7 +160,7 @@ export function TabOverview({
 
       {/* QUICK STATS & ACTIONS */}
       <div className="grid grid-cols-3 gap-6">
-        <div className="p-8 rounded-[2.5rem] bg-[#0a0a0a]/50 border border-white/5 flex flex-col justify-between h-64 group hover:border-white/10 transition-all">
+        <div className="p-8 rounded-3xl bg-white/[0.04] backdrop-blur-xl border border-white/8 flex flex-col justify-between h-64 group hover:border-white/15 transition-all">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 flex items-center justify-center text-purple-400 mb-4">
             <MessageSquare className="w-6 h-6" />
           </div>
@@ -180,7 +180,7 @@ export function TabOverview({
           </button>
         </div>
 
-        <div className="p-8 rounded-[2.5rem] bg-[#0a0a0a]/50 border border-white/5 flex flex-col justify-between h-64 group hover:border-white/10 transition-all">
+        <div className="p-8 rounded-3xl bg-white/[0.04] backdrop-blur-xl border border-white/8 flex flex-col justify-between h-64 group hover:border-white/15 transition-all">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 flex items-center justify-center text-emerald-400 mb-4">
             <FolderOpen className="w-6 h-6" />
           </div>
@@ -200,7 +200,7 @@ export function TabOverview({
           </button>
         </div>
 
-        <div className="p-8 rounded-[2.5rem] bg-[#0a0a0a]/50 border border-white/5 flex flex-col justify-between h-64 group hover:border-white/10 transition-all relative overflow-hidden">
+        <div className="p-8 rounded-3xl bg-white/[0.04] backdrop-blur-xl border border-white/8 flex flex-col justify-between h-64 group hover:border-white/15 transition-all relative overflow-hidden">
           <div
             className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${projectPlan.color} opacity-10 blur-[40px]`}
           />
@@ -266,7 +266,7 @@ function FasePanel({ project }: { project: any }) {
   };
 
   return (
-    <section className="bg-[#0a0a0a]/50 border border-white/5 rounded-[3rem] p-8">
+    <section className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-8">
       <div className="flex items-start justify-between gap-6 mb-6">
         <div>
           <h2 className="text-xl font-black uppercase tracking-tighter">Fase del proyecto</h2>

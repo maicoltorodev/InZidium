@@ -45,7 +45,7 @@
 
 :root {
   /* Forced Dark Mode Aesthetic for "InZidium" */
-  --background: #030014;
+  --background: #060214;
   /* Deepest Purple-Black */
   --foreground: #ffffff;
 
@@ -364,4 +364,36 @@
 .section-optimize {
   content-visibility: auto;
   contain-intrinsic-size: auto 800px;
+}
+
+@keyframes energy-flow-vertical {
+  from { background-position: 0% 0%; }
+  to   { background-position: 0% 200%; }
+}
+
+.energy-flow-css-vertical {
+  animation: energy-flow-vertical 10s linear infinite;
+  will-change: background-position;
+}
+
+@media (min-width: 768px) {
+  .energy-flow-css-vertical {
+    animation: energy-flow-vertical 6s linear infinite;
+  }
+}
+
+.energy-flow-css-vertical-fast {
+  animation: energy-flow-vertical 4s linear infinite;
+  will-change: background-position;
+}
+
+@media (min-width: 768px) {
+  .energy-flow-css-vertical-fast {
+    animation: energy-flow-vertical 2s linear infinite;
+  }
+}
+
+@keyframes gradient {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
 }

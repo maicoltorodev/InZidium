@@ -3,16 +3,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 import AdminSidebar from "@/app/admin/_components/AdminSidebar";
-import { SectionBackground } from "@/lib/ui/SectionBackground";
 
 export function AdminDesktopShell({ children }: { children: React.ReactNode }) {
   return (
-    <SectionBackground
-      className="fixed inset-0 h-screen w-screen overflow-hidden"
-      innerClassName="relative flex h-full w-full"
-    >
+    <div className="fixed inset-0 h-screen w-screen overflow-hidden flex">
       <AdminSidebar />
-
       <main
         className="relative z-10 h-full flex-1 overflow-y-auto"
         style={{ scrollbarGutter: "stable" }}
@@ -26,6 +21,6 @@ export function AdminDesktopShell({ children }: { children: React.ReactNode }) {
           {children}
         </motion.div>
       </main>
-    </SectionBackground>
+    </div>
   );
 }

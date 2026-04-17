@@ -2,7 +2,6 @@
 
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
-import { BackgroundGradients } from "@/components/ui/background-gradients"
 import { useViewportActive } from "@/lib/hooks/use-viewport-active"
 import { cn } from "@/lib/utils"
 import { HighlightText } from "@/components/ui/highlight-text"
@@ -37,7 +36,6 @@ const ABOUT_CARDS = [
 export function AboutSection() {
   return (
     <PageSection id="sobre-mi" containerSize="lg" withBackground={false}>
-      <BackgroundGradients />
       <div className="relative">
 
         <div className="text-center mb-16 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-down">

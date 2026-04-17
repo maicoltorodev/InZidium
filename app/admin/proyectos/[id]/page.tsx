@@ -429,9 +429,9 @@ export default function ProyectoDetalle() {
 
   // --- RENDER ---
   return (
-    <div className="min-h-screen text-white overflow-hidden flex flex-col font-sans selection:bg-[#FFD700] selection:text-black">
+    <div className="min-h-screen text-white overflow-hidden flex flex-col font-sans selection:bg-[#22d3ee] selection:text-black">
       {/* TOP BAR / HEADER */}
-      <header className="h-20 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-xl flex items-center justify-between px-8 shrink-0 z-50">
+      <header className="h-20 border-b border-white/5 bg-[#060214]/80 backdrop-blur-xl flex items-center justify-between px-8 shrink-0 z-50">
         <div className="flex items-center gap-6">
           <button
             onClick={() => handleNavigation("/admin/proyectos")}
@@ -496,7 +496,7 @@ export default function ProyectoDetalle() {
         />
 
         {/* SIDEBAR NAVIGATION */}
-        <aside className="w-64 border-r border-white/5 bg-[#0a0a0a]/50 flex flex-col shrink-0">
+        <aside className="w-64 border-r border-white/5 bg-[#060214]/60 flex flex-col shrink-0">
           <nav className="flex-1 p-4 space-y-2">
             <NavTab
               active={activeTab === "overview"}
@@ -534,7 +534,7 @@ export default function ProyectoDetalle() {
               active={activeTab === "briefing"}
               onClick={() => setActiveTab("briefing")}
               icon={Briefcase}
-              label="Información inicial"
+              label="Información"
               color="text-purple-400"
             />
             <NavTab

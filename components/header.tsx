@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button"
 import { scrollToId } from "@/lib/utils"
 
 const NAV_ITEMS = [
-  { id: "sobre-mi", label: "Nosotros" },
-  { id: "otras-soluciones", label: "Soluciones" },
-  { id: "valores", label: "Valores" },
+  { id: "sobre-mi",        label: "Nosotros",  highlight: false },
+  { id: "otras-soluciones", label: "Soluciones", highlight: false },
+  { id: "portal",          label: "Portal",    highlight: true  },
+  { id: "valores",         label: "Valores",   highlight: false },
 ] as const
 
 export function Header() {
@@ -129,11 +130,23 @@ export function Header() {
               key={item.id}
               href={pathname === "/" ? `#${item.id}` : `/#${item.id}`}
               onClick={(e) => handleNavClick(e, item.id)}
-              className="text-[11px] font-medium text-white/50 md:hover:text-white transition-all duration-200 relative group px-2 py-1 uppercase tracking-[0.2em] font-orbitron md:hover:scale-110 active:scale-95 cursor-pointer"
+              className={`text-[11px] font-medium transition-all duration-200 relative group px-2 py-1 uppercase tracking-[0.2em] font-orbitron md:hover:scale-110 active:scale-95 cursor-pointer ${
+                item.highlight
+                  ? "text-neon-cyan/60 md:hover:text-neon-cyan"
+                  : "text-white/50 md:hover:text-white"
+              }`}
             >
               <span className="relative z-10">{item.label}</span>
-              <span className="absolute bottom-0 left-0 w-0 h-[1px] bg-white transition-all duration-200 md:group-hover:w-full" />
-              <span className="absolute inset-0 bg-white/0 md:group-hover:bg-white/5 blur-md rounded-lg transition-all duration-200 -z-10" />
+              <span className={`absolute bottom-0 left-0 w-0 h-[1px] transition-all duration-200 md:group-hover:w-full ${
+                item.highlight
+                  ? "bg-gradient-to-r from-cyan-400 to-purple-500"
+                  : "bg-white"
+              }`} />
+              <span className={`absolute inset-0 blur-md rounded-lg transition-all duration-200 -z-10 ${
+                item.highlight
+                  ? "bg-neon-cyan/0 md:group-hover:bg-neon-cyan/5"
+                  : "bg-white/0 md:group-hover:bg-white/5"
+              }`} />
             </a>
           ))}
         </nav>
@@ -198,7 +211,11 @@ export function Header() {
                   <a
                     href={pathname === "/" ? `#${item.id}` : `/#${item.id}`}
                     onClick={(e) => handleNavClick(e, item.id)}
-                    className="group w-full py-7 flex items-center justify-center text-center text-[13px] font-orbitron font-medium tracking-[0.4em] text-white/50 hover:text-white transition-all duration-300 active:scale-[0.98] cursor-pointer relative z-[101]"
+                    className={`group w-full py-7 flex items-center justify-center text-center text-[13px] font-orbitron font-medium tracking-[0.4em] transition-all duration-300 active:scale-[0.98] cursor-pointer relative z-[101] ${
+                      item.highlight
+                        ? "text-neon-cyan/60 hover:text-neon-cyan"
+                        : "text-white/50 hover:text-white"
+                    }`}
                   >
                     <span className="relative">
                       {item.label}

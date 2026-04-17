@@ -104,7 +104,7 @@ export function TabSettings({
         exit={{ opacity: 0, y: -10 }}
         className="max-w-3xl mx-auto space-y-8"
       >
-        <div className="p-8 rounded-[2.5rem] bg-[#0a0a0a]/50 border border-white/5 space-y-8">
+        <div className="p-8 rounded-3xl bg-white/[0.04] backdrop-blur-xl border border-white/8 space-y-8">
           <div className="flex items-center gap-4 border-b border-white/5 pb-6">
             <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white">
               <Settings2 className="w-6 h-6" />
@@ -256,7 +256,7 @@ export function TabSettings({
       <AnimatePresence>
         {isEditingPlan && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-            <div className="bg-[#0a0a0a] border border-white/10 w-full max-w-5xl rounded-[3rem] p-12 overflow-hidden relative">
+            <div className="bg-[#060214]/95 border border-white/10 w-full max-w-5xl rounded-3xl p-12 overflow-hidden relative">
               <div className="flex justify-between mb-8">
                 <h3 className="text-2xl font-black text-white uppercase">
                   Cambiar plan
@@ -333,7 +333,7 @@ export function TabSettings({
       <AnimatePresence>
         {showVerifyName && (
           <div className="fixed inset-0 z-[140] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-            <div className="bg-[#0a0a0a] border border-amber-500/30 w-full max-w-md rounded-[2.5rem] p-10 relative z-10">
+            <div className="bg-[#060214]/95 border border-amber-500/30 w-full max-w-md rounded-3xl p-10 relative z-10">
               <h3 className="text-xl font-black text-center text-white mb-4">
                 Verificación de seguridad
               </h3>
@@ -371,7 +371,7 @@ export function TabSettings({
       {/* Modal DATE EDIT */}
       {isEditingDate && (
         <div className="fixed inset-0 z-[130] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-          <div className="bg-[#0a0a0a] border border-white/10 p-8 rounded-3xl w-full max-w-sm">
+          <div className="bg-[#060214]/95 border border-white/10 p-8 rounded-3xl w-full max-w-sm">
             <h3 className="text-white font-black uppercase mb-4 text-center">
               Editar fecha
             </h3>
@@ -402,7 +402,7 @@ export function TabSettings({
       {/* Modal LINK EDIT */}
       {isEditingLink && (
         <div className="fixed inset-0 z-[130] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-          <div className="bg-[#0a0a0a] border border-white/10 p-8 rounded-3xl w-full max-w-md">
+          <div className="bg-[#060214]/95 border border-white/10 p-8 rounded-3xl w-full max-w-md">
             <h3 className="text-white font-black uppercase mb-4 text-center">
               Editar enlace
             </h3>
@@ -433,7 +433,7 @@ export function TabSettings({
       {/* Modal DELETE PROJECT */}
       {showConfirmDeleteProject && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl">
-          <div className="w-full max-w-md bg-black border border-red-900/30 p-10 rounded-[3rem] text-center">
+          <div className="w-full max-w-md bg-[#060214]/95 border border-red-900/30 p-10 rounded-3xl text-center">
             <Trash2 className="w-12 h-12 text-red-600 mx-auto mb-6" />
             <h2 className="text-2xl font-black text-white uppercase tracking-tight mb-2">
               Eliminar proyecto

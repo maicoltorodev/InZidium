@@ -14,11 +14,9 @@ import {
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import useBranding from '@/hooks/useBranding';
 
 export default function AdminSidebar() {
     const pathname = usePathname();
-    const { estudio, assets, partner } = useBranding();
     const [isAdminHover, setIsAdminHover] = useState(false);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
     const [mounted, setMounted] = useState(false);
@@ -29,95 +27,78 @@ export default function AdminSidebar() {
 
     return (
         <>
-            <aside className="relative z-50 flex h-screen w-80 shrink-0 flex-col border-r border-white/5 bg-[#0a0a0a]/40 backdrop-blur-3xl shadow-[20px_0_50px_rgba(0,0,0,0.5)]">
+            <aside
+                className="relative z-50 flex h-screen w-80 shrink-0 flex-col bg-[#060214]/80 backdrop-blur-xl"
+                onMouseEnter={() => setIsAdminHover(true)}
+                onMouseLeave={() => setIsAdminHover(false)}
+            >
                 <div
-                    className={`sidebar-flow-line absolute inset-y-0 right-0 z-20 transition-all duration-700 ${isAdminHover ? 'w-[5px] brightness-150' : 'w-[2px]'}`}
-                    style={{
-                        animationDuration: isAdminHover ? '1.5s' : '8s',
-                    }}
-                />
+                    className={`absolute inset-y-0 right-0 overflow-hidden opacity-90 transition-all duration-500 pointer-events-none ${isAdminHover ? 'w-[4px]' : 'w-[2px]'}`}
+                >
+                    <div
+                        className={`absolute inset-0 w-full h-full bg-[length:100%_100%] ${isAdminHover ? 'energy-flow-css-vertical-fast' : 'energy-flow-css-vertical'}`}
+                        style={{
+                            backgroundImage: 'linear-gradient(to bottom, #22d3ee, #a855f7, #22d3ee, #a855f7, #22d3ee)',
+                            backgroundSize: '100% 200%',
+                        }}
+                    />
+                    <div className={`absolute inset-0 pointer-events-none transition-all duration-500 ${isAdminHover ? 'shadow-[0_0_20px_rgba(34,211,238,0.8)]' : 'shadow-[0_0_10px_rgba(34,211,238,0.4)]'}`} />
+                </div>
 
                 <div className="relative z-10 p-8">
                     <Link
                         href="/admin/dashboard"
                         className="group relative mb-12 block"
-                        onMouseEnter={() => setIsAdminHover(true)}
-                        onMouseLeave={() => setIsAdminHover(false)}
                     >
-                        <div className="relative mb-6">
+                        {/* Logo InZidium */}
+                        <div className="flex justify-center mb-5">
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#e879f9] to-[#22d3ee] blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 rounded-full" />
+                                <motion.div
+                                    animate={{ y: [0, -5, 0] }}
+                                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                                >
+                                    <Image
+                                        src="/logo.webp"
+                                        alt="InZidium"
+                                        width={48}
+                                        height={48}
+                                        className="object-contain relative z-10 transition-all duration-500"
+                                    style={{ filter: 'drop-shadow(0 0 10px rgba(34,211,238,0.35)) drop-shadow(0 0 6px rgba(168,85,247,0.3))' }}
+                                    />
+                                </motion.div>
+                            </div>
+                        </div>
+
+                        {/* Título ADMIN */}
+                        <div className="relative">
                             <h2
                                 className="relative z-10 text-center text-4xl font-black tracking-tighter text-transparent bg-clip-text bg-[length:200%_auto] transition-transform duration-500 group-hover:scale-105 font-[family-name:var(--font-orbitron)]"
                                 style={{
-                                    backgroundImage: 'linear-gradient(90deg, #FFD700, #a855f7, #22d3ee, #a855f7, #FFD700)',
+                                    backgroundImage: 'linear-gradient(90deg, #e879f9, #a855f7, #22d3ee, #a855f7, #e879f9)',
                                     animation: 'gradient 3s linear infinite',
                                 }}
                             >
                                 ADMIN
                             </h2>
-
                             <div
                                 className="pointer-events-none absolute inset-0 animate-pulse opacity-20 blur-2xl"
-                                style={{
-                                    background: 'radial-gradient(circle, #a855f7 0%, transparent 70%)',
-                                }}
+                                style={{ background: 'radial-gradient(circle, #22d3ee 0%, #a855f7 50%, transparent 70%)' }}
                             />
                         </div>
-
-                        {partner.mostrarAlianza && (
-                            <div className="group/badge relative">
-                                <div className="absolute inset-0 bg-gradient-to-r from-[#FFD700] to-[#a855f7] opacity-0 blur-xl transition-opacity duration-500 group-hover/badge:opacity-10" />
-
-                                <div className="relative flex items-center justify-between gap-2 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] px-6 py-5 shadow-2xl backdrop-blur-sm transition-all duration-500 group-hover/badge:border-[#FFD700]/30">
-                                    <div className="flex flex-1 flex-col items-center gap-3">
-                                        <div className="relative h-8 w-8 transition-transform duration-500 group-hover/badge:scale-110 group-hover/badge:rotate-12">
-                                            <Image
-                                                src={assets.logoPath}
-                                                alt={estudio.nombre}
-                                                fill
-                                                className="object-contain drop-shadow-[0_0_8px_rgba(255,215,0,0.3)]"
-                                            />
-                                        </div>
-                                        <div className="whitespace-nowrap text-[8px] font-medium uppercase tracking-[0.2em] text-white">
-                                            {estudio.nombre.split(' ')[0]}
-                                        </div>
-                                    </div>
-
-                                    {assets.logoPartnerPath && (
-                                        <>
-                                            <span className="mb-6 text-xl font-light text-white/10 font-[family-name:var(--font-orbitron)]">×</span>
-
-                                            <div className="flex flex-1 flex-col items-center gap-3">
-                                                <div className="relative h-8 w-8 transition-transform duration-500 group-hover/badge:scale-110 group-hover/badge:-rotate-12">
-                                                    <Image
-                                                        src={assets.logoPartnerPath}
-                                                        alt={partner.nombre}
-                                                        fill
-                                                        className="object-contain drop-shadow-[0_0_8px_rgba(168,85,247,0.4)]"
-                                                    />
-                                                </div>
-                                                <div className="whitespace-nowrap bg-gradient-to-r from-purple-500 to-cyan-400 bg-clip-text text-[8px] font-bold tracking-[0.1em] text-transparent font-[family-name:var(--font-orbitron)]">
-                                                    {partner.nombre}
-                                                </div>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                        )}
                     </Link>
 
-                    <nav className="mt-12 space-y-2">
+                    <nav className="mt-4 space-y-2">
                         {[
                             { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard', match: (p: string) => p.startsWith('/admin/dashboard') },
                             { icon: Users, label: 'Clientes', href: '/admin/clientes', match: (p: string) => p.startsWith('/admin/clientes') },
                             { icon: FolderKanban, label: 'Proyectos', href: '/admin/proyectos', match: (p: string) => p.startsWith('/admin/proyectos') },
                             { icon: ShieldCheck, label: 'Administradores', href: '/admin/administradores', match: (p: string) => p.startsWith('/admin/administradores') },
-                        ].map((item, idx) => (
+                        ].map((item) => (
                             <SidebarLink
                                 key={item.href}
                                 {...item}
                                 active={item.match(pathname)}
-                                index={idx}
                             />
                         ))}
                     </nav>
@@ -151,10 +132,9 @@ export default function AdminSidebar() {
                                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                                         animate={{ opacity: 1, scale: 1, y: 0 }}
                                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                                        className="relative z-10 w-full max-w-sm overflow-hidden rounded-[2rem] border border-white/10 bg-[#0a0a0a] p-8 shadow-2xl"
+                                        className="relative z-10 w-full max-w-sm overflow-hidden rounded-3xl border border-white/10 bg-[#060214]/95 p-8 shadow-2xl"
                                     >
                                         <div className="absolute top-0 right-0 -z-10 h-32 w-32 bg-red-500/10 blur-[50px]" />
-
                                         <div className="text-center">
                                             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-red-500/20 bg-red-500/10 text-red-500">
                                                 <LogOut className="ml-1 h-8 w-8" />
@@ -165,7 +145,6 @@ export default function AdminSidebar() {
                                             <p className="mb-8 text-xs font-medium leading-relaxed text-gray-400">
                                                 Tendrás que volver a autenticarte para acceder al panel de control.
                                             </p>
-
                                             <div className="grid grid-cols-2 gap-3">
                                                 <button
                                                     onClick={() => setShowLogoutConfirm(false)}
@@ -192,13 +171,7 @@ export default function AdminSidebar() {
     );
 }
 
-function SidebarLink({ icon: Icon, label, href, active, index }: any) {
-    const isEven = index % 2 === 0;
-    const activeColor = isEven ? '#FFD700' : '#a855f7';
-    const indicatorColor = isEven ? '#FFD700' : '#22d3ee';
-    const activeGradient = isEven ? 'from-[#FFD700]/10 to-transparent' : 'from-[#a855f7]/10 to-transparent';
-    const activeBorder = isEven ? 'border-[#FFD700]' : 'border-[#a855f7]';
-
+function SidebarLink({ icon: Icon, label, href, active }: any) {
     return (
         <Link
             href={href}
@@ -208,12 +181,15 @@ function SidebarLink({ icon: Icon, label, href, active, index }: any) {
                 {active && (
                     <motion.div
                         layoutId="sidebar-active"
-                        className={`absolute inset-0 z-0 border-l-2 bg-gradient-to-r ${activeGradient} ${activeBorder}`}
+                        className="absolute inset-0 z-0"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                    />
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#22d3ee]/10 via-[#a855f7]/5 to-transparent" />
+                        <div className="absolute inset-y-0 left-0 w-[2px] bg-gradient-to-b from-[#22d3ee] to-[#a855f7]" />
+                    </motion.div>
                 )}
             </AnimatePresence>
 
@@ -222,13 +198,16 @@ function SidebarLink({ icon: Icon, label, href, active, index }: any) {
             {active && (
                 <div
                     className="absolute left-[-10px] top-1/2 h-12 w-4 -translate-y-1/2 px-4 opacity-20 blur-xl"
-                    style={{ backgroundColor: activeColor }}
+                    style={{ background: 'linear-gradient(to bottom, #22d3ee, #a855f7)' }}
                 />
             )}
 
             <Icon
-                className={`relative z-10 h-5 w-5 transition-all duration-500 ${active ? 'scale-110 drop-shadow-[0_0_8px_rgba(255,215,0,0.4)]' : 'group-hover:scale-110 group-hover:text-gray-300'}`}
-                style={{ color: active ? activeColor : undefined }}
+                className={`relative z-10 h-5 w-5 transition-all duration-500 ${active ? 'scale-110' : 'group-hover:scale-110 group-hover:text-gray-300'}`}
+                style={{
+                    color: active ? '#22d3ee' : undefined,
+                    filter: active ? 'drop-shadow(0 0 6px rgba(34,211,238,0.5)) drop-shadow(0 0 4px rgba(168,85,247,0.3))' : undefined,
+                }}
             />
 
             <span className={`relative z-10 text-[13px] font-bold tracking-wide transition-colors duration-500 ${active ? 'text-white' : 'group-hover:text-white'}`}>
@@ -240,8 +219,8 @@ function SidebarLink({ icon: Icon, label, href, active, index }: any) {
                     layoutId="sidebar-indicator"
                     className="ml-auto h-1.5 w-1.5 rounded-full"
                     style={{
-                        backgroundColor: indicatorColor,
-                        boxShadow: `0 0 10px ${indicatorColor}80`,
+                        background: 'linear-gradient(to bottom, #22d3ee, #a855f7)',
+                        boxShadow: '0 0 8px rgba(34,211,238,0.6), 0 0 6px rgba(168,85,247,0.4)',
                     }}
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}

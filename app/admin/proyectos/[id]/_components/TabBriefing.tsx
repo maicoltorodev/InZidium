@@ -79,7 +79,7 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`rounded-[2rem] border border-white/5 bg-[#0a0a0a]/50 p-6 hover:border-${color}-500/20 transition-colors`}>
+    <div className={`rounded-2xl border border-white/8 bg-white/[0.04] backdrop-blur-xl p-6 hover:border-${color}-500/20 transition-colors`}>
       <div className="mb-5 flex items-center gap-3 border-b border-white/5 pb-5">
         <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-${color}-500/10 text-${color}-400`}>
           <Icon className="h-5 w-5" />
@@ -219,7 +219,7 @@ export function TabBriefing({ project }: TabBriefingProps) {
           </Card>
 
           {/* ── FILA 3: Catálogo ─────────────────────────────────────────── */}
-          <div className="rounded-[2rem] border border-white/5 bg-[#0a0a0a]/50 p-6">
+          <div className="rounded-2xl border border-white/8 bg-white/[0.04] backdrop-blur-xl p-6">
             <div className="mb-5 flex items-center justify-between border-b border-white/5 pb-5">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400">

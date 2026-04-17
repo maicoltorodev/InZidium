@@ -76,10 +76,10 @@ export function TabFinance({
     >
 
       {/* ── HERO: MONTO A TRANSFERIR ── */}
-      <div className={`relative bg-[#0a0a0a]/50 border rounded-[3rem] p-10 overflow-hidden transition-colors ${pagoRecibido ? "border-emerald-500/30" : "border-white/10"}`}>
+      <div className={`relative bg-white/[0.04] backdrop-blur-xl border rounded-3xl p-10 overflow-hidden transition-colors ${pagoRecibido ? "border-emerald-500/30" : "border-white/8"}`}>
 
         {/* Glow de fondo según estado */}
-        <div className={`absolute inset-0 rounded-[3rem] transition-opacity duration-700 ${pagoRecibido ? "opacity-100" : "opacity-0"}`}
+        <div className={`absolute inset-0 rounded-3xl transition-opacity duration-700 ${pagoRecibido ? "opacity-100" : "opacity-0"}`}
           style={{ background: "radial-gradient(ellipse 80% 60% at 50% 100%, rgba(16,185,129,0.06) 0%, transparent 70%)" }}
         />
 
@@ -176,7 +176,7 @@ export function TabFinance({
                         value={tempPrecio}
                         onChange={(e) => setTempPrecio(e.target.value.replace(/\D/g, ""))}
                         placeholder="0"
-                        className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-2xl font-black text-white outline-none focus:border-[#FFD700]/50"
+                        className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-2xl font-black text-white outline-none focus:border-[#22d3ee]/50"
                         autoFocus
                       />
                       <span className="text-sm font-black text-gray-600">COP</span>
@@ -184,7 +184,7 @@ export function TabFinance({
                     {tempPrecio && parseInt(tempPrecio) > 0 && (
                       <div className="flex gap-3 text-[10px] font-black uppercase tracking-widest">
                         <span className="text-gray-500">InZidium recibirá:</span>
-                        <span className="text-[#FFD700]">
+                        <span className="text-[#22d3ee]">
                           {COP(Math.round(parseInt(tempPrecio) * 0.8))}
                         </span>
                         <span className="text-gray-600">·</span>
@@ -204,7 +204,7 @@ export function TabFinance({
                       <button
                         onClick={handleSavePrecio}
                         disabled={savingPrecio || !tempPrecio || parseInt(tempPrecio) <= 0}
-                        className="flex-1 py-3 rounded-xl bg-[#FFD700] text-black font-black text-xs uppercase hover:bg-yellow-400 disabled:opacity-50 flex items-center justify-center gap-2"
+                        className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#a855f7] to-[#22d3ee] text-white font-black text-xs uppercase hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
                       >
                         {savingPrecio ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                         Confirmar
@@ -244,16 +244,16 @@ export function TabFinance({
 
       {/* ── DESGLOSE 80 / 20 ── */}
       {precioTotal && (
-        <div className="bg-[#0a0a0a]/50 border border-white/10 rounded-[2.5rem] p-8">
+        <div className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-8">
           <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gray-500 mb-6">
             Distribución del proyecto
           </p>
           <div className="grid grid-cols-2 gap-4">
-            <div className="p-6 rounded-2xl bg-[#FFD700]/5 border border-[#FFD700]/20 space-y-1">
-              <p className="text-[9px] font-black uppercase tracking-widest text-[#FFD700]/60">
+            <div className="p-6 rounded-2xl bg-[#22d3ee]/5 border border-[#22d3ee]/20 space-y-1">
+              <p className="text-[9px] font-black uppercase tracking-widest text-[#22d3ee]/60">
                 InZidium · 80%
               </p>
-              <p className="text-2xl font-black text-[#FFD700]">
+              <p className="text-2xl font-black text-[#22d3ee]">
                 {COP(montoInzidium!)}
               </p>
               <p className="text-[9px] text-gray-600 font-bold uppercase tracking-widest">
@@ -286,7 +286,7 @@ export function TabFinance({
       )}
 
       {/* ── COMPROBANTE ── */}
-      <div className="bg-[#0a0a0a]/50 border border-white/10 rounded-[2.5rem] p-8 space-y-6">
+      <div className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-8 space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gray-500 mb-1">

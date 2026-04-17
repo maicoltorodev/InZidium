@@ -79,7 +79,7 @@ export function TabCommunication({
       exit={{ opacity: 0, scale: 0.98 }}
       className="h-[calc(100vh-180px)]"
     >
-      <div className="h-full bg-[#0a0a0a]/50 border border-white/5 rounded-[2.5rem] overflow-hidden flex flex-col relative">
+      <div className="h-full bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl overflow-hidden flex flex-col relative">
 
         {/* Header */}
         <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">

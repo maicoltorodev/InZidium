@@ -4,6 +4,7 @@ import { Geist, Geist_Mono, Orbitron } from "next/font/google"
 import "./globals.css"
 import { JSONLDSchema } from "./components/json-ld-schema"
 import { CustomCursor } from "@/components/ui/custom-cursor"
+import { AnimatedBackground } from "@/components/ui/animated-background"
 import { AuthProvider } from "@/app/providers/AuthProvider"
 import { ToastProvider } from "@/app/providers/ToastProvider"
 
@@ -125,6 +126,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
       </head>
       <body className={`${geist.variable} ${geistMono.variable} ${orbitron.variable} font-sans antialiased`}>
+        <AnimatedBackground />
         <JSONLDSchema />
         <CustomCursor />
         <AuthProvider>

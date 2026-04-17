@@ -107,7 +107,7 @@ export function TabVault({
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="group relative bg-[#0a0a0a]/50 border border-white/5 rounded-3xl p-6 hover:border-white/20 transition-all hover:bg-[#0a0a0a]/70"
+              className="group relative bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 hover:border-white/20 transition-all hover:bg-white/[0.06]"
             >
               <div
                 className="aspect-square rounded-2xl bg-black/40 flex items-center justify-center mb-4 overflow-hidden relative cursor-pointer"
@@ -174,7 +174,7 @@ export function TabVault({
         </AnimatePresence>
 
         {(!project.archivos || project.archivos.length === 0) && (
-          <div className="col-span-full py-20 flex flex-col items-center justify-center bg-[#0a0a0a]/50 border-2 border-dashed border-white/5 rounded-[3rem]">
+          <div className="col-span-full py-20 flex flex-col items-center justify-center bg-white/[0.02] border-2 border-dashed border-white/8 rounded-3xl">
             <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-4">
               <FolderOpen className="w-10 h-10 text-gray-600" />
             </div>

@@ -65,13 +65,12 @@ export default function ProjectsAdmin() {
 
   return (
     <div className="p-12 max-w-7xl mx-auto space-y-12">
-      {/* Header Elite */}
       <header className="flex flex-row items-end justify-between gap-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
         >
-          <div className="flex items-center gap-3 text-[#FFD700] mb-2">
+          <div className="flex items-center gap-3 text-[#22d3ee] mb-2">
             <LayerIcon className="w-5 h-5" />
             <span className="text-[10px] font-black uppercase tracking-[0.4em] font-[family-name:var(--font-orbitron)]">
               Gestión de proyectos
@@ -79,7 +78,7 @@ export default function ProjectsAdmin() {
           </div>
           <h1 className="text-5xl font-black tracking-tighter">
             Nuestros{" "}
-            <span className="bg-gradient-to-r from-[#FFD700] via-[#a855f7] to-[#22d3ee] bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
+            <span className="bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
               Proyectos
             </span>
           </h1>
@@ -87,11 +86,11 @@ export default function ProjectsAdmin() {
 
         <div className="flex items-center gap-4">
           <div className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-[#FFD700] transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-[#22d3ee] transition-colors" />
             <input
               type="text"
               placeholder="Filtrar proyectos..."
-              className="bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-[#FFD700]/50 focus:bg-white/[0.08] transition-all w-64"
+              className="bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-[#22d3ee]/50 focus:bg-white/[0.08] transition-all w-64"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -104,10 +103,10 @@ export default function ProjectsAdmin() {
               date.setDate(date.getDate() + (PLANS_ARRAY[0].days ?? 0));
               setDeliveryDate(date.toISOString().split("T")[0]);
             }}
-            className="group relative px-6 py-3 rounded-2xl font-bold text-sm transition-all hover:scale-105 active:scale-95 overflow-hidden shadow-[0_0_20px_rgba(255,215,0,0.1)]"
+            className="group relative px-6 py-3 rounded-2xl font-bold text-sm transition-all hover:scale-105 active:scale-95 overflow-hidden shadow-[0_0_20px_rgba(168,85,247,0.12),_0_0_20px_rgba(34,211,238,0.08)]"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-[#FFD700] via-[#a855f7] to-[#22d3ee] animate-gradient bg-[length:200%_auto]" />
-            <div className="relative flex items-center gap-2 text-black">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] animate-gradient bg-[length:200%_auto]" />
+            <div className="relative flex items-center gap-2 text-white">
               <Plus className="w-5 h-5" />
               <span>Crear proyecto</span>
             </div>
@@ -115,7 +114,6 @@ export default function ProjectsAdmin() {
         </div>
       </header>
 
-      {/* Project Grid */}
       <div className="min-h-[400px]">
         {filteredProjects.length > 0 ? (
           <div className="grid grid-cols-2 gap-8">
@@ -134,18 +132,15 @@ export default function ProjectsAdmin() {
                     transition={{ delay: idx * 0.1 }}
                     className="group relative"
                   >
-                    {/* Dynamic Glow Layer */}
                     <div
-                      className={`absolute inset-0 bg-gradient-to-br ${projectPlan.color} opacity-0 group-hover:opacity-10 blur-[80px] transition-all duration-1000 rounded-[3rem]`}
+                      className={`absolute inset-0 bg-gradient-to-br ${projectPlan.color} opacity-0 group-hover:opacity-10 blur-[80px] transition-all duration-1000 rounded-3xl`}
                     />
 
-                    <div className="relative bg-[#0a0a0a]/40 backdrop-blur-3xl border border-white/5 rounded-[3rem] p-10 hover:border-white/20 transition-all duration-700 flex flex-col h-full overflow-hidden shadow-2xl">
-                      {/* Top Decoration */}
+                    <div className="relative bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-10 hover:border-white/20 transition-all duration-700 flex flex-col h-full overflow-hidden shadow-2xl">
                       <div
                         className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${projectPlan.color} opacity-5 blur-3xl`}
                       />
 
-                      {/* Header Section */}
                       <div className="flex justify-between items-start mb-8">
                         <div className="flex items-center gap-5">
                           <div
@@ -155,9 +150,7 @@ export default function ProjectsAdmin() {
                           </div>
                           <div className="flex flex-col">
                             <div className="flex items-center gap-2 mb-1">
-                              <span
-                                className={`text-[9px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-gray-400 group-hover:border-white/20 transition-colors`}
-                              >
+                              <span className="text-[9px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-gray-400 group-hover:border-white/20 transition-colors">
                                 {project.plan}
                               </span>
                             </div>
@@ -169,7 +162,6 @@ export default function ProjectsAdmin() {
                         <StatusBadge status={project.estado} />
                       </div>
 
-                      {/* Details Matrix */}
                       <div className="grid grid-cols-2 gap-8 mb-6 p-6 rounded-3xl bg-white/[0.02] border border-white/5 group-hover:bg-white/[0.04] transition-all duration-500">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-widest text-gray-500">
@@ -194,7 +186,6 @@ export default function ProjectsAdmin() {
                         </div>
                       </div>
 
-                      {/* Advanced Progress Bar */}
                       <div className="mt-auto space-y-5">
                         <div className="flex justify-between items-end">
                           <div className="flex flex-col gap-1">
@@ -225,7 +216,6 @@ export default function ProjectsAdmin() {
                         </div>
                       </div>
 
-                      {/* Action Console */}
                       <Link
                         href={`/admin/proyectos/${project.id}`}
                         className={`mt-10 w-full py-5 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center gap-3 font-black text-xs uppercase tracking-[0.4em] hover:bg-gradient-to-r ${projectPlan.color} hover:text-white hover:border-transparent transition-all duration-500 shadow-xl`}
@@ -247,7 +237,7 @@ export default function ProjectsAdmin() {
           >
             <div className="w-24 h-24 bg-white/5 rounded-[2rem] border border-white/10 flex items-center justify-center text-gray-700 mb-8 relative">
               <FolderKanban className="w-10 h-10" />
-              <div className="absolute inset-0 bg-[#FFD700]/5 blur-2xl rounded-full" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#22d3ee]/5 to-[#a855f7]/5 blur-2xl rounded-full" />
             </div>
             <h2 className="text-2xl font-black mb-3 font-[family-name:var(--font-orbitron)] uppercase tracking-tight text-white">
               No hay proyectos
@@ -261,7 +251,7 @@ export default function ProjectsAdmin() {
         )}
       </div>
 
-      {/* Modal Nuevo Proyecto Premium */}
+      {/* Modal Nuevo Proyecto */}
       <AnimatePresence>
         {isAdding && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -276,9 +266,9 @@ export default function ProjectsAdmin() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-[#0a0a0a]/90 border border-white/10 w-full max-w-4xl rounded-[3rem] p-12 relative z-10 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto custom-scrollbar"
+              className="bg-[#060214]/90 border border-white/10 w-full max-w-4xl rounded-3xl p-12 relative z-10 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto custom-scrollbar"
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFD700]/5 blur-[100px] -z-10" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#22d3ee]/5 to-[#a855f7]/8 blur-[100px] -z-10" />
 
               <button
                 onClick={() => {
@@ -287,13 +277,13 @@ export default function ProjectsAdmin() {
                   setDeliveryDate("");
                   setIsSelectOpen(false);
                 }}
-                className="absolute top-10 right-10 w-12 h-12 flex items-center justify-center text-gray-500 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all duration-300 group/close z-50 absolute"
+                className="absolute top-10 right-10 w-12 h-12 flex items-center justify-center text-gray-500 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all duration-300 group/close z-50"
               >
-                <X className="w-5 h-5 w-6 h-6 group-hover/close:rotate-90 transition-transform duration-300" />
+                <X className="w-6 h-6 group-hover/close:rotate-90 transition-transform duration-300" />
               </button>
 
               <div className="mb-12">
-                <span className="text-xs font-black text-[#FFD700] uppercase tracking-[0.5em] mb-2 block">
+                <span className="text-xs font-black text-[#22d3ee] uppercase tracking-[0.5em] mb-2 block">
                   Nuevo proyecto
                 </span>
                 <h2 className="text-4xl font-black font-[family-name:var(--font-orbitron)] tracking-tighter uppercase">
@@ -337,19 +327,19 @@ export default function ProjectsAdmin() {
                     error={errors.nombre}
                     onFocus={() => setErrors({ ...errors, nombre: null })}
                   />
-                  {/* Custom Premium Select */}
+                  {/* Custom Select */}
                   <div className="relative group">
                     <div
-                      className={`absolute -inset-0.5 rounded-2xl transition-opacity blur-[2px] ${errors.clienteId ? "bg-red-500/40 opacity-100" : "bg-[#FFD700]/10 opacity-0 group-focus-within:opacity-100"}`}
+                      className={`absolute -inset-0.5 rounded-2xl transition-opacity blur-[2px] ${errors.clienteId ? "bg-red-500/40 opacity-100" : "bg-gradient-to-r from-[#22d3ee]/10 to-[#a855f7]/10 opacity-0 group-focus-within:opacity-100"}`}
                     />
                     <div className="relative">
                       <button
                         type="button"
                         onClick={() => setIsSelectOpen(!isSelectOpen)}
-                        className={`w-full bg-white/[0.03] border rounded-2xl py-4 pl-12 pr-6 text-sm text-left flex justify-between items-center transition-all ${errors.clienteId ? "border-red-500/50" : "border-white/10 group-hover:border-white/20"}`}
+                        className={`w-full bg-white/[0.04] border rounded-2xl py-4 pl-12 pr-6 text-sm text-left flex justify-between items-center transition-all ${errors.clienteId ? "border-red-500/50" : "border-white/8 group-hover:border-white/15"}`}
                       >
                         <User
-                          className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${errors.clienteId ? "text-red-400" : "text-gray-500 group-focus-within:text-[#FFD700]"}`}
+                          className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${errors.clienteId ? "text-red-400" : "text-gray-500 group-focus-within:text-[#22d3ee]"}`}
                         />
                         <span
                           className={
@@ -379,7 +369,7 @@ export default function ProjectsAdmin() {
                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            className="absolute top-full left-0 right-0 mt-3 p-2 bg-[#0a0a0a]/95 backdrop-blur-3xl border border-white/10 rounded-2xl z-[120] shadow-2xl overflow-hidden shadow-black"
+                            className="absolute top-full left-0 right-0 mt-3 p-2 bg-[#060214]/95 backdrop-blur-xl border border-white/10 rounded-2xl z-[120] shadow-2xl overflow-hidden"
                           >
                             <div className="relative mb-2">
                               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-500" />
@@ -390,7 +380,7 @@ export default function ProjectsAdmin() {
                                 onChange={(e) =>
                                   setClientSearch(e.target.value)
                                 }
-                                className="w-full bg-white/5 border border-white/5 rounded-xl py-2 pl-9 pr-4 text-xs focus:outline-none focus:border-[#FFD700]/30 transition-all"
+                                className="w-full bg-white/5 border border-white/5 rounded-xl py-2 pl-9 pr-4 text-xs focus:outline-none focus:border-[#22d3ee]/30 transition-all"
                                 onClick={(e) => e.stopPropagation()}
                               />
                             </div>
@@ -410,9 +400,9 @@ export default function ProjectsAdmin() {
                                       setIsSelectOpen(false);
                                       setErrors({ ...errors, clienteId: null });
                                     }}
-                                    className="w-full px-4 py-3 rounded-xl hover:bg-[#FFD700] hover:text-black transition-all text-left text-xs font-bold flex items-center gap-3 group/opt"
+                                    className="w-full px-4 py-3 rounded-xl hover:bg-gradient-to-r hover:from-[#22d3ee]/10 hover:to-[#a855f7]/20 hover:text-white transition-all text-left text-xs font-bold flex items-center gap-3 group/opt"
                                   >
-                                    <div className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover/opt:bg-black/40" />
+                                    <div className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover/opt:bg-[#22d3ee]" />
                                     {client.nombre}
                                   </button>
                                 ))}
@@ -431,6 +421,7 @@ export default function ProjectsAdmin() {
                       </AnimatePresence>
                     </div>
                   </div>
+
                   {/* Selector de Plan */}
                   <div className="col-span-full">
                     <input
@@ -467,7 +458,7 @@ export default function ProjectsAdmin() {
                             className={`flex items-center gap-4 p-5 rounded-2xl border transition-all text-left ${
                               isSelected
                                 ? `bg-gradient-to-r ${plan.color} border-transparent text-white`
-                                : "bg-white/5 border-white/10 hover:border-white/20 text-gray-400"
+                                : "bg-white/[0.04] border-white/8 hover:border-white/20 text-gray-400"
                             }`}
                           >
                             <PlanIcon className="w-5 h-5 shrink-0" />
@@ -487,13 +478,13 @@ export default function ProjectsAdmin() {
                     </div>
                   </div>
 
-                  {/* Calculated Delivery Date (Modernizado) */}
+                  {/* Fecha de entrega */}
                   <div className="col-span-full">
                     <div className="relative group">
                       <div
                         className={`absolute -inset-0.5 rounded-2xl transition-opacity blur-[2px] ${errors.fechaEntrega ? "bg-red-500/40 opacity-100" : "bg-[#22d3ee]/10 opacity-0 group-focus-within:opacity-100"}`}
                       />
-                      <div className="relative bg-black/40 border border-white/10 rounded-2xl p-6 flex items-center justify-between group-hover:border-white/20 transition-all">
+                      <div className="relative bg-white/[0.04] border border-white/8 rounded-2xl p-6 flex items-center justify-between group-hover:border-white/15 transition-all">
                         <div className="flex items-center gap-4">
                           <div
                             className={`w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center transition-colors ${deliveryDate ? "text-[#22d3ee]" : "text-gray-500"}`}
@@ -543,32 +534,16 @@ export default function ProjectsAdmin() {
 
                 <button
                   type="submit"
-                  className="relative group w-full py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-sm transition-all hover:scale-[1.02] active:scale-95 overflow-hidden shadow-[0_10px_30px_rgba(255,215,0,0.2)] mt-6"
+                  className="relative group w-full py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-sm transition-all hover:scale-[1.02] active:scale-95 overflow-hidden shadow-[0_10px_30px_rgba(168,85,247,0.15),_0_10px_30px_rgba(34,211,238,0.1)] mt-6"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#FFD700] via-[#a855f7] to-[#22d3ee] animate-gradient bg-[length:200%_auto]" />
-                  <span className="relative text-black">Crear proyecto</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] animate-gradient bg-[length:200%_auto]" />
+                  <span className="relative text-white">Crear proyecto</span>
                 </button>
               </form>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
-    </div>
-  );
-}
-
-function ProjectDetailItem({
-  icon: Icon,
-  label,
-  value,
-  color = "text-white",
-}: any) {
-  return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500">
-        <Icon className="w-3 h-3" /> {label}
-      </div>
-      <span className={`font-bold text-sm ${color}`}>{value}</span>
     </div>
   );
 }
@@ -580,11 +555,11 @@ function StatusBadge({ status }: { status: string }) {
       className={`px-4 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-2 ${
         isDeveloping
           ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-          : "bg-[#FFD700]/10 border-[#FFD700]/30 text-[#FFD700]"
+          : "bg-[#22d3ee]/10 border-[#22d3ee]/30 text-[#22d3ee]"
       }`}
     >
       <span
-        className={`w-1.5 h-1.5 rounded-full ${isDeveloping ? "bg-emerald-500 animate-pulse" : "bg-[#FFD700]"}`}
+        className={`w-1.5 h-1.5 rounded-full ${isDeveloping ? "bg-emerald-500 animate-pulse" : "bg-[#22d3ee]"}`}
       />
       {status}
     </div>
@@ -621,17 +596,17 @@ function PremiumInput({
   return (
     <div className="relative group">
       <div
-        className={`absolute -inset-0.5 rounded-2xl transition-opacity blur-[2px] ${error ? "bg-red-500/40 opacity-100" : "bg-[#FFD700]/10 opacity-0 group-focus-within:opacity-100"}`}
+        className={`absolute -inset-0.5 rounded-2xl transition-opacity blur-[2px] ${error ? "bg-red-500/40 opacity-100" : "bg-gradient-to-r from-[#22d3ee]/10 to-[#a855f7]/10 opacity-0 group-focus-within:opacity-100"}`}
       />
       <div className="relative">
         <Icon
-          className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${error ? "text-red-400" : "text-gray-500 group-focus-within:text-[#FFD700]"}`}
+          className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${error ? "text-red-400" : "text-gray-500 group-focus-within:text-[#22d3ee]"}`}
         />
         <input
           {...props}
           placeholder={placeholder}
           onFocus={onFocus}
-          className={`w-full bg-white/[0.03] border rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none transition-all placeholder:text-gray-600 ${error ? "border-red-500/50 focus:border-red-500" : "border-white/10 group-hover:border-white/20 focus:border-[#FFD700]/50"}`}
+          className={`w-full bg-white/[0.04] border rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none transition-all placeholder:text-gray-600 ${error ? "border-red-500/50 focus:border-red-500" : "border-white/8 group-hover:border-white/15 focus:border-[#22d3ee]/50"}`}
         />
       </div>
       <AnimatePresence>
@@ -651,12 +626,8 @@ function PremiumInput({
 
       <style jsx global>{`
         @keyframes move-bg {
-          0% {
-            background-position: 0 0;
-          }
-          100% {
-            background-position: 1rem 1rem;
-          }
+          0% { background-position: 0 0; }
+          100% { background-position: 1rem 1rem; }
         }
       `}</style>
     </div>

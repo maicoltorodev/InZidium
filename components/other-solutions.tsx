@@ -6,7 +6,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
-import { BackgroundGradients } from "@/components/ui/background-gradients"
 import { useViewportActive } from "@/lib/hooks/use-viewport-active"
 import { cn } from "@/lib/utils"
 
@@ -109,8 +108,6 @@ function SolutionCard({ solution, index }: { solution: Solution; index: number }
 export function OtherSolutions() {
   return (
     <PageSection id="otras-soluciones" containerSize="xl" withBackground={false}>
-      <BackgroundGradients purplePosition="bottom-right" cyanPosition="top-left" opacity="opacity-10" />
-
       <div className="relative z-10">
         <div className="text-center mb-20 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-down">
           <SectionHeader

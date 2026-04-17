@@ -5,6 +5,7 @@ import { Hero } from "@/components/hero"
 // Lazy load off-screen sections
 const AboutSection = dynamic(() => import("@/components/about-section").then(mod => mod.AboutSection))
 const OtherSolutions = dynamic(() => import("@/components/other-solutions").then(mod => mod.OtherSolutions))
+const PortalSection = dynamic(() => import("@/components/portal-section").then(mod => mod.PortalSection))
 const ValuesSection = dynamic(() => import("@/components/values-section").then(mod => mod.ValuesSection))
 const ContactSection = dynamic(() => import("@/components/contact-section").then(mod => mod.ContactSection))
 const Footer = dynamic(() => import("@/components/footer").then(mod => mod.Footer))
@@ -12,11 +13,12 @@ const WhatsAppFAB = dynamic(() => import("@/components/whatsapp-fab").then(mod =
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen">
       <Header />
       <Hero />
       <AboutSection />
       <OtherSolutions />
+      <PortalSection />
       <ValuesSection />
       <ContactSection />
       <Footer />

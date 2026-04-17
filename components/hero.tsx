@@ -1,15 +1,30 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import { ArrowDown } from "lucide-react"
 import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
 import { scrollToId } from "@/lib/utils"
-import { BackgroundGradients } from "@/components/ui/background-gradients"
 
 export function Hero() {
   const [isHovered, setIsHovered] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [clickCount, setClickCount] = useState(0)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const router = useRouter()
+
+  const handleLogoClick = () => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    const next = clickCount + 1
+    if (next >= 7) {
+      router.push("/admin")
+      setClickCount(0)
+    } else {
+      setClickCount(next)
+      timerRef.current = setTimeout(() => setClickCount(0), 2000)
+    }
+  }
 
   // Notify other components (like Header) about the hover state
   useEffect(() => {
@@ -28,8 +43,6 @@ export function Hero() {
 
   return (
     <section id="inicio" className="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden select-none">
-
-      <BackgroundGradients />
 
       <div className="relative z-10 container mx-auto px-4 pt-16 sm:pt-32 flex flex-col items-center justify-center">
 
@@ -116,6 +129,7 @@ export function Hero() {
               transition: { duration: 0.3 }
             }}
             whileTap={{ scale: 0.85 }}
+            onClick={handleLogoClick}
             className="cursor-pointer relative shine-container group z-10 will-change-transform translate-z-0 backface-hidden"
           >
             {/* Base Image */}

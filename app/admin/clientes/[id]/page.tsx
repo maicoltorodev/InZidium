@@ -98,7 +98,7 @@ export default function ClienteDetalle() {
         <h2 className="text-2xl font-bold mb-4">Cliente no encontrado</h2>
         <button
           onClick={() => router.push("/admin/clientes")}
-          className="px-6 py-3 bg-[#FFD700] text-black rounded-xl font-bold hover:bg-[#FFD700]/90 transition-colors"
+          className="px-6 py-3 bg-gradient-to-r from-[#a855f7] to-[#22d3ee] text-white rounded-xl font-bold hover:opacity-90 transition-colors"
         >
           Volver a Clientes
         </button>
@@ -143,7 +143,7 @@ export default function ClienteDetalle() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center gap-2 px-4 py-2 bg-[#FFD700] text-black rounded-xl font-bold hover:bg-[#FFD700]/90 transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#a855f7] to-[#22d3ee] text-white rounded-xl font-bold hover:opacity-90 transition-colors disabled:opacity-50"
               >
                 {saving ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -161,10 +161,10 @@ export default function ClienteDetalle() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-[#0a0a0a]/40 backdrop-blur-3xl border border-white/5 rounded-[3rem] p-12"
+        className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-12"
       >
         <div className="flex items-center gap-6 mb-8">
-          <div className="w-20 h-20 bg-gradient-to-br from-[#FFD700] to-[#a855f7] rounded-3xl flex items-center justify-center text-black">
+          <div className="w-20 h-20 bg-gradient-to-br from-[#e879f9] to-[#a855f7] rounded-3xl flex items-center justify-center text-white">
             <User className="w-10 h-10" />
           </div>
           <div>
@@ -185,7 +185,7 @@ export default function ClienteDetalle() {
                 onChange={(e) =>
                   setFormData({ ...formData, nombre: e.target.value })
                 }
-                className={`w-full bg-white/5 border rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#FFD700] ${errors.nombre ? "border-red-500" : "border-white/10"}`}
+                className={`w-full bg-white/5 border rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#a855f7] ${errors.nombre ? "border-red-500" : "border-white/10"}`}
               />
             ) : (
               <div className="flex items-center gap-3 text-white">
@@ -212,7 +212,7 @@ export default function ClienteDetalle() {
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
-                className={`w-full bg-white/5 border rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#FFD700] ${errors.email ? "border-red-500" : "border-white/10"}`}
+                className={`w-full bg-white/5 border rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#a855f7] ${errors.email ? "border-red-500" : "border-white/10"}`}
               />
             ) : (
               <div className="flex items-center gap-3 text-white">
@@ -239,7 +239,7 @@ export default function ClienteDetalle() {
                 onChange={(e) =>
                   setFormData({ ...formData, telefono: e.target.value })
                 }
-                className={`w-full bg-white/5 border rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#FFD700] ${errors.telefono ? "border-red-500" : "border-white/10"}`}
+                className={`w-full bg-white/5 border rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#a855f7] ${errors.telefono ? "border-red-500" : "border-white/10"}`}
               />
             ) : (
               <div className="flex items-center gap-3 text-white">
@@ -266,7 +266,7 @@ export default function ClienteDetalle() {
                 onChange={(e) =>
                   setFormData({ ...formData, cedula: e.target.value })
                 }
-                className={`w-full bg-white/5 border rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#FFD700] ${errors.cedula ? "border-red-500" : "border-white/10"}`}
+                className={`w-full bg-white/5 border rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#a855f7] ${errors.cedula ? "border-red-500" : "border-white/10"}`}
               />
             ) : (
               <div className="flex items-center gap-3 text-white">
@@ -311,7 +311,7 @@ export default function ClienteDetalle() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-[#0a0a0a] border border-white/10 rounded-[2rem] p-8 relative z-10 max-w-md w-full"
+              className="bg-[#060214]/95 border border-white/10 rounded-3xl p-8 relative z-10 max-w-md w-full"
             >
               <div className="text-center">
                 <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center text-red-500 mx-auto mb-4">

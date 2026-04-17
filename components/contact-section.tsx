@@ -5,7 +5,6 @@ import { Phone, MapPin, Mail } from "lucide-react"
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
-import { BackgroundGradients } from "@/components/ui/background-gradients"
 import { useViewportActive } from "@/lib/hooks/use-viewport-active"
 import { cn } from "@/lib/utils"
 
@@ -16,7 +15,6 @@ export function ContactSection() {
 
   return (
     <PageSection id="contacto" className="relative overflow-hidden" withBackground={false}>
-      <BackgroundGradients />
       <div className="relative">
         <div className="text-center mb-16 sm:mb-24 animate-on-mount" data-animation="fade-down">
           <SectionHeader

@@ -27,7 +27,7 @@ export function ModalConfirm({
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-[#0a0a0a] border border-white/10 p-8 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl"
+        className="bg-[#060214]/95 border border-white/10 p-8 rounded-3xl w-full max-w-sm text-center shadow-2xl"
       >
         <h3 className="text-xl font-black uppercase text-white mb-2">
           {title}

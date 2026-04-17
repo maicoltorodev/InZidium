@@ -4,7 +4,6 @@ import { Target, Zap, Palette, Rocket } from "lucide-react"
 import { motion } from "framer-motion"
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
-import { BackgroundGradients } from "@/components/ui/background-gradients"
 import { useViewportActive } from "@/lib/hooks/use-viewport-active"
 import { cn } from "@/lib/utils"
 
@@ -97,7 +96,6 @@ export function ValuesSection() {
 
   return (
     <PageSection id="valores" containerSize="lg" withBackground={false}>
-      <BackgroundGradients purplePosition="top-left" cyanPosition="bottom-right" className="opacity-10" />
       <div className="relative">
         <div className="text-center mb-20 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-down">
           <SectionHeader titleLeft="Nuestros" titleHighlight="Valores" subtitle="Principios que guían cada proyecto y garantizan resultados excepcionales" />

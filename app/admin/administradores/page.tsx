@@ -77,13 +77,12 @@ export default function AdminsPage() {
 
   return (
     <div className="p-12 max-w-7xl mx-auto space-y-12">
-      {/* Header Elite */}
       <header className="flex flex-row items-end justify-between gap-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
         >
-          <div className="flex items-center gap-3 text-[#FFD700] mb-2">
+          <div className="flex items-center gap-3 text-[#22d3ee] mb-2">
             <ShieldAlert className="w-5 h-5" />
             <span className="text-[10px] font-black uppercase tracking-[0.4em] font-[family-name:var(--font-orbitron)]">
               Gestión de administradores
@@ -91,7 +90,7 @@ export default function AdminsPage() {
           </div>
           <h1 className="text-5xl font-black tracking-tighter">
             Nuestro{" "}
-            <span className="bg-gradient-to-r from-[#FFD700] via-[#a855f7] to-[#22d3ee] bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
+            <span className="bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
               Equipo
             </span>
           </h1>
@@ -99,21 +98,21 @@ export default function AdminsPage() {
 
         <div className="flex items-center gap-4">
           <div className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-[#a855f7] transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-[#22d3ee] transition-colors" />
             <input
               type="text"
               placeholder="Buscar administrador..."
-              className="bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-[#a855f7]/50 focus:bg-white/[0.08] transition-all w-64"
+              className="bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-[#22d3ee]/50 focus:bg-white/[0.08] transition-all w-64"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <button
             onClick={() => setIsAdding(true)}
-            className="group relative px-6 py-3 rounded-2xl font-bold text-sm transition-all hover:scale-105 active:scale-95 overflow-hidden shadow-[0_0_30px_rgba(168,85,247,0.2)]"
+            className="group relative px-6 py-3 rounded-2xl font-bold text-sm transition-all hover:scale-105 active:scale-95 overflow-hidden shadow-[0_0_30px_rgba(168,85,247,0.15),_0_0_30px_rgba(34,211,238,0.1)]"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-[#FFD700] via-[#a855f7] to-[#22d3ee] animate-gradient bg-[length:200%_auto]" />
-            <div className="relative flex items-center gap-2 text-black font-black uppercase tracking-widest text-[10px]">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] animate-gradient bg-[length:200%_auto]" />
+            <div className="relative flex items-center gap-2 text-white font-black uppercase tracking-widest text-[10px]">
               <Plus className="w-5 h-5" />
               <span className="inline">Nuevo administrador</span>
             </div>
@@ -121,7 +120,6 @@ export default function AdminsPage() {
         </div>
       </header>
 
-      {/* Content Grid */}
       <div className="min-h-[400px]">
         {filteredAdmins.length > 0 ? (
           <div className="grid grid-cols-3 gap-6">
@@ -135,13 +133,13 @@ export default function AdminsPage() {
                   transition={{ delay: idx * 0.05 }}
                   className="group relative"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#a855f7]/10 to-cyan-500/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-[2.5rem]" />
-                  <div className="relative bg-[#0a0a0a]/50 backdrop-blur-3xl border border-white/5 p-8 rounded-[2.5rem] hover:border-white/20 transition-all duration-500 h-full flex flex-col">
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#a855f7]/10 to-[#22d3ee]/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
+                  <div className="relative bg-white/[0.04] backdrop-blur-xl border border-white/8 p-8 rounded-3xl hover:border-white/20 transition-all duration-500 h-full flex flex-col">
                     <div className="flex justify-between items-start mb-6">
-                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#a855f7]/20 to-[#a855f7]/5 border border-white/5 flex items-center justify-center text-[#a855f7] group-hover:scale-110 transition-transform duration-500">
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#22d3ee]/15 to-[#a855f7]/10 border border-white/5 flex items-center justify-center text-[#22d3ee] group-hover:scale-110 transition-transform duration-500">
                         <ShieldCheck className="w-6 h-6" />
                       </div>
-                      <div className="px-3 py-1 bg-[#a855f7]/10 border border-[#a855f7]/20 rounded-full text-[8px] font-black uppercase tracking-widest text-[#a855f7]">
+                      <div className="px-3 py-1 bg-gradient-to-r from-[#22d3ee]/10 to-[#a855f7]/10 border border-white/10 rounded-full text-[8px] font-black uppercase tracking-widest text-transparent bg-clip-text">
                         Acceso total
                       </div>
                     </div>
@@ -192,8 +190,8 @@ export default function AdminsPage() {
             className="flex flex-col items-center justify-center py-32 text-center"
           >
             <div className="w-24 h-24 bg-white/5 rounded-[2.5rem] border border-white/10 flex items-center justify-center text-gray-700 mb-8 relative group">
-              <ShieldAlert className="w-10 h-10 group-hover:text-[#a855f7] transition-colors duration-500" />
-              <div className="absolute inset-0 bg-[#a855f7]/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+              <ShieldAlert className="w-10 h-10 group-hover:text-[#22d3ee] transition-colors duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#22d3ee]/5 to-[#a855f7]/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
             <h2 className="text-2xl font-black mb-3 font-[family-name:var(--font-orbitron)] uppercase tracking-tight text-white">
               No hay administradores
@@ -204,7 +202,7 @@ export default function AdminsPage() {
             </p>
             <button
               onClick={() => setIsAdding(true)}
-              className="px-10 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 hover:bg-[#a855f7] hover:text-white hover:border-transparent transition-all duration-500"
+              className="px-10 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 hover:bg-gradient-to-r hover:from-[#22d3ee] hover:to-[#a855f7] hover:text-white hover:border-transparent transition-all duration-500"
             >
               Crear administrador
             </button>
@@ -212,7 +210,7 @@ export default function AdminsPage() {
         )}
       </div>
 
-      {/* Modal de Registro Premium */}
+      {/* Modal Registro */}
       <AnimatePresence>
         {isAdding && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -227,9 +225,9 @@ export default function AdminsPage() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-[#0a0a0a]/80 border border-white/10 w-full max-w-lg rounded-[3rem] p-10 relative z-10 shadow-2xl overflow-hidden"
+              className="bg-[#060214]/90 border border-white/10 w-full max-w-lg rounded-3xl p-10 relative z-10 shadow-2xl overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-[#a855f7]/5 blur-[100px] -z-10" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#22d3ee]/5 to-[#a855f7]/8 blur-[100px] -z-10" />
 
               <button
                 onClick={() => setIsAdding(false)}
@@ -239,7 +237,7 @@ export default function AdminsPage() {
               </button>
 
               <div className="mb-10 text-center">
-                <span className="text-xs font-black text-[#a855f7] uppercase tracking-[0.5em] mb-2 block">
+                <span className="text-xs font-black text-transparent bg-clip-text bg-gradient-to-r from-[#22d3ee] to-[#a855f7] uppercase tracking-[0.5em] mb-2 block">
                   Nuevo administrador
                 </span>
                 <h2 className="text-3xl font-black font-[family-name:var(--font-orbitron)] mb-2 uppercase tracking-tighter">
@@ -329,9 +327,9 @@ export default function AdminsPage() {
 
                 <button
                   type="submit"
-                  className="relative group w-full py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-sm transition-all hover:scale-[1.02] active:scale-95 overflow-hidden shadow-[0_10px_30px_rgba(168,85,247,0.2)] mt-6"
+                  className="relative group w-full py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-sm transition-all hover:scale-[1.02] active:scale-95 overflow-hidden shadow-[0_10px_30px_rgba(168,85,247,0.15),_0_10px_30px_rgba(34,211,238,0.1)] mt-6"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-[#a855f7] via-[#8b5cf6] to-[#22d3ee] animate-gradient bg-[length:200%_auto]" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] animate-gradient bg-[length:200%_auto]" />
                   <span className="relative text-white">
                     Crear administrador
                   </span>
@@ -342,7 +340,7 @@ export default function AdminsPage() {
         )}
       </AnimatePresence>
 
-      {/* Modal de Confirmación de Eliminación */}
+      {/* Modal Confirmación Eliminación */}
       <AnimatePresence>
         {adminToDelete && (
           <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
@@ -357,7 +355,7 @@ export default function AdminsPage() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-[#0a0a0a] border border-red-500/20 w-full max-w-md rounded-[2.5rem] p-10 relative z-10 shadow-2xl"
+              className="bg-[#060214]/95 border border-red-500/20 w-full max-w-md rounded-3xl p-10 relative z-10 shadow-2xl"
             >
               <div className="text-center">
                 <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center text-red-500 mx-auto mb-6">
@@ -437,17 +435,17 @@ function PremiumInput({
   return (
     <div className="relative group">
       <div
-        className={`absolute -inset-0.5 rounded-2xl transition-opacity blur-[2px] ${error ? "bg-red-500/40 opacity-100" : "bg-[#a855f7]/10 opacity-0 group-focus-within:opacity-100"}`}
+        className={`absolute -inset-0.5 rounded-2xl transition-opacity blur-[2px] ${error ? "bg-red-500/40 opacity-100" : "bg-gradient-to-r from-[#22d3ee]/10 to-[#a855f7]/10 opacity-0 group-focus-within:opacity-100"}`}
       />
       <div className="relative">
         <Icon
-          className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${error ? "text-red-400" : "text-gray-500 group-focus-within:text-[#a855f7]"}`}
+          className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${error ? "text-red-400" : "text-gray-500 group-focus-within:text-[#22d3ee]"}`}
         />
         <input
           {...props}
           placeholder={placeholder}
           onFocus={onFocus}
-          className={`w-full bg-white/[0.03] border rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none transition-all placeholder:text-gray-600 ${error ? "border-red-500/50 focus:border-red-500" : "border-white/10 group-hover:border-white/20 focus:border-[#a855f7]/50 focus:bg-white/[0.08]"}`}
+          className={`w-full bg-white/[0.04] border rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none transition-all placeholder:text-gray-600 ${error ? "border-red-500/50 focus:border-red-500" : "border-white/8 group-hover:border-white/15 focus:border-[#22d3ee]/50 focus:bg-white/[0.08]"}`}
         />
       </div>
       <AnimatePresence>
