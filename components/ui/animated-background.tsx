@@ -6,7 +6,10 @@ export function AnimatedBackground() {
   const reduced = useReducedMotion()
 
   return (
-    <div className="fixed inset-0 -z-10 bg-[#060214] pointer-events-none overflow-hidden">
+    <div
+      className="fixed -z-10 bg-[#060214] pointer-events-none overflow-hidden"
+      style={{ top: 0, left: 0, width: "100lvw", height: "100lvh" }}
+    >
 
       {/* Glow 1: Magenta — top-left */}
       <motion.div
