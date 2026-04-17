@@ -134,7 +134,7 @@ export function PortalSection() {
                   </div>
 
                   <h3 className="text-2xl sm:text-3xl font-orbitron text-white mb-4 md:group-hover:text-neon-cyan transition-colors duration-200">
-                    Seguimiento de Proyecto
+                    Portal de Proyecto
                   </h3>
 
                   <p className="text-muted-foreground text-lg leading-relaxed mb-8">

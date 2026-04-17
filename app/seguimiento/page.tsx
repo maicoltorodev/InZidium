@@ -13,7 +13,7 @@ function detectDevice(): Device {
     return "desktop";
 }
 
-export default function SeguimientoPage() {
+export default function PortalPage() {
     const [device, setDevice] = useState<Device>("desktop");
     const [mounted, setMounted] = useState(false);
 
