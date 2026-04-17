@@ -1,5 +1,5 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Geist, Geist_Mono, Orbitron } from "next/font/google"
 import "./globals.css"
 import { JSONLDSchema } from "./components/json-ld-schema"
@@ -107,6 +107,14 @@ export const metadata: Metadata = {
   other: {
     "og:logo": "https://www.inzidium.com/icon.png",
   },
+}
+
+export const viewport: Viewport = {
+  themeColor: "#060214",
+  colorScheme: "dark",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 }
 
 export default function RootLayout({
