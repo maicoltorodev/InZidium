@@ -1,4 +1,3 @@
-import Image from "next/image"
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 
@@ -20,7 +19,6 @@ export function Footer() {
   return (
     <footer className="relative w-full">
 
-      {/* Animated gradient line — mirrors navbar */}
       <div className="h-[2px] w-full overflow-hidden opacity-80">
         <div
           className="w-full h-full energy-flow-css"
@@ -31,78 +29,67 @@ export function Footer() {
         />
       </div>
 
-      <div className="container mx-auto px-6 sm:px-8 max-w-6xl">
+      <div className="container mx-auto px-6 sm:px-8 max-w-6xl py-10">
 
-        {/* Brand — centered */}
-        <div className="pt-16 pb-12 flex flex-col items-center gap-5 border-b border-white/5">
-          <Image
-            src="/logo.webp"
-            alt="InZidium"
-            width={64}
-            height={64}
-            className="object-contain opacity-90"
-            loading="lazy"
-          />
-          <span className="font-orbitron font-medium tracking-[0.3em] text-[32px] text-white/90">
-            InZidium
-          </span>
-          <p className="text-[12px] text-white/20 font-light tracking-wide text-center">
-            Estudio de desarrollo web &amp; digital premium.
-          </p>
-          <a
-            href="mailto:maicoltorodev@gmail.com"
-            className="group inline-flex items-center gap-1.5 text-[13px] text-white/25 hover:text-white transition-colors duration-200 mt-1"
-          >
-            <span>maicoltorodev@gmail.com</span>
-            <ArrowUpRight className="w-3 h-3 text-white/10 group-hover:text-[#22d3ee] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200" />
-          </a>
-        </div>
+        <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-8">
 
-        {/* Links — centered */}
-        <div className="py-10 flex justify-center gap-16 sm:gap-24 border-b border-white/5">
-          <div>
-            <p className="text-[9px] font-black uppercase tracking-[0.35em] text-white/15 mb-5 font-[family-name:var(--font-orbitron)]">
-              Sitio
+          {/* Brand */}
+          <div className="flex flex-col items-center sm:items-start gap-3">
+            <span className="font-orbitron font-medium tracking-[0.3em] text-[20px] text-white/90">
+              InZidium
+            </span>
+            <p className="text-[12px] text-white/20 font-light tracking-wide text-center sm:text-left">
+              Estudio de desarrollo web &amp; digital premium.
             </p>
-            <ul className="space-y-3">
-              {NAV.map(({ href, label }) => (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className="text-[13px] text-white/25 hover:text-white transition-colors duration-200"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <a
+              href="mailto:maicoltorodev@gmail.com"
+              className="group inline-flex items-center gap-1.5 text-[12px] text-white/25 hover:text-white transition-colors duration-200"
+            >
+              <span>maicoltorodev@gmail.com</span>
+              <ArrowUpRight className="w-3 h-3 text-white/10 group-hover:text-[#22d3ee] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-200" />
+            </a>
           </div>
 
-          <div>
-            <p className="text-[9px] font-black uppercase tracking-[0.35em] text-white/15 mb-5 font-[family-name:var(--font-orbitron)]">
-              Legal
-            </p>
-            <ul className="space-y-3">
-              {LEGAL.map(({ href, label }) => (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className="text-[13px] text-white/25 hover:text-white transition-colors duration-200"
-                  >
-                    {label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          {/* Links */}
+          <div className="flex gap-12 sm:gap-16">
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-[0.35em] text-white/15 mb-4 font-[family-name:var(--font-orbitron)]">
+                Sitio
+              </p>
+              <ul className="space-y-2.5">
+                {NAV.map(({ href, label }) => (
+                  <li key={href}>
+                    <Link href={href} className="text-[12px] text-white/25 hover:text-white transition-colors duration-200">
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-[0.35em] text-white/15 mb-4 font-[family-name:var(--font-orbitron)]">
+                Legal
+              </p>
+              <ul className="space-y-2.5">
+                {LEGAL.map(({ href, label }) => (
+                  <li key={href}>
+                    <Link href={href} className="text-[12px] text-white/25 hover:text-white transition-colors duration-200">
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
+
         </div>
 
         {/* Bottom strip */}
-        <div className="py-6 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div className="mt-8 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span className="text-[11px] text-white/15 tracking-wide">
             {currentYear} © InZidium — Todos los derechos reservados
           </span>
-          <span className="text-[11px] text-white/10 tracking-wide">
+          <span className="text-[11px] text-white/10 tracking-wide text-center sm:text-right">
             Representante Legal: Maicol Stiven Toro Aguirre
           </span>
         </div>

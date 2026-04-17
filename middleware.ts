@@ -88,23 +88,12 @@ export default async function proxy(req: NextRequest) {
     });
   }
 
-  if (requiredPath && req.nextUrl.pathname !== requiredPath) {
-    // /servicios/[slug] on mobile/tablet → rewrite to the platform-specific route
-    if (isServiceDetailPage) {
-      const rewriteUrl = req.nextUrl.clone();
-      rewriteUrl.pathname = pathname.replace(
-        "/servicios/",
-        deviceTier === "tablet" ? "/tablet/servicios/" : "/mobile/servicios/",
-      );
-      return NextResponse.rewrite(rewriteUrl, {
-        request: { headers: requestHeaders },
-      });
-    }
-
-    // All other pages: rewrite to the platform gate
+  if (requiredPath && isServiceDetailPage) {
     const rewriteUrl = req.nextUrl.clone();
-    rewriteUrl.pathname = requiredPath;
-    rewriteUrl.searchParams.set("from", req.nextUrl.pathname);
+    rewriteUrl.pathname = pathname.replace(
+      "/servicios/",
+      deviceTier === "tablet" ? "/tablet/servicios/" : "/mobile/servicios/",
+    );
     return NextResponse.rewrite(rewriteUrl, {
       request: { headers: requestHeaders },
     });
