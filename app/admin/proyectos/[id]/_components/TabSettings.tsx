@@ -202,7 +202,7 @@ export function TabSettings({
                 </div>
                 <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wide max-w-[280px]">
                   {visibilidad
-                    ? "El cliente puede acceder a su panel de seguimiento."
+                    ? "El cliente puede acceder a su panel de portal."
                     : "El acceso del cliente está restringido temporalmente."}
                 </p>
               </div>

@@ -6,7 +6,7 @@ const NAV = [
   { href: "/#servicios", label: "Servicios" },
   { href: "/#planes", label: "Planes" },
   { href: "/#portal", label: "Portal cliente" },
-  { href: "/seguimiento", label: "Seguimiento" },
+  { href: "/portal", label: "Seguimiento" },
 ]
 
 const LEGAL = [

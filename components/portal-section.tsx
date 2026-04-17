@@ -102,7 +102,7 @@ export function PortalSection() {
         </div>
 
         <div className="animate-on-mount" data-animation="fade-up" style={{ animationDelay: "0.2s" }}>
-          <Link href="/seguimiento" className="block max-w-4xl mx-auto cursor-pointer">
+          <Link href="/portal" className="block max-w-4xl mx-auto cursor-pointer">
           <motion.div
             ref={elementRef}
             className={cn(

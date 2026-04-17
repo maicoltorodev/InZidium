@@ -44,7 +44,7 @@ export default function PoliticaPrivacidad() {
                 <strong>Uso de WhatsApp Cloud API:</strong> Nuestra comunicación por WhatsApp es operada a través de la infraestructura oficial de WhatsApp Cloud API de Meta. Los mensajes pueden ser procesados mediante herramientas de Inteligencia Artificial de terceros para brindar respuestas automatizadas, rápidas y precisas relacionadas exclusivamente con nuestros servicios de desarrollo de software conectado.
               </p>
               <p className="leading-relaxed">
-                Adicionalmente, utilizamos cookies y tecnologías de seguimiento similares (como el Píxel de Meta) para recopilar datos de navegación anónimos que nos ayudan a mejorar la experiencia de usuario y medir la efectividad de nuestras campañas publicitarias.
+                Adicionalmente, utilizamos cookies y tecnologías de portal similares (como el Píxel de Meta) para recopilar datos de navegación anónimos que nos ayudan a mejorar la experiencia de usuario y medir la efectividad de nuestras campañas publicitarias.
               </p>
             </section>
 
