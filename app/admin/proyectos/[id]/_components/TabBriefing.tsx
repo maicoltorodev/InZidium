@@ -124,7 +124,7 @@ export function TabBriefing({ project }: TabBriefingProps) {
       </div>
 
       {!hasData ? (
-        <div className="rounded-3xl border border-white/5 p-12 text-center text-gray-500">
+        <div className="rounded-3xl border border-white/5 p-8 sm:p-12 text-center text-gray-500">
           <p className="text-xs font-black uppercase tracking-widest">
             El cliente aún no ha completado ningún campo
           </p>
@@ -133,7 +133,7 @@ export function TabBriefing({ project }: TabBriefingProps) {
         <div className="space-y-5">
 
           {/* ── FILA 1: Identidad + Colores ──────────────────────────────── */}
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5">
 
             {/* Identidad */}
             <Card icon={Zap} title="Identidad" color="purple">
@@ -194,12 +194,12 @@ export function TabBriefing({ project }: TabBriefingProps) {
 
           {/* ── FILA 2: Nosotros ─────────────────────────────────────────── */}
           <Card icon={Users} title="Nosotros" color="blue">
-            <div className="grid grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
               <div className="col-span-2 space-y-4">
                 <Field label="Descripción" value={d.descripcion} />
                 <Field label="Misión" value={d.mision} />
                 <Field label="Diferencial" value={d.diferencial} />
-                <div className="grid grid-cols-4 gap-3 pt-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                   {(d.stats || []).map((stat: { value: string; label: string }, i: number) => (
                     <div key={i} className="rounded-xl bg-white/5 p-3 text-center">
                       <p className="text-xl font-black text-white">{stat.value || <Empty label="—" />}</p>
@@ -255,7 +255,7 @@ export function TabBriefing({ project }: TabBriefingProps) {
                 Sin items aún
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {catalogo.map((item: any, i: number) => (
                   <div
                     key={item.id || i}
@@ -300,7 +300,7 @@ export function TabBriefing({ project }: TabBriefingProps) {
           </div>
 
           {/* ── FILA 4: Contacto + Footer ────────────────────────────────── */}
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5">
             <Card icon={MapPin} title="Contacto" color="amber">
               <Field label="Descripción del local" value={d.descripcionLocal} />
               <Field label="Dirección" value={d.direccion} />
@@ -374,7 +374,7 @@ export function TabBriefing({ project }: TabBriefingProps) {
           {/* ── Redes sociales ───────────────────────────────────────────── */}
           {(d.instagram || d.facebook || d.tiktok || d.twitter || d.youtube || d.whatsappUrl || d.threads || d.telegram) && (
             <Card icon={AtSign} title="Redes sociales" color="violet">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
                   { label: "Instagram",   val: d.instagram },
                   { label: "Facebook",    val: d.facebook },
@@ -406,7 +406,7 @@ export function TabBriefing({ project }: TabBriefingProps) {
           {/* ── Legal ────────────────────────────────────────────────────── */}
           {(d.legalTemplate || d.legalLastUpdated) && (
             <Card icon={Lock} title="Legal" color="gray">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Field label="Plantilla legal" value={d.legalTemplate ? ({ servicios: "Servicios profesionales", comercio: "Comercio / tienda", gastronomia: "Gastronomía / restaurante" } as Record<string, string>)[d.legalTemplate] || d.legalTemplate : undefined} />
                 <Field label="Fecha de vigencia" value={d.legalLastUpdated} />
               </div>

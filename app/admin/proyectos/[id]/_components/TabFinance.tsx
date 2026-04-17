@@ -76,7 +76,7 @@ export function TabFinance({
     >
 
       {/* ── HERO: MONTO A TRANSFERIR ── */}
-      <div className={`relative bg-white/[0.04] backdrop-blur-xl border rounded-3xl p-10 overflow-hidden transition-colors ${pagoRecibido ? "border-emerald-500/30" : "border-white/8"}`}>
+      <div className={`relative bg-white/[0.04] backdrop-blur-xl border rounded-3xl p-6 sm:p-8 lg:p-10 overflow-hidden transition-colors ${pagoRecibido ? "border-emerald-500/30" : "border-white/8"}`}>
 
         {/* Glow de fondo según estado */}
         <div className={`absolute inset-0 rounded-3xl transition-opacity duration-700 ${pagoRecibido ? "opacity-100" : "opacity-0"}`}
@@ -93,11 +93,11 @@ export function TabFinance({
               </p>
               <div className="flex items-baseline gap-3">
                 {montoInzidium ? (
-                  <span className="text-5xl font-black text-white tracking-tight">
+                  <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight break-all">
                     {COP(montoInzidium)}
                   </span>
                 ) : (
-                  <span className="text-2xl font-black text-gray-600 uppercase tracking-widest">
+                  <span className="text-xl sm:text-2xl font-black text-gray-600 uppercase tracking-widest">
                     Monto no definido
                   </span>
                 )}
@@ -244,12 +244,12 @@ export function TabFinance({
 
       {/* ── DESGLOSE 80 / 20 ── */}
       {precioTotal && (
-        <div className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-8">
+        <div className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 sm:p-8">
           <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gray-500 mb-6">
             Distribución del proyecto
           </p>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-6 rounded-2xl bg-[#22d3ee]/5 border border-[#22d3ee]/20 space-y-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="p-5 sm:p-6 rounded-2xl bg-[#22d3ee]/5 border border-[#22d3ee]/20 space-y-1">
               <p className="text-[9px] font-black uppercase tracking-widest text-[#22d3ee]/60">
                 InZidium · 80%
               </p>
@@ -260,7 +260,7 @@ export function TabFinance({
                 Desarrollo & plataforma
               </p>
             </div>
-            <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 space-y-1">
+            <div className="p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5 space-y-1">
               <p className="text-[9px] font-black uppercase tracking-widest text-gray-500">
                 Estudio · 20%
               </p>
@@ -286,8 +286,8 @@ export function TabFinance({
       )}
 
       {/* ── COMPROBANTE ── */}
-      <div className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-8 space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 sm:p-8 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gray-500 mb-1">
               Comprobante de transferencia
@@ -296,7 +296,7 @@ export function TabFinance({
               El estudio adjunta el soporte cuando realiza el pago
             </p>
           </div>
-          <div className="text-[9px] font-black uppercase tracking-widest text-gray-600 px-3 py-1.5 rounded-full border border-white/5">
+          <div className="text-[9px] font-black uppercase tracking-widest text-gray-600 px-3 py-1.5 rounded-full border border-white/5 self-start sm:self-auto">
             #{projectId?.toString().slice(-6).toUpperCase()}
           </div>
         </div>

@@ -75,7 +75,7 @@ export default function AdminDashboard() {
   if (cargando) return <AdminLoading />;
 
   return (
-    <div className="p-12 max-w-7xl mx-auto space-y-12">
+    <div className="p-4 sm:p-6 lg:p-12 max-w-7xl mx-auto space-y-8 lg:space-y-12">
       <header className="flex flex-row items-end justify-between gap-6">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -87,7 +87,7 @@ export default function AdminDashboard() {
               Panel de control
             </span>
           </div>
-          <h1 className="text-5xl font-black tracking-tighter">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter">
             Nuestro{" "}
             <span className="bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
               Ecosistema
@@ -101,7 +101,7 @@ export default function AdminDashboard() {
         variants={container}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-3 gap-6"
+        className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6"
       >
         <StatCard
           icon={TrendingUp}
@@ -128,13 +128,13 @@ export default function AdminDashboard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35 }}
-        className="relative group bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-10 overflow-hidden"
+        className="relative group bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 sm:p-8 lg:p-10 overflow-hidden"
       >
         <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 blur-[100px] -z-10" />
-        <div className="flex flex-row items-center justify-between gap-12">
-          <div className="flex items-center gap-8">
-            <div className="flex items-center justify-center w-20 h-20 rounded-3xl bg-emerald-500/10 text-emerald-400 relative">
-              <Activity className="w-10 h-10 animate-pulse" />
+        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8 xl:gap-12">
+          <div className="flex items-center gap-5 sm:gap-8">
+            <div className="flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-emerald-500/10 text-emerald-400 relative shrink-0">
+              <Activity className="w-8 h-8 sm:w-10 sm:h-10 animate-pulse" />
               <div className="absolute inset-0 rounded-3xl border border-emerald-500/20 animate-ping opacity-20" />
             </div>
             <div>
@@ -147,7 +147,7 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-8 flex-1 max-w-3xl">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 xl:gap-8 flex-1 xl:max-w-3xl">
             <HealthStat
               icon={Database}
               label="Base de datos"
@@ -176,81 +176,78 @@ export default function AdminDashboard() {
       >
         <div className="absolute inset-0 bg-gradient-to-br from-[#22d3ee]/5 via-[#a855f7]/5 to-[#e879f9]/5 blur-3xl rounded-3xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
         <div className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl overflow-hidden">
-          <div className="p-8 border-b border-white/5 text-center">
-            <h2 className="text-xl font-bold font-[family-name:var(--font-orbitron)]">
+          <div className="p-6 sm:p-8 border-b border-white/5 text-center">
+            <h2 className="text-lg sm:text-xl font-bold font-[family-name:var(--font-orbitron)]">
               Últimos proyectos
             </h2>
             <p className="text-xs text-gray-500 font-medium">
               Resumen en tiempo real de la actividad del sistema
             </p>
           </div>
-          <div className="overflow-x-auto">
+          <div>
             {recentProjects.length > 0 ? (
-              <table className="w-full text-left">
-                <tbody>
-                  {recentProjects.map((proj, idx) => {
-                    const projectPlan =
-                      PLANS_ARRAY.find((p) => p.title === proj.plan) ||
-                      PLANS_ARRAY[0];
+              <ul className="divide-y divide-white/5">
+                {recentProjects.map((proj, idx) => {
+                  const projectPlan =
+                    PLANS_ARRAY.find((p) => p.title === proj.plan) ||
+                    PLANS_ARRAY[0];
 
-                    return (
-                      <tr
-                        key={idx}
-                        onClick={() =>
-                          router.push(`/admin/proyectos/${proj.id}`)
-                        }
-                        className="group/row hover:bg-white/[0.02] transition-colors cursor-pointer"
-                      >
-                        <td className="px-10 py-8">
-                          <div className="flex flex-col">
+                  return (
+                    <li
+                      key={idx}
+                      onClick={() =>
+                        router.push(`/admin/proyectos/${proj.id}`)
+                      }
+                      className="group/row hover:bg-white/[0.02] transition-colors cursor-pointer"
+                    >
+                      <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6 px-5 sm:px-8 md:px-10 py-6 md:py-8">
+                        <div className="flex flex-col md:flex-1">
+                          <span
+                            className={`font-bold text-lg sm:text-xl group-hover/row:bg-gradient-to-r ${projectPlan.color} group-hover/row:bg-clip-text group-hover/row:text-transparent transition-all`}
+                          >
+                            {proj.nombre}
+                          </span>
+                          <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest mt-1">
+                            Cliente: {proj.cliente?.nombre}
+                          </span>
+                        </div>
+                        <div className="flex flex-col gap-3 md:flex-1 md:min-w-[200px]">
+                          <div className="flex justify-between gap-3 text-[10px] sm:text-[11px] font-black font-[family-name:var(--font-orbitron)] tracking-widest uppercase">
                             <span
-                              className={`font-bold text-xl group-hover/row:bg-gradient-to-r ${projectPlan.color} group-hover/row:bg-clip-text group-hover/row:text-transparent transition-all`}
+                              className={`bg-gradient-to-r ${projectPlan.color} bg-clip-text text-transparent`}
                             >
-                              {proj.nombre}
+                              Progreso: {proj.progreso}%
                             </span>
-                            <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest mt-1">
-                              Cliente: {proj.cliente?.nombre}
+                            <span className="text-gray-400 opacity-60 group-hover/row:opacity-100 transition-opacity truncate">
+                              Sistema: {proj.estado}
                             </span>
                           </div>
-                        </td>
-                        <td className="px-10 py-8">
-                          <div className="flex flex-col gap-3 min-w-[200px]">
-                            <div className="flex justify-between text-[11px] font-black font-[family-name:var(--font-orbitron)] tracking-widest uppercase">
-                              <span
-                                className={`bg-gradient-to-r ${projectPlan.color} bg-clip-text text-transparent`}
-                              >
-                                Progreso: {proj.progreso}%
-                              </span>
-                              <span className="text-gray-400 opacity-60 group-hover/row:opacity-100 transition-opacity">
-                                Sistema: {proj.estado}
-                              </span>
-                            </div>
-                            <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden p-[2px] border border-white/5">
-                              <motion.div
-                                initial={{ width: 0 }}
-                                whileInView={{ width: `${proj.progreso}%` }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 1.5, ease: "circOut" }}
-                                className={`h-full bg-gradient-to-r ${projectPlan.color} rounded-full relative overflow-hidden`}
-                              >
-                                <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.15)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.15)_50%,rgba(255,255,255,0.15)_75%,transparent_75%,transparent)] bg-[size:1rem_1rem] opacity-30 animate-[move-bg_3s_linear_infinite]" />
-                              </motion.div>
-                            </div>
+                          <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden p-[2px] border border-white/5">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              whileInView={{ width: `${proj.progreso}%` }}
+                              viewport={{ once: true }}
+                              transition={{ duration: 1.5, ease: "circOut" }}
+                              className={`h-full bg-gradient-to-r ${projectPlan.color} rounded-full relative overflow-hidden`}
+                            >
+                              <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.15)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.15)_50%,rgba(255,255,255,0.15)_75%,transparent_75%,transparent)] bg-[size:1rem_1rem] opacity-30 animate-[move-bg_3s_linear_infinite]" />
+                            </motion.div>
                           </div>
-                        </td>
-                        <td className="px-10 py-8 text-right">
+                        </div>
+                        <div className="hidden md:flex md:justify-end">
                           <Link
                             href={`/admin/proyectos/${proj.id}`}
-                            className={`inline-flex h-14 w-14 items-center justify-center bg-white/5 rounded-2xl border border-white/5 group-hover/row:border-white/20 transition-all text-gray-500 group-hover/row:text-white group-hover/row:bg-gradient-to-br ${projectPlan.color} group-hover/row:scale-105 active:scale-95 shadow-lg`}
+                            onClick={(e) => e.stopPropagation()}
+                            className={`inline-flex h-12 w-12 lg:h-14 lg:w-14 items-center justify-center bg-white/5 rounded-2xl border border-white/5 group-hover/row:border-white/20 transition-all text-gray-500 group-hover/row:text-white group-hover/row:bg-gradient-to-br ${projectPlan.color} group-hover/row:scale-105 active:scale-95 shadow-lg`}
                           >
                             <ChevronRight className="w-6 h-6" />
                           </Link>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
             ) : (
               <div className="py-24 flex flex-col items-center justify-center text-center px-6">
                 <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center text-gray-700 mb-6 border border-white/5">

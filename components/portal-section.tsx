@@ -5,7 +5,6 @@ import { motion } from "framer-motion"
 import { Monitor, Lock, Zap, ArrowRight, FileText, CheckCircle2 } from "lucide-react"
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
-import { useViewportActive } from "@/lib/hooks/use-viewport-active"
 import { cn } from "@/lib/utils"
 
 const FEATURES = [
@@ -87,8 +86,6 @@ function PortalPreview() {
 }
 
 export function PortalSection() {
-  const { elementRef, isActive } = useViewportActive<HTMLDivElement>()
-
   return (
     <PageSection id="portal" withBackground={false}>
       <div className="relative">
@@ -104,11 +101,7 @@ export function PortalSection() {
         <div className="animate-on-mount" data-animation="fade-up" style={{ animationDelay: "0.2s" }}>
           <Link href="/portal" className="block max-w-4xl mx-auto cursor-pointer">
           <motion.div
-            ref={elementRef}
-            className={cn(
-              "glass-panel glass-card rounded-3xl overflow-hidden border border-white/10 will-change-transform translate-z-0 backface-hidden group",
-              isActive && "viewport-active"
-            )}
+            className="glass-panel glass-card rounded-3xl overflow-hidden border border-white/10 will-change-transform translate-z-0 backface-hidden group"
             style={{
               "--active-border": "rgba(34,211,238,0.5)",
               "--active-glow": "rgba(34,211,238,0.2)",
@@ -160,10 +153,52 @@ export function PortalSection() {
                 </span>
               </div>
 
-              {/* Right — portal visualization */}
-              <div className="relative p-6 border-t border-white/5 md:border-t-0 md:border-l md:border-white/5 bg-white/[0.01]">
+              {/* Right — portal visualization (hidden on mobile) */}
+              <div className="relative p-6 hidden md:block border-l border-white/5 bg-white/[0.01]">
                 <div className="absolute inset-0 bg-gradient-to-br from-neon-cyan/[0.03] to-neon-purple/[0.03] pointer-events-none rounded-r-3xl" />
                 <PortalPreview />
+              </div>
+
+              {/* Mobile — compact preview strip */}
+              <div className="md:hidden px-8 pb-8 flex flex-col gap-2">
+                {/* Status */}
+                <div className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.03] px-4 py-2.5">
+                  <div className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-neon-cyan animate-pulse" />
+                    <span className="text-[11px] text-white/30 font-medium">En progreso</span>
+                  </div>
+                  <span className="text-[11px] text-neon-cyan/60 font-medium">68%</span>
+                </div>
+                {/* Progress */}
+                <div className="rounded-xl border border-white/5 bg-white/[0.03] px-4 py-3 flex flex-col gap-2">
+                  <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
+                    <motion.div
+                      className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-purple-500"
+                      initial={{ width: "0%" }}
+                      animate={{ width: "68%" }}
+                      transition={{ duration: 1.6, delay: 0.4, ease: "easeOut" }}
+                    />
+                  </div>
+                  <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
+                    <motion.div
+                      className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-purple-500 opacity-40"
+                      initial={{ width: "0%" }}
+                      animate={{ width: "38%" }}
+                      transition={{ duration: 1.6, delay: 0.7, ease: "easeOut" }}
+                    />
+                  </div>
+                </div>
+                {/* File row */}
+                <div className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.03] px-4 py-2.5">
+                  <div className="h-7 w-7 rounded-lg bg-neon-cyan/10 border border-neon-cyan/20 flex items-center justify-center shrink-0">
+                    <FileText className="h-3.5 w-3.5 text-neon-cyan/60" />
+                  </div>
+                  <div className="flex flex-col gap-1 flex-1">
+                    <div className="h-1.5 w-24 rounded-full bg-white/10" />
+                    <div className="h-1 w-16 rounded-full bg-white/5" />
+                  </div>
+                  <CheckCircle2 className="h-3.5 w-3.5 text-neon-cyan/40 shrink-0" />
+                </div>
               </div>
 
             </div>

@@ -64,8 +64,8 @@ export default function ProjectsAdmin() {
   );
 
   return (
-    <div className="p-12 max-w-7xl mx-auto space-y-12">
-      <header className="flex flex-row items-end justify-between gap-8">
+    <div className="p-4 sm:p-6 lg:p-12 max-w-7xl mx-auto space-y-8 lg:space-y-12">
+      <header className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -76,7 +76,7 @@ export default function ProjectsAdmin() {
               Gestión de proyectos
             </span>
           </div>
-          <h1 className="text-5xl font-black tracking-tighter">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter">
             Nuestros{" "}
             <span className="bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
               Proyectos
@@ -84,13 +84,13 @@ export default function ProjectsAdmin() {
           </h1>
         </motion.div>
 
-        <div className="flex items-center gap-4">
-          <div className="relative group">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+          <div className="relative group flex-1 sm:flex-initial">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-[#22d3ee] transition-colors" />
             <input
               type="text"
               placeholder="Filtrar proyectos..."
-              className="bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-[#22d3ee]/50 focus:bg-white/[0.08] transition-all w-64"
+              className="bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-[#22d3ee]/50 focus:bg-white/[0.08] transition-all w-full sm:w-64"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -106,7 +106,7 @@ export default function ProjectsAdmin() {
             className="group relative px-6 py-3 rounded-2xl font-bold text-sm transition-all hover:scale-105 active:scale-95 overflow-hidden shadow-[0_0_20px_rgba(168,85,247,0.12),_0_0_20px_rgba(34,211,238,0.08)]"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] animate-gradient bg-[length:200%_auto]" />
-            <div className="relative flex items-center gap-2 text-white">
+            <div className="relative flex items-center justify-center gap-2 text-white">
               <Plus className="w-5 h-5" />
               <span>Crear proyecto</span>
             </div>
@@ -116,7 +116,7 @@ export default function ProjectsAdmin() {
 
       <div className="min-h-[400px]">
         {filteredProjects.length > 0 ? (
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
             <AnimatePresence mode="popLayout">
               {filteredProjects.map((project, idx) => {
                 const projectPlan =
@@ -136,33 +136,35 @@ export default function ProjectsAdmin() {
                       className={`absolute inset-0 bg-gradient-to-br ${projectPlan.color} opacity-0 group-hover:opacity-10 blur-[80px] transition-all duration-1000 rounded-3xl`}
                     />
 
-                    <div className="relative bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-10 hover:border-white/20 transition-all duration-700 flex flex-col h-full overflow-hidden shadow-2xl">
+                    <div className="relative bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 sm:p-8 lg:p-10 hover:border-white/20 transition-all duration-700 flex flex-col h-full overflow-hidden shadow-2xl">
                       <div
                         className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${projectPlan.color} opacity-5 blur-3xl`}
                       />
 
-                      <div className="flex justify-between items-start mb-8">
-                        <div className="flex items-center gap-5">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6 sm:mb-8">
+                        <div className="flex items-center gap-4 sm:gap-5 min-w-0">
                           <div
-                            className={`p-4 rounded-[1.5rem] bg-gradient-to-br ${projectPlan.color} text-white shadow-lg transition-all duration-500 group-hover:rotate-6 group-hover:scale-110 shadow-current/20`}
+                            className={`p-4 rounded-[1.5rem] bg-gradient-to-br ${projectPlan.color} text-white shadow-lg transition-all duration-500 group-hover:rotate-6 group-hover:scale-110 shadow-current/20 shrink-0`}
                           >
                             <PlanIcon className="w-6 h-6" />
                           </div>
-                          <div className="flex flex-col">
+                          <div className="flex flex-col min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                               <span className="text-[9px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-gray-400 group-hover:border-white/20 transition-colors">
                                 {project.plan}
                               </span>
                             </div>
-                            <h3 className="text-2xl font-black group-hover:text-white transition-colors leading-tight tracking-tighter">
+                            <h3 className="text-xl sm:text-2xl font-black group-hover:text-white transition-colors leading-tight tracking-tighter break-words">
                               {project.nombre}
                             </h3>
                           </div>
                         </div>
-                        <StatusBadge status={project.estado} />
+                        <div className="self-start sm:self-auto">
+                          <StatusBadge status={project.estado} />
+                        </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-8 mb-6 p-6 rounded-3xl bg-white/[0.02] border border-white/5 group-hover:bg-white/[0.04] transition-all duration-500">
+                      <div className="grid grid-cols-2 gap-4 sm:gap-8 mb-6 p-4 sm:p-6 rounded-3xl bg-white/[0.02] border border-white/5 group-hover:bg-white/[0.04] transition-all duration-500">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-widest text-gray-500">
                             <User className="w-3 h-3" /> Cliente
@@ -266,7 +268,7 @@ export default function ProjectsAdmin() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-[#060214]/90 border border-white/10 w-full max-w-4xl rounded-3xl p-12 relative z-10 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto custom-scrollbar"
+              className="bg-[#060214]/90 border border-white/10 w-full max-w-4xl rounded-3xl p-6 sm:p-8 lg:p-12 relative z-10 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto custom-scrollbar"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#22d3ee]/5 to-[#a855f7]/8 blur-[100px] -z-10" />
 
@@ -277,16 +279,16 @@ export default function ProjectsAdmin() {
                   setDeliveryDate("");
                   setIsSelectOpen(false);
                 }}
-                className="absolute top-10 right-10 w-12 h-12 flex items-center justify-center text-gray-500 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all duration-300 group/close z-50"
+                className="absolute top-4 right-4 sm:top-10 sm:right-10 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-gray-500 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all duration-300 group/close z-50"
               >
                 <X className="w-6 h-6 group-hover/close:rotate-90 transition-transform duration-300" />
               </button>
 
-              <div className="mb-12">
+              <div className="mb-8 sm:mb-12 pr-12 sm:pr-0">
                 <span className="text-xs font-black text-[#22d3ee] uppercase tracking-[0.5em] mb-2 block">
                   Nuevo proyecto
                 </span>
-                <h2 className="text-4xl font-black font-[family-name:var(--font-orbitron)] tracking-tighter uppercase">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black font-[family-name:var(--font-orbitron)] tracking-tighter uppercase">
                   Crear proyecto
                 </h2>
               </div>
@@ -319,7 +321,7 @@ export default function ProjectsAdmin() {
                 }}
                 className="space-y-8"
               >
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   <PremiumInput
                     name="nombre"
                     placeholder="Nombre del proyecto"
@@ -435,7 +437,7 @@ export default function ProjectsAdmin() {
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 block mb-3">
                       Plan
                     </span>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {PLANS_ARRAY.map((plan) => {
                         const PlanIcon = plan.icon;
                         const isSelected = selectedPlanId === plan.id;
@@ -484,7 +486,7 @@ export default function ProjectsAdmin() {
                       <div
                         className={`absolute -inset-0.5 rounded-2xl transition-opacity blur-[2px] ${errors.fechaEntrega ? "bg-red-500/40 opacity-100" : "bg-[#22d3ee]/10 opacity-0 group-focus-within:opacity-100"}`}
                       />
-                      <div className="relative bg-white/[0.04] border border-white/8 rounded-2xl p-6 flex items-center justify-between group-hover:border-white/15 transition-all">
+                      <div className="relative bg-white/[0.04] border border-white/8 rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 group-hover:border-white/15 transition-all">
                         <div className="flex items-center gap-4">
                           <div
                             className={`w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center transition-colors ${deliveryDate ? "text-[#22d3ee]" : "text-gray-500"}`}
@@ -510,7 +512,7 @@ export default function ProjectsAdmin() {
                         <motion.div
                           initial={{ opacity: 0, x: 20 }}
                           animate={{ opacity: 1, x: 0 }}
-                          className="flex flex-col items-end"
+                          className="flex flex-col items-start sm:items-end"
                         >
                           <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#22d3ee]">
                             <Sparkles className="w-3 h-3" /> Sugerencia

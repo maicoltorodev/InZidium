@@ -71,9 +71,9 @@ export function TabVault({
         </div>
       )}
 
-      <div className="flex justify-between items-end mb-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 mb-6 sm:mb-8">
         <div>
-          <h2 className="text-3xl font-black uppercase tracking-tighter text-white">
+          <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tighter text-white">
             Archivos del proyecto
           </h2>
           <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">
@@ -81,7 +81,7 @@ export function TabVault({
           </p>
         </div>
         <label
-          className={`cursor-pointer px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-3 transition-all ${uploading ? "bg-gray-800 pointer-events-none" : "bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg hover:shadow-emerald-500/20"}`}
+          className={`cursor-pointer px-6 sm:px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all ${uploading ? "bg-gray-800 pointer-events-none" : "bg-emerald-500 text-white hover:bg-emerald-600 shadow-lg hover:shadow-emerald-500/20"}`}
         >
           <input
             type="file"
@@ -98,7 +98,7 @@ export function TabVault({
         </label>
       </div>
 
-      <div className="grid grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
         <AnimatePresence>
           {project.archivos?.map((archivo: any) => (
             <motion.div

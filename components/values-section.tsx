@@ -4,7 +4,6 @@ import { Target, Zap, Palette, Rocket } from "lucide-react"
 import { motion } from "framer-motion"
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
-import { useViewportActive } from "@/lib/hooks/use-viewport-active"
 import { cn } from "@/lib/utils"
 
 import { HighlightText } from "@/components/ui/highlight-text"
@@ -42,15 +41,9 @@ const values = [
 
 function ValueCard({ value, index }: { value: (typeof values)[0]; index: number }) {
   const Icon = value.icon
-  const { elementRef, isActive } = useViewportActive<HTMLDivElement>();
-
   return (
     <motion.div
-      ref={elementRef}
-      className={cn(
-        "glass-panel glass-card border-white/5 bg-white/5 rounded-3xl p-8 sm:p-10 relative overflow-hidden group will-change-transform translate-z-0 backface-hidden",
-        isActive && "viewport-active"
-      )}
+      className="glass-panel glass-card border-white/5 bg-white/5 rounded-3xl p-8 sm:p-10 relative overflow-hidden group will-change-transform translate-z-0 backface-hidden"
       style={{
         "--active-border": index % 2 === 0 ? "rgba(168,85,247,0.5)" : "rgba(34,211,238,0.5)",
         "--active-glow": index % 2 === 0 ? "rgba(168,85,247,0.2)" : "rgba(34,211,238,0.2)",

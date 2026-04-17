@@ -4,16 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-    Users,
-    LayoutDashboard,
-    FolderKanban,
-    ShieldCheck,
-    LogOut,
-} from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
+import { adminNavItems } from './adminNav';
 
 export default function AdminSidebar() {
     const pathname = usePathname();
@@ -28,7 +23,7 @@ export default function AdminSidebar() {
     return (
         <>
             <aside
-                className="relative z-50 flex h-screen w-80 shrink-0 flex-col bg-[#060214]/80 backdrop-blur-xl"
+                className="relative z-50 hidden h-screen w-80 shrink-0 flex-col bg-[#060214]/80 backdrop-blur-xl lg:flex"
                 onMouseEnter={() => setIsAdminHover(true)}
                 onMouseLeave={() => setIsAdminHover(false)}
             >
@@ -89,12 +84,7 @@ export default function AdminSidebar() {
                     </Link>
 
                     <nav className="mt-4 space-y-2">
-                        {[
-                            { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard', match: (p: string) => p.startsWith('/admin/dashboard') },
-                            { icon: Users, label: 'Clientes', href: '/admin/clientes', match: (p: string) => p.startsWith('/admin/clientes') },
-                            { icon: FolderKanban, label: 'Proyectos', href: '/admin/proyectos', match: (p: string) => p.startsWith('/admin/proyectos') },
-                            { icon: ShieldCheck, label: 'Administradores', href: '/admin/administradores', match: (p: string) => p.startsWith('/admin/administradores') },
-                        ].map((item) => (
+                        {adminNavItems.map((item) => (
                             <SidebarLink
                                 key={item.href}
                                 {...item}

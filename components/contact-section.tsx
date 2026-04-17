@@ -5,14 +5,9 @@ import { Phone, MapPin, Mail } from "lucide-react"
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
-import { useViewportActive } from "@/lib/hooks/use-viewport-active"
 import { cn } from "@/lib/utils"
 
 export function ContactSection() {
-  const contactRef1 = useViewportActive<HTMLAnchorElement>();
-  const contactRef2 = useViewportActive<HTMLDivElement>();
-  const contactRef3 = useViewportActive<HTMLAnchorElement>();
-
   return (
     <PageSection id="contacto" className="relative overflow-hidden" withBackground={false}>
       <div className="relative">
@@ -32,11 +27,7 @@ export function ContactSection() {
               href="https://wa.me/573143855079"
               target="_blank"
               rel="noopener noreferrer"
-              ref={contactRef1.elementRef}
-              className={cn(
-                "glass-panel glass-card p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform translate-z-0 backface-hidden order-first md:order-none",
-                contactRef1.isActive && "viewport-active"
-              )}
+              className="glass-panel glass-card p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform translate-z-0 backface-hidden order-first md:order-none"
               style={{
                 "--active-border": "rgba(34,211,238,0.5)",
                 "--active-glow": "rgba(34,211,238,0.2)",
@@ -56,11 +47,7 @@ export function ContactSection() {
             {/* Email Card */}
             <a
               href="mailto:maicoltorodev@gmail.com"
-              ref={contactRef3.elementRef}
-              className={cn(
-                "glass-panel glass-card p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform translate-z-0 backface-hidden",
-                contactRef3.isActive && "viewport-active"
-              )}
+              className="glass-panel glass-card p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform translate-z-0 backface-hidden"
               style={{
                 "--active-border": "rgba(34,211,238,0.5)",
                 "--active-glow": "rgba(34,211,238,0.2)",
@@ -79,11 +66,7 @@ export function ContactSection() {
 
             {/* Location Card */}
             <div
-              ref={contactRef2.elementRef}
-              className={cn(
-                "glass-panel glass-card p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform translate-z-0 backface-hidden",
-                contactRef2.isActive && "viewport-active"
-              )}
+              className="glass-panel glass-card p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform translate-z-0 backface-hidden"
               style={{
                 "--active-border": "rgba(34,211,238,0.5)",
                 "--active-glow": "rgba(34,211,238,0.2)",

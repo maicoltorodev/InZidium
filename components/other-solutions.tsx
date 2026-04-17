@@ -6,7 +6,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
-import { useViewportActive } from "@/lib/hooks/use-viewport-active"
 import { cn } from "@/lib/utils"
 
 import { HighlightText } from "@/components/ui/highlight-text"
@@ -57,15 +56,9 @@ const solutions: Solution[] = [
 
 
 function SolutionCard({ solution, index }: { solution: Solution; index: number }) {
-  const { elementRef, isActive } = useViewportActive<HTMLDivElement>();
-
   return (
     <motion.div
-      ref={elementRef}
-      className={cn(
-        "glass-panel glass-card rounded-3xl p-8 relative overflow-hidden group will-change-transform translate-z-0 backface-hidden",
-        isActive && "viewport-active"
-      )}
+      className="glass-panel glass-card rounded-3xl p-8 relative overflow-hidden group will-change-transform translate-z-0 backface-hidden"
       style={{
         animationDelay: `${0.2 + index * 0.1}s`,
         "--active-border": index % 2 === 0 ? "rgba(168,85,247,0.5)" : "rgba(34,211,238,0.5)",

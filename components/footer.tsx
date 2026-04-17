@@ -39,7 +39,7 @@ export function Footer() {
               InZidium
             </span>
             <p className="text-[12px] text-white/20 font-light tracking-wide text-center sm:text-left">
-              Estudio de desarrollo web &amp; digital premium.
+              Desarrollo de Software Profesional.
             </p>
             <a
               href="mailto:maicoltorodev@gmail.com"

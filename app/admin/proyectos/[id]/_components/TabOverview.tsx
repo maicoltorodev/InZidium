@@ -47,11 +47,11 @@ export function TabOverview({
       <FasePanel project={project} />
 
       {/* SECCIÓN PROGRESS ENGINE */}
-      <section className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-10 relative overflow-hidden">
-        <div className="flex flex-row items-center justify-between gap-12">
+      <section className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 sm:p-8 lg:p-10 relative overflow-hidden">
+        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8 xl:gap-12">
           {/* Circular Progress & Value */}
-          <div className="flex items-center gap-8">
-            <div className="relative w-40 h-40 flex items-center justify-center">
+          <div className="flex items-center gap-6 sm:gap-8">
+            <div className="relative w-40 h-40 flex items-center justify-center shrink-0">
               <svg className="w-full h-full -rotate-90">
                 <circle
                   cx="80"
@@ -106,7 +106,7 @@ export function TabOverview({
           </div>
 
           {/* Controls */}
-          <div className="flex-1 w-full max-w-xl space-y-8">
+          <div className="flex-1 w-full xl:max-w-xl space-y-6 sm:space-y-8">
             <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
               <input
                 type="range"
@@ -132,7 +132,7 @@ export function TabOverview({
               </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {["Pendiente", "Diseño", "Desarrollo", "Finalizado"].map(
                 (label) => {
                   let value = label.toLowerCase();
@@ -159,8 +159,8 @@ export function TabOverview({
       </section>
 
       {/* QUICK STATS & ACTIONS */}
-      <div className="grid grid-cols-3 gap-6">
-        <div className="p-8 rounded-3xl bg-white/[0.04] backdrop-blur-xl border border-white/8 flex flex-col justify-between h-64 group hover:border-white/15 transition-all">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="p-6 sm:p-8 rounded-3xl bg-white/[0.04] backdrop-blur-xl border border-white/8 flex flex-col justify-between h-64 group hover:border-white/15 transition-all">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 flex items-center justify-center text-purple-400 mb-4">
             <MessageSquare className="w-6 h-6" />
           </div>
@@ -180,7 +180,7 @@ export function TabOverview({
           </button>
         </div>
 
-        <div className="p-8 rounded-3xl bg-white/[0.04] backdrop-blur-xl border border-white/8 flex flex-col justify-between h-64 group hover:border-white/15 transition-all">
+        <div className="p-6 sm:p-8 rounded-3xl bg-white/[0.04] backdrop-blur-xl border border-white/8 flex flex-col justify-between h-64 group hover:border-white/15 transition-all">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 flex items-center justify-center text-emerald-400 mb-4">
             <FolderOpen className="w-6 h-6" />
           </div>
@@ -266,8 +266,8 @@ function FasePanel({ project }: { project: any }) {
   };
 
   return (
-    <section className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-8">
-      <div className="flex items-start justify-between gap-6 mb-6">
+    <section className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 sm:p-8">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-6 mb-6">
         <div>
           <h2 className="text-xl font-black uppercase tracking-tighter">Fase del proyecto</h2>
           <p className="mt-1 text-xs font-bold text-gray-500 uppercase tracking-widest">
@@ -279,7 +279,7 @@ function FasePanel({ project }: { project: any }) {
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {FASES.map((f) => {
           const active = fase === f.value;
           const Icon = f.icon;

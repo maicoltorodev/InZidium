@@ -431,30 +431,30 @@ export default function ProyectoDetalle() {
   return (
     <div className="min-h-screen text-white overflow-hidden flex flex-col font-sans selection:bg-[#22d3ee] selection:text-black">
       {/* TOP BAR / HEADER */}
-      <header className="h-20 border-b border-white/5 bg-[#060214]/80 backdrop-blur-xl flex items-center justify-between px-8 shrink-0 z-50">
-        <div className="flex items-center gap-6">
+      <header className="border-b border-white/5 bg-[#060214]/80 backdrop-blur-xl flex flex-col lg:flex-row lg:items-center lg:justify-between lg:h-20 px-4 sm:px-6 lg:px-8 py-3 lg:py-0 gap-3 lg:gap-4 shrink-0 z-50">
+        <div className="flex items-center gap-4 lg:gap-6 min-w-0">
           <button
             onClick={() => handleNavigation("/admin/proyectos")}
-            className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors shrink-0"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
-          <div className="flex flex-col">
-            <h1 className="text-xl font-black tracking-tight uppercase leading-none flex items-center gap-2">
-              {project.nombre}
+          <div className="flex flex-col min-w-0">
+            <h1 className="text-base sm:text-lg lg:text-xl font-black tracking-tight uppercase leading-tight flex flex-wrap items-center gap-2 min-w-0">
+              <span className="truncate">{project.nombre}</span>
               <span
-                className={`px-2 py-0.5 rounded text-[10px] bg-gradient-to-r ${projectPlan.color} text-white font-black uppercase tracking-widest`}
+                className={`px-2 py-0.5 rounded text-[10px] bg-gradient-to-r ${projectPlan.color} text-white font-black uppercase tracking-widest shrink-0`}
               >
                 {project.plan}
               </span>
             </h1>
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
-              <User className="w-3 h-3" /> {project.cliente?.nombre}
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2 truncate">
+              <User className="w-3 h-3 shrink-0" /> <span className="truncate">{project.cliente?.nombre}</span>
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 flex-wrap lg:flex-nowrap">
           <AnimatePresence>
             {hasPendingChanges && (
               <motion.button
@@ -463,28 +463,49 @@ export default function ProyectoDetalle() {
                 exit={{ opacity: 0, scale: 0.9 }}
                 onClick={handleSyncChanges}
                 disabled={saving}
-                className={`px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 shadow-lg hover:shadow-cyan-500/20 transition-all ${saving ? "bg-gray-800" : "bg-gradient-to-r from-cyan-500 to-blue-500"}`}
+                className={`px-4 sm:px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 shadow-lg hover:shadow-cyan-500/20 transition-all ${saving ? "bg-gray-800" : "bg-gradient-to-r from-cyan-500 to-blue-500"}`}
               >
                 {saving ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <Save className="w-4 h-4" />
                 )}
-                Guardar cambios
+                <span className="hidden sm:inline">Guardar cambios</span>
+                <span className="sm:hidden">Guardar</span>
               </motion.button>
             )}
           </AnimatePresence>
 
-          <div className="h-8 w-[1px] bg-white/10 mx-2" />
+          <div className="hidden lg:block h-8 w-[1px] bg-white/10 mx-2" />
 
-          <div className="flex items-center gap-3 px-4 py-2 rounded-full border border-white/10 bg-white/5">
+          <div className="flex items-center gap-3 px-3 sm:px-4 py-2 rounded-full border border-white/10 bg-white/5">
             <div
               className={`w-2 h-2 rounded-full bg-gradient-to-r ${projectPlan.color} animate-pulse`}
             />
-            <span className="text-[10px] font-black uppercase tracking-widest text-white">
+            <span className="text-[10px] font-black uppercase tracking-widest text-white truncate">
               {estado}
             </span>
           </div>
+
+          <button
+            onClick={handleToggleVisibilidad}
+            disabled={togglingVisibilidad}
+            className={`lg:hidden flex items-center gap-2 px-3 py-2 rounded-full border transition-all ${
+              visibilidad
+                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                : "bg-red-500/10 border-red-500/20 text-red-400"
+            }`}
+            aria-label="Cambiar visibilidad"
+          >
+            {togglingVisibilidad ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : (
+              <div className={`w-2 h-2 rounded-full ${visibilidad ? "bg-emerald-500" : "bg-red-500"}`} />
+            )}
+            <span className="text-[10px] font-black uppercase tracking-widest">
+              {visibilidad ? "Online" : "Offline"}
+            </span>
+          </button>
         </div>
       </header>
 
@@ -495,8 +516,8 @@ export default function ProyectoDetalle() {
           className={`absolute top-[-50%] left-[-20%] w-[50%] h-[100%] rounded-full bg-gradient-to-br ${projectPlan.color} opacity-[0.03] blur-[150px] pointer-events-none`}
         />
 
-        {/* SIDEBAR NAVIGATION */}
-        <aside className="w-64 border-r border-white/5 bg-[#060214]/60 flex flex-col shrink-0">
+        {/* SIDEBAR NAVIGATION (desktop) */}
+        <aside className="w-64 border-r border-white/5 bg-[#060214]/60 hidden lg:flex flex-col shrink-0">
           <nav className="flex-1 p-4 space-y-2">
             <NavTab
               active={activeTab === "overview"}
@@ -576,8 +597,38 @@ export default function ProyectoDetalle() {
         </aside>
 
         {/* CONTENT AREA */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-12 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-          <div className="max-w-6xl mx-auto">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+          {/* Mobile/tablet horizontal tabs */}
+          <div className="lg:hidden sticky top-0 z-30 bg-[#060214]/90 backdrop-blur-xl border-b border-white/5">
+            <nav className="flex gap-1 overflow-x-auto px-3 py-2 scrollbar-none">
+              {[
+                { key: "overview", label: "Resumen", icon: Grid, color: "text-blue-400" },
+                { key: "finance", label: "Pagos", icon: TrendingUp, color: "text-emerald-400" },
+                { key: "communication", label: "Mensajes", icon: MessageCircle, color: "text-amber-400", count: project.chat?.filter((n: any) => n.autor !== "admin").length },
+                { key: "vault", label: "Archivos", icon: FolderOpen, color: "text-emerald-400", count: project.archivos?.length },
+                { key: "briefing", label: "Info", icon: Briefcase, color: "text-purple-400" },
+                { key: "settings", label: "Ajustes", icon: Cpu, color: "text-gray-400" },
+              ].map((t) => {
+                const Icon = t.icon;
+                const active = activeTab === t.key;
+                return (
+                  <button
+                    key={t.key}
+                    onClick={() => setActiveTab(t.key as TabType)}
+                    className={`relative shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${active ? "bg-white/10 text-white" : "text-gray-500 hover:text-white hover:bg-white/5"}`}
+                  >
+                    <Icon className={`w-4 h-4 ${active ? t.color : ""}`} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">{t.label}</span>
+                    {t.count !== undefined && t.count > 0 && (
+                      <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">{t.count}</span>
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+
+          <div className="p-4 sm:p-6 lg:p-12 max-w-6xl mx-auto">
             <AnimatePresence mode="wait">
               {activeTab === "overview" && (
                 <TabOverview
@@ -701,7 +752,7 @@ export default function ProyectoDetalle() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed top-0 right-0 bottom-0 left-80 z-[300] flex items-center justify-center bg-black/90 backdrop-blur-xl p-10"
+            className="fixed inset-0 lg:left-80 z-[300] flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 sm:p-10"
             onClick={() => setLightboxUrl(null)}
           >
             <button

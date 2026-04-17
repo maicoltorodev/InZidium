@@ -76,8 +76,8 @@ export default function ClientsAdmin() {
   );
 
   return (
-    <div className="p-12 max-w-7xl mx-auto space-y-12">
-      <header className="flex flex-row items-end justify-between gap-8">
+    <div className="p-4 sm:p-6 lg:p-12 max-w-7xl mx-auto space-y-8 lg:space-y-12">
+      <header className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -88,7 +88,7 @@ export default function ClientsAdmin() {
               Gestión de clientes
             </span>
           </div>
-          <h1 className="text-5xl font-black tracking-tighter">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tighter">
             Nuestros{" "}
             <span className="bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
               Clientes
@@ -96,13 +96,13 @@ export default function ClientsAdmin() {
           </h1>
         </motion.div>
 
-        <div className="flex items-center gap-4">
-          <div className="relative group">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+          <div className="relative group flex-1 sm:flex-initial">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-[#22d3ee] transition-colors" />
             <input
               type="text"
               placeholder="Buscar cliente..."
-              className="bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-[#22d3ee]/50 focus:bg-white/[0.08] transition-all w-64"
+              className="bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-6 text-sm focus:outline-none focus:border-[#22d3ee]/50 focus:bg-white/[0.08] transition-all w-full sm:w-64"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -112,7 +112,7 @@ export default function ClientsAdmin() {
             className="relative group px-6 py-3 rounded-2xl font-bold text-sm transition-all hover:scale-105 active:scale-95 overflow-hidden shadow-[0_0_20px_rgba(168,85,247,0.12),_0_0_20px_rgba(34,211,238,0.08)]"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] animate-gradient bg-[length:200%_auto]" />
-            <div className="relative flex items-center gap-2 text-white">
+            <div className="relative flex items-center justify-center gap-2 text-white">
               <UserPlus className="w-5 h-5" />
               <span className="inline">Nuevo cliente</span>
             </div>
@@ -122,7 +122,7 @@ export default function ClientsAdmin() {
 
       <div className="min-h-[400px]">
         {filteredClients.length > 0 ? (
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
             <AnimatePresence mode="popLayout">
               {filteredClients.map((client, idx) => (
                 <motion.div
@@ -135,10 +135,10 @@ export default function ClientsAdmin() {
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-[#e879f9]/10 via-[#a855f7]/10 to-[#22d3ee]/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl" />
 
-                  <div className="relative bg-white/[0.04] backdrop-blur-xl border border-white/8 p-10 rounded-3xl hover:border-white/20 transition-all duration-500 h-full flex flex-col overflow-hidden">
+                  <div className="relative bg-white/[0.04] backdrop-blur-xl border border-white/8 p-6 sm:p-8 lg:p-10 rounded-3xl hover:border-white/20 transition-all duration-500 h-full flex flex-col overflow-hidden">
                     <div className="absolute top-0 left-0 w-0 group-hover:w-full h-[2px] bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] transition-all duration-700" />
 
-                    <div className="flex justify-between items-start mb-10">
+                    <div className="flex justify-between items-start mb-6 sm:mb-10">
                       <div className="w-16 h-16 rounded-[2rem] bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 flex items-center justify-center text-[#22d3ee] group-hover:bg-[#22d3ee] group-hover:text-black group-hover:rotate-6 transition-all duration-500">
                         <Users className="w-7 h-7" />
                       </div>
@@ -152,16 +152,16 @@ export default function ClientsAdmin() {
                       </div>
                     </div>
 
-                    <div className="mb-10">
+                    <div className="mb-6 sm:mb-10">
                       <span className="text-[10px] font-black uppercase tracking-[0.4em] text-transparent bg-clip-text bg-gradient-to-r from-[#22d3ee] to-[#a855f7] mb-2 block">
                         Cliente
                       </span>
-                      <h3 className="text-2xl font-black group-hover:bg-gradient-to-r group-hover:from-[#e879f9] group-hover:via-[#a855f7] group-hover:to-[#22d3ee] group-hover:bg-clip-text group-hover:text-transparent transition-all duration-500 leading-none">
+                      <h3 className="text-xl sm:text-2xl font-black group-hover:bg-gradient-to-r group-hover:from-[#e879f9] group-hover:via-[#a855f7] group-hover:to-[#22d3ee] group-hover:bg-clip-text group-hover:text-transparent transition-all duration-500 leading-tight break-words">
                         {client.nombre}
                       </h3>
                     </div>
 
-                    <div className="space-y-5 flex-1">
+                    <div className="space-y-4 sm:space-y-5 flex-1">
                       <ClientInfo
                         icon={Mail}
                         label="Correo electrónico"
@@ -179,7 +179,7 @@ export default function ClientsAdmin() {
                       />
                     </div>
 
-                    <div className="mt-12 pt-8 border-t border-white/5 flex justify-between items-center">
+                    <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-white/5 flex justify-between items-center">
                       <div className="flex flex-col gap-1">
                         <span className="text-[8px] font-black text-gray-600 uppercase tracking-[0.3em]">
                           Registrado desde
@@ -255,28 +255,28 @@ export default function ClientsAdmin() {
               animate={{ opacity: 1, scale: 1, y: 0, rotateX: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 40 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="bg-[#060214]/90 border border-white/10 w-full max-w-lg rounded-3xl p-12 relative z-10 shadow-[0_0_100px_rgba(168,85,247,0.12),_0_0_100px_rgba(34,211,238,0.08)] overflow-hidden max-h-[90vh] overflow-y-auto custom-scrollbar"
+              className="bg-[#060214]/90 border border-white/10 w-full max-w-lg rounded-3xl p-6 sm:p-10 lg:p-12 relative z-10 shadow-[0_0_100px_rgba(168,85,247,0.12),_0_0_100px_rgba(34,211,238,0.08)] overflow-hidden max-h-[90vh] overflow-y-auto custom-scrollbar"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-[#22d3ee]/5 to-[#a855f7]/10 blur-[80px] -z-10 rounded-full" />
               <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#22d3ee]/10 blur-[80px] -z-10 rounded-full" />
 
               <button
                 onClick={() => setIsAdding(false)}
-                className="absolute top-8 right-8 w-12 h-12 flex items-center justify-center text-gray-500 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all duration-300 group/close z-50"
+                className="absolute top-4 right-4 sm:top-8 sm:right-8 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-gray-500 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all duration-300 group/close z-50"
               >
                 <X className="w-5 h-5 group-hover/close:rotate-90 transition-transform duration-300" />
               </button>
 
-              <div className="mb-12 text-center relative">
+              <div className="mb-8 sm:mb-12 text-center relative">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", delay: 0.2 }}
-                  className="w-20 h-20 bg-gradient-to-br from-[#a855f7] to-[#22d3ee] rounded-3xl flex items-center justify-center text-white mx-auto mb-8 shadow-[0_10px_30px_rgba(168,85,247,0.3)] rotate-3"
+                  className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-[#a855f7] to-[#22d3ee] rounded-3xl flex items-center justify-center text-white mx-auto mb-6 sm:mb-8 shadow-[0_10px_30px_rgba(168,85,247,0.3)] rotate-3"
                 >
-                  <UserPlus className="w-10 h-10" />
+                  <UserPlus className="w-8 h-8 sm:w-10 sm:h-10" />
                 </motion.div>
-                <h2 className="text-3xl font-black font-[family-name:var(--font-orbitron)] mb-3 uppercase tracking-tighter leading-none">
+                <h2 className="text-2xl sm:text-3xl font-black font-[family-name:var(--font-orbitron)] mb-3 uppercase tracking-tighter leading-tight">
                   Nuevo <br />
                   <span className="bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] bg-clip-text text-transparent">
                     Cliente
@@ -392,7 +392,7 @@ export default function ClientsAdmin() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-[#060214]/95 border border-white/10 w-full max-w-md rounded-3xl p-8 relative z-10 shadow-2xl overflow-hidden"
+              className="bg-[#060214]/95 border border-white/10 w-full max-w-md rounded-3xl p-6 sm:p-8 relative z-10 shadow-2xl overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 blur-[50px] -z-10" />
 

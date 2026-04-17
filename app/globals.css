@@ -158,12 +158,6 @@
   transform: scale(0.95) translateZ(0);
 }
 
-/* Simulated Hover for Mobile (Activated via custom hook) */
-.glass-card.viewport-active {
-  transform: scale(1.0) translateZ(0);
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.06);
-}
 
 @media (min-width: 768px) {
   .glass-panel {
@@ -372,4 +366,9 @@
 @keyframes gradient {
   0%   { background-position: 0% 50%; }
   100% { background-position: 200% 50%; }
+}
+
+/* Stable viewport height — prevents browser chrome repaints on scroll */
+.min-h-screen {
+  min-height: 100svh;
 }

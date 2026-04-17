@@ -77,7 +77,7 @@ export function TabCommunication({
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.98 }}
-      className="h-[calc(100vh-180px)]"
+      className="h-[calc(100vh-220px)] lg:h-[calc(100vh-180px)]"
     >
       <div className="h-full bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl overflow-hidden flex flex-col relative">
 
@@ -99,7 +99,7 @@ export function TabCommunication({
         </div>
 
         {/* Mensajes */}
-        <div className="flex-1 overflow-y-auto p-8 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-4">
           {project.chat && project.chat.length > 0 ? (
             <>
               {project.chat.map((mensaje: any) => {
@@ -112,7 +112,7 @@ export function TabCommunication({
                     className={`flex ${esAdmin ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[70%] p-5 rounded-3xl space-y-2 ${
+                      className={`max-w-[85%] sm:max-w-[70%] p-4 sm:p-5 rounded-3xl space-y-2 ${
                         esAdmin
                           ? "bg-white/5 border border-white/10 text-white rounded-tr-none"
                           : "bg-blue-500/10 border border-blue-500/20 text-blue-100 rounded-tl-none"
@@ -171,7 +171,7 @@ export function TabCommunication({
         </div>
 
         {/* Input */}
-        <div className="p-6 bg-black/50 border-t border-white/5 space-y-3">
+        <div className="p-3 sm:p-6 bg-black/50 border-t border-white/5 space-y-3">
           {replyImage && (
             <div className="relative w-24 h-24 rounded-xl overflow-hidden border border-white/10">
               <img src={replyImage} className="w-full h-full object-cover" />
@@ -183,8 +183,8 @@ export function TabCommunication({
               </button>
             </div>
           )}
-          <div className="flex items-end gap-3">
-            <label className={`flex h-14 w-14 shrink-0 cursor-pointer items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-white/40 transition-colors hover:bg-white/[0.06] hover:text-white/60 ${uploadingReplyImg || replyImage ? "pointer-events-none opacity-30" : ""}`}>
+          <div className="flex items-end gap-2 sm:gap-3">
+            <label className={`flex h-12 w-12 sm:h-14 sm:w-14 shrink-0 cursor-pointer items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-white/40 transition-colors hover:bg-white/[0.06] hover:text-white/60 ${uploadingReplyImg || replyImage ? "pointer-events-none opacity-30" : ""}`}>
               <input type="file" accept="image/*" className="hidden" onChange={handleReplyImageUpload} disabled={uploadingReplyImg || !!replyImage} />
               {uploadingReplyImg ? <Loader2 className="h-5 w-5 animate-spin" /> : <Upload className="h-5 w-5" />}
             </label>
@@ -203,7 +203,7 @@ export function TabCommunication({
             <button
               onClick={handleSendReply}
               disabled={sendingReply || (!replyNote.trim() && !replyImage)}
-              className="h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-black flex items-center justify-center shadow-lg hover:shadow-orange-500/20 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+              className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-black flex items-center justify-center shadow-lg hover:shadow-orange-500/20 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
             >
               {sendingReply ? (
                 <Loader2 className="w-6 h-6 animate-spin" />

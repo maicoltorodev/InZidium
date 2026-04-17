@@ -104,19 +104,19 @@ export function TabSettings({
         exit={{ opacity: 0, y: -10 }}
         className="max-w-3xl mx-auto space-y-8"
       >
-        <div className="p-8 rounded-3xl bg-white/[0.04] backdrop-blur-xl border border-white/8 space-y-8">
+        <div className="p-6 sm:p-8 rounded-3xl bg-white/[0.04] backdrop-blur-xl border border-white/8 space-y-6 sm:space-y-8">
           <div className="flex items-center gap-4 border-b border-white/5 pb-6">
-            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white">
+            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white shrink-0">
               <Settings2 className="w-6 h-6" />
             </div>
-            <h2 className="text-2xl font-black uppercase tracking-tighter">
+            <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tighter">
               Configuración general
             </h2>
           </div>
 
           <div className="space-y-6">
             {/* Date Editor */}
-            <div className="flex items-center justify-between p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+            <div className="flex items-center justify-between gap-4 p-4 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
               <div>
                 <h3 className="text-xs font-black uppercase tracking-widest text-white mb-1">
                   Fecha de inicio
@@ -139,12 +139,12 @@ export function TabSettings({
             </div>
 
             {/* Link Editor */}
-            <div className="flex items-center justify-between p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+            <div className="flex items-center justify-between gap-4 p-4 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
               <div>
                 <h3 className="text-xs font-black uppercase tracking-widest text-white mb-1">
                   Enlace público
                 </h3>
-                <p className="text-[10px] text-gray-500 font-bold uppercase max-w-[200px] truncate">
+                <p className="text-[10px] text-gray-500 font-bold uppercase max-w-[160px] sm:max-w-[200px] truncate">
                   {project.link ||
                     (project.onboardingData?.dominioUno
                       ? `www.${project.onboardingData.dominioUno}.com`
@@ -168,7 +168,7 @@ export function TabSettings({
             </div>
 
             {/* Plan Editor */}
-            <div className="flex items-center justify-between p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+            <div className="flex items-center justify-between gap-4 p-4 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
               <div>
                 <h3 className="text-xs font-black uppercase tracking-widest text-white mb-1">
                   Plan contratado
@@ -188,7 +188,7 @@ export function TabSettings({
             </div>
 
             {/* Visibility Toggle Detailed */}
-            <div className="flex items-center justify-between p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+            <div className="flex items-center justify-between gap-4 p-4 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <h3 className="text-xs font-black uppercase tracking-widest text-white">
@@ -225,7 +225,7 @@ export function TabSettings({
         </div>
 
         {/* DANGER ZONE */}
-        <div className="p-8 rounded-[2.5rem] bg-red-500/[0.02] border border-red-500/10">
+        <div className="p-6 sm:p-8 rounded-[2.5rem] bg-red-500/[0.02] border border-red-500/10">
           <h3 className="text-red-500 font-black uppercase tracking-widest text-xs mb-6 flex items-center gap-2">
             <ShieldAlert className="w-4 h-4" /> Zona de riesgo
           </h3>
@@ -256,7 +256,7 @@ export function TabSettings({
       <AnimatePresence>
         {isEditingPlan && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-            <div className="bg-[#060214]/95 border border-white/10 w-full max-w-5xl rounded-3xl p-12 overflow-hidden relative">
+            <div className="bg-[#060214]/95 border border-white/10 w-full max-w-5xl rounded-3xl p-6 sm:p-8 lg:p-12 overflow-hidden relative max-h-[90vh] overflow-y-auto custom-scrollbar">
               <div className="flex justify-between mb-8">
                 <h3 className="text-2xl font-black text-white uppercase">
                   Cambiar plan
@@ -265,7 +265,7 @@ export function TabSettings({
                   <X className="text-gray-500 hover:text-white" />
                 </button>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {PLANS_ARRAY.map((planOption) => {
                   const isCurrent = project.plan === planOption.title;
                   const Icon = planOption.icon;
@@ -279,7 +279,7 @@ export function TabSettings({
                           setShowConfirmPlan(true);
                         }
                       }}
-                      className={`p-8 rounded-3xl border flex items-center gap-5 transition-all text-left ${isCurrent ? "bg-white/10 border-white/20" : "bg-transparent border-white/5 hover:bg-white/5"}`}
+                      className={`p-5 sm:p-6 lg:p-8 rounded-3xl border flex items-center gap-4 sm:gap-5 transition-all text-left ${isCurrent ? "bg-white/10 border-white/20" : "bg-transparent border-white/5 hover:bg-white/5"}`}
                     >
                       <Icon
                         className={`w-8 h-8 shrink-0 ${isCurrent ? "text-white" : "text-gray-600"}`}
@@ -333,7 +333,7 @@ export function TabSettings({
       <AnimatePresence>
         {showVerifyName && (
           <div className="fixed inset-0 z-[140] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-            <div className="bg-[#060214]/95 border border-amber-500/30 w-full max-w-md rounded-3xl p-10 relative z-10">
+            <div className="bg-[#060214]/95 border border-amber-500/30 w-full max-w-md rounded-3xl p-6 sm:p-10 relative z-10">
               <h3 className="text-xl font-black text-center text-white mb-4">
                 Verificación de seguridad
               </h3>
@@ -371,7 +371,7 @@ export function TabSettings({
       {/* Modal DATE EDIT */}
       {isEditingDate && (
         <div className="fixed inset-0 z-[130] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-          <div className="bg-[#060214]/95 border border-white/10 p-8 rounded-3xl w-full max-w-sm">
+          <div className="bg-[#060214]/95 border border-white/10 p-6 sm:p-8 rounded-3xl w-full max-w-sm">
             <h3 className="text-white font-black uppercase mb-4 text-center">
               Editar fecha
             </h3>
@@ -402,7 +402,7 @@ export function TabSettings({
       {/* Modal LINK EDIT */}
       {isEditingLink && (
         <div className="fixed inset-0 z-[130] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-          <div className="bg-[#060214]/95 border border-white/10 p-8 rounded-3xl w-full max-w-md">
+          <div className="bg-[#060214]/95 border border-white/10 p-6 sm:p-8 rounded-3xl w-full max-w-md">
             <h3 className="text-white font-black uppercase mb-4 text-center">
               Editar enlace
             </h3>
@@ -433,7 +433,7 @@ export function TabSettings({
       {/* Modal DELETE PROJECT */}
       {showConfirmDeleteProject && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl">
-          <div className="w-full max-w-md bg-[#060214]/95 border border-red-900/30 p-10 rounded-3xl text-center">
+          <div className="w-full max-w-md bg-[#060214]/95 border border-red-900/30 p-6 sm:p-10 rounded-3xl text-center">
             <Trash2 className="w-12 h-12 text-red-600 mx-auto mb-6" />
             <h2 className="text-2xl font-black text-white uppercase tracking-tight mb-2">
               Eliminar proyecto
