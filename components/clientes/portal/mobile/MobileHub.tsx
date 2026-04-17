@@ -1,0 +1,289 @@
+"use client";
+
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { MessageSquare, Settings2, ChevronRight, CheckCircle2 } from "lucide-react";
+import { getSectionCompletion } from "../types";
+import type { ProjectFase } from "@/lib/data/types";
+import { ProgressRing } from "../shared/primitives/ProgressRing";
+import { SectionCard } from "../shared/primitives/SectionCard";
+import { DomainCard } from "../shared/primitives/DomainCard";
+import { CountdownCard } from "../shared/primitives/CountdownCard";
+import { BuildModal } from "../shared/primitives/BuildModal";
+import { MOTION, STAGGER, usePrefersReducedMotion } from "../shared/primitives/motion";
+import { BrandDivider } from "../shared/primitives/BrandDivider";
+import { HUB_SECTIONS, getCatalogoSubtitle, type SectionKey } from "../shared/sections/registry";
+
+export type HubKey = SectionKey;
+
+function subtitleFor(completion: "empty" | "partial" | "complete") {
+  if (completion === "complete") return "Completa";
+  if (completion === "partial") return "En progreso";
+  return "Por iniciar";
+}
+
+export function MobileHub({
+  clientName,
+  projectName,
+  data,
+  fase,
+  progreso,
+  buildStartedAt,
+  onSelect,
+  onReset,
+  onDomainChange,
+  justCompleted,
+  hasUnread,
+  lastAdminMessage,
+}: {
+  clientName: string;
+  projectName: string;
+  data: any;
+  fase: ProjectFase;
+  progreso: number;
+  buildStartedAt: Date | string | null;
+  onSelect: (key: HubKey) => void;
+  onReset: () => void;
+  onDomainChange?: (v: string) => void;
+  justCompleted: string | null;
+  hasUnread: boolean;
+  lastAdminMessage?: string;
+}) {
+  const reduced = usePrefersReducedMotion();
+  const [buildModalOpen, setBuildModalOpen] = useState(false);
+
+  const sectionsLocked = fase === "construccion";
+  const isLive = fase === "publicado";
+  const isBuilding = fase === "construccion";
+
+  const sectionsCompleted = HUB_SECTIONS.filter(
+    (s) => getSectionCompletion(s.key, data) === "complete"
+  ).length;
+  const domainComplete = !!data.dominioUno;
+  const totalSteps = HUB_SECTIONS.length + 1;
+  const completedCount = sectionsCompleted + (domainComplete ? 1 : 0);
+  const progressPct = Math.round((completedCount / totalSteps) * 100);
+
+  const heroCopy =
+    progressPct === 100
+      ? "¡Tu información está lista!"
+      : !domainComplete
+      ? "Empecemos eligiendo tu dominio."
+      : progressPct >= 70
+      ? "¡Vas muy bien, casi terminas!"
+      : progressPct >= 30
+      ? "Buen avance. Sigamos completando."
+      : "Ya diste el primer paso.";
+
+  return (
+    <motion.main
+      initial={reduced ? { opacity: 0 } : { opacity: 0, x: "-6%" }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={reduced ? { opacity: 0 } : { opacity: 0, x: "-12%" }}
+      transition={MOTION.page}
+      className="relative min-h-dvh overflow-hidden bg-[#060214] px-4 pb-16 pt-10 text-white"
+    >
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute -top-40 -left-32 h-[420px] w-[420px] rounded-full bg-[#e879f9] opacity-[0.12] blur-[120px]"
+        animate={reduced ? undefined : { x: [0, 28] }}
+        transition={{ duration: 20, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }}
+      />
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute top-[40%] -right-40 h-[480px] w-[480px] rounded-full bg-[#60a5fa] opacity-[0.1] blur-[130px]"
+        animate={reduced ? undefined : { y: [0, 24] }}
+        transition={{ duration: 26, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }}
+      />
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-32 left-[20%] h-[360px] w-[360px] rounded-full bg-[#a855f7] opacity-[0.09] blur-[120px]"
+        animate={reduced ? undefined : { x: [0, -22] }}
+        transition={{ duration: 23, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }}
+      />
+
+      <div className="relative mx-auto w-full max-w-[560px]">
+        <motion.div
+          initial={reduced ? { opacity: 0 } : { opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={MOTION.reveal}
+          className="mb-8 text-center"
+        >
+          <p className="bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] bg-clip-text text-[10px] font-black uppercase tracking-[0.32em] text-transparent">
+            Hola, {clientName.split(" ")[0] || "bienvenido"}
+          </p>
+          <h1 className="mt-3 bg-[linear-gradient(135deg,#f5e7ff_0%,#ffffff_40%,#d6e9ff_100%)] bg-clip-text text-[2.75rem] font-black leading-[0.95] tracking-tight text-transparent">
+            Tu sitio web
+          </h1>
+          <BrandDivider width="w-16" className="mt-4" />
+          <p className="mt-4 text-[12px] font-bold uppercase tracking-[0.22em] text-white/40 truncate">
+            {projectName || "Proyecto en construcción"}
+          </p>
+        </motion.div>
+
+        {isBuilding ? (
+          <CountdownCard buildStartedAt={buildStartedAt} progreso={progreso} />
+        ) : isLive ? (
+          <LivePublishedCard />
+        ) : (
+          <motion.div
+            initial={reduced ? { opacity: 0 } : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...MOTION.reveal, delay: reduced ? 0 : 0.08 }}
+            className="relative mb-6 overflow-hidden rounded-[2rem] border border-white/[0.08] bg-[linear-gradient(135deg,rgba(232,121,249,0.06)_0%,rgba(168,85,247,0.04)_50%,rgba(96,165,250,0.06)_100%)] p-5"
+          >
+            <div className="flex items-center gap-5">
+              <ProgressRing value={progressPct} />
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/30">
+                  {completedCount} de {totalSteps} completados
+                </p>
+                <p className="mt-1.5 text-[15px] font-bold leading-snug text-white">{heroCopy}</p>
+                <p className="mt-1 text-[11px] leading-snug text-white/40">
+                  Apenas completes la info tendremos la web lista en 48 horas.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        <DomainCard
+          value={data.dominioUno ?? ""}
+          onSave={!isBuilding && !isLive ? (v) => onDomainChange?.(v) : undefined}
+          mode={isBuilding ? "locked" : isLive ? "live" : "edit"}
+          onLockedTap={isBuilding ? () => setBuildModalOpen(true) : undefined}
+        />
+
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={{
+            hidden: {},
+            show: {
+              transition: {
+                staggerChildren: reduced ? 0 : STAGGER.cards,
+                delayChildren: reduced ? 0 : 0.12,
+              },
+            },
+          }}
+          className="space-y-2.5"
+        >
+          {HUB_SECTIONS.map((sec) => {
+            const completion = getSectionCompletion(sec.key, data);
+            return (
+              <motion.div
+                key={sec.key}
+                variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
+                transition={MOTION.reveal}
+              >
+                <SectionCard
+                  icon={sec.icon}
+                  title={sec.label}
+                  description={sec.key === "catalogo" ? getCatalogoSubtitle(data.tipoCatalogo) : sec.subtitle}
+                  status={{ kind: "progress", completion, subtitle: subtitleFor(completion) }}
+                  onPress={() => onSelect(sec.key as HubKey)}
+                  celebrate={justCompleted === sec.key}
+                  disabled={sectionsLocked}
+                  published={isLive}
+                />
+              </motion.div>
+            );
+          })}
+
+          <motion.div
+            variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
+            transition={MOTION.reveal}
+          >
+            <SectionCard
+              icon={MessageSquare}
+              title="Mensajes"
+              description="Habla con el equipo de desarrollo"
+              status={{ kind: "messages", unread: hasUnread, preview: lastAdminMessage }}
+              onPress={() => onSelect("chat")}
+            />
+          </motion.div>
+
+          <motion.button
+            type="button"
+            variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
+            transition={MOTION.reveal}
+            whileTap={sectionsLocked ? undefined : { scale: 0.98 }}
+            onClick={sectionsLocked ? undefined : () => onSelect("ajustes")}
+            disabled={sectionsLocked}
+            aria-disabled={sectionsLocked}
+            className={`mt-4 flex w-full items-center gap-3 rounded-2xl border border-white/[0.04] bg-white/[0.015] px-4 py-3 text-left text-white/50 transition-colors ${
+              sectionsLocked ? "cursor-not-allowed opacity-40" : "hover:bg-white/[0.03]"
+            }`}
+          >
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/[0.03] text-white/35">
+              <Settings2 className="h-4 w-4" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[12px] font-bold text-white/55">Ajustes avanzados</p>
+              <p className="text-[10px] text-white/25">Legal, fuente y analíticas</p>
+            </div>
+            {!sectionsLocked && <ChevronRight className="h-4 w-4 text-white/20" />}
+          </motion.button>
+        </motion.div>
+
+        <FinalMessage fase={fase} />
+      </div>
+
+      <BuildModal
+        open={buildModalOpen}
+        onClose={() => setBuildModalOpen(false)}
+        domain={data.dominioUno}
+      />
+    </motion.main>
+  );
+}
+
+function LivePublishedCard() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ ...MOTION.reveal, delay: 0.08 }}
+      className="relative mb-6 overflow-hidden rounded-[2rem] border border-emerald-500/25 bg-[linear-gradient(135deg,rgba(16,185,129,0.08)_0%,rgba(16,185,129,0.04)_50%,rgba(96,165,250,0.06)_100%)] p-5 shadow-[0_0_32px_-12px_rgba(16,185,129,0.4)]"
+    >
+      <div className="flex items-center gap-4">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-500/25">
+          <CheckCircle2 className="h-7 w-7 text-emerald-400" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-emerald-400/80">Publicado</p>
+          <p className="mt-1 text-[18px] font-black leading-tight text-white">Tu sitio está en vivo</p>
+          <p className="mt-1 text-[11px] leading-snug text-white/45">
+            Ahora puedes editar cualquier información cuando quieras.
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function FinalMessage({ fase }: { fase: ProjectFase }) {
+  if (fase === "construccion") {
+    return (
+      <div className="mt-8 rounded-2xl border border-white/[0.05] bg-[linear-gradient(135deg,rgba(232,121,249,0.03)_0%,rgba(168,85,247,0.03)_50%,rgba(96,165,250,0.03)_100%)] px-5 py-4 text-center">
+        <p className="text-[12px] leading-relaxed text-white/55">
+          Cuando terminemos de construir tu página, podrás editar cualquier información sin ningún problema.
+          <br />
+          <span className="text-white/35">Entendemos que las cosas pueden cambiar.</span>
+        </p>
+      </div>
+    );
+  }
+  if (fase === "publicado") {
+    return (
+      <p className="mt-8 text-center text-[11px] leading-relaxed text-white/40">
+        Puedes editar cualquier información y se actualizará en tu sitio.
+      </p>
+    );
+  }
+  return (
+    <p className="mt-8 text-center text-[10px] text-white/20">
+      Los cambios se guardan automáticamente.
+    </p>
+  );
+}

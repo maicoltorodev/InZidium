@@ -4,6 +4,8 @@ import { Geist, Geist_Mono, Orbitron } from "next/font/google"
 import "./globals.css"
 import { JSONLDSchema } from "./components/json-ld-schema"
 import { CustomCursor } from "@/components/ui/custom-cursor"
+import { AuthProvider } from "@/app/providers/AuthProvider"
+import { ToastProvider } from "@/app/providers/ToastProvider"
 
 const geist = Geist({
   subsets: ["latin"],
@@ -125,7 +127,11 @@ export default function RootLayout({
       <body className={`${geist.variable} ${geistMono.variable} ${orbitron.variable} font-sans antialiased`}>
         <JSONLDSchema />
         <CustomCursor />
-        {children}
+        <AuthProvider>
+          <ToastProvider>
+            {children}
+          </ToastProvider>
+        </AuthProvider>
       </body>
     </html>
   )
