@@ -38,12 +38,12 @@ export function Footer() {
           <Image
             src="/logo.webp"
             alt="InZidium"
-            width={40}
-            height={40}
+            width={64}
+            height={64}
             className="object-contain opacity-90"
             loading="lazy"
           />
-          <span className="font-orbitron font-medium tracking-[0.3em] text-[22px] text-white/90">
+          <span className="font-orbitron font-medium tracking-[0.3em] text-[32px] text-white/90">
             InZidium
           </span>
           <p className="text-[12px] text-white/20 font-light tracking-wide text-center">
