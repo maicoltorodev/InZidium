@@ -60,10 +60,10 @@ export function CustomCursor() {
     if (!mounted) return null
 
     return (
-        <div className="fixed inset-0 pointer-events-none z-[9999] hidden lg:block">
+        <div className="fixed inset-0 pointer-events-none z-[99999] hidden lg:block">
             {/* Precision Dot - Zero Lag */}
             <motion.div
-                className="fixed top-0 left-0 bg-cyan-400 z-[9999]"
+                className="fixed top-0 left-0 bg-cyan-400 z-[99999]"
                 animate={{
                     scale: isClickable ? 1.5 : 1,
                     borderRadius: isClickable ? "2px" : "50%",

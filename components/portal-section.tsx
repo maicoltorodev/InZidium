@@ -102,10 +102,11 @@ export function PortalSection() {
         </div>
 
         <div className="animate-on-mount" data-animation="fade-up" style={{ animationDelay: "0.2s" }}>
+          <Link href="/seguimiento" className="block max-w-4xl mx-auto cursor-pointer">
           <motion.div
             ref={elementRef}
             className={cn(
-              "max-w-4xl mx-auto glass-panel glass-card rounded-3xl overflow-hidden border border-white/10 will-change-transform translate-z-0 backface-hidden group",
+              "glass-panel glass-card rounded-3xl overflow-hidden border border-white/10 will-change-transform translate-z-0 backface-hidden group",
               isActive && "viewport-active"
             )}
             style={{
@@ -153,13 +154,10 @@ export function PortalSection() {
                   </div>
                 </div>
 
-                <Link
-                  href="/seguimiento"
-                  className="inline-flex items-center gap-2 text-neon-cyan font-medium w-fit md:hover:gap-3 transition-all duration-200"
-                >
+                <span className="inline-flex items-center gap-2 text-neon-cyan font-medium w-fit md:group-hover:gap-3 transition-all duration-200">
                   Acceder al portal
                   <ArrowRight className="h-4 w-4" />
-                </Link>
+                </span>
               </div>
 
               {/* Right — portal visualization */}
@@ -173,6 +171,7 @@ export function PortalSection() {
             {/* Bottom accent line */}
             <div className="h-px w-full bg-gradient-to-r from-transparent via-neon-purple/30 to-transparent" />
           </motion.div>
+          </Link>
         </div>
 
       </div>
