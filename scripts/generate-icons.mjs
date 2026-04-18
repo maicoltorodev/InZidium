@@ -1,14 +1,12 @@
-// Genera dos variantes de favicon por proyecto:
+// Genera las variantes de favicon por proyecto (ver memoria: favicon_pattern.md).
 //
-//   1. TAB variant — app/icon.png + app/apple-icon.png + app/favicon.ico
-//      Versión "bonita" con más padding. La que se ve en la pestaña del browser.
-//
-//   2. GOOGLE variant — public/favicon-google.png (192x192) + public/favicon-google-512.png
-//      Padding más tight (logo más grande) para que renderice nítido cuando
-//      Google lo muestra a 48×48 en los resultados de búsqueda.
-//      Debe ser múltiplo de 48 y estar declarada en metadata.icons con sizes.
-//
-// Regenerable: correr `node scripts/generate-icons.mjs`.
+// Padding por uso:
+//   - FAVICON.ICO (16/32/48/64)   → 2% — renderiza chico en tab, logo tiene
+//     que llenar el canvas o se ve una mancha lejana.
+//   - ICON.PNG (192)               → 4% — para tab de alta DPI y Windows.
+//   - APPLE-ICON.PNG (180)         → 10% — safe zone de iOS para rounded corners.
+//   - FAVICON-GOOGLE (192/512)     → 6% — logo grande para rendering a 48×48
+//     en los resultados de búsqueda de Google.
 
 import sharp from "sharp";
 import pngToIco from "png-to-ico";
@@ -20,8 +18,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
 
 const BG = "#060214";
-const TAB_PADDING = 0.16;
-const GOOGLE_PADDING = 0.06;
+
+const PADDING = {
+    favicon: 0.02,  // .ico small sizes
+    icon: 0.04,     // icon.png 192
+    apple: 0.10,    // iOS safe zone
+    google: 0.06,   // Google search results
+};
 
 function gradientBackgroundSvg(size) {
     return Buffer.from(
@@ -60,24 +63,24 @@ async function composeBuffer(logoPath, size, paddingRatio) {
 async function writeIcon(logoPath, size, outPath, paddingRatio) {
     const buf = await composeBuffer(logoPath, size, paddingRatio);
     writeFileSync(outPath, buf);
-    console.log(`  wrote ${outPath.split(/[\\/]/).slice(-2).join("/")} (${size}×${size})`);
+    console.log(`  ${outPath.split(/[\\/]/).slice(-2).join("/")} (${size}×${size}, pad ${Math.round(paddingRatio * 100)}%)`);
 }
 
 const sourceLogo = resolve(root, "scripts/inzidium-logo-transparent.webp");
 
-console.log("→ TAB variant (app/ + favicon.ico)");
-await writeIcon(sourceLogo, 192, resolve(root, "app/icon.png"), TAB_PADDING);
-await writeIcon(sourceLogo, 180, resolve(root, "app/apple-icon.png"), TAB_PADDING);
+console.log("→ TAB variant");
+await writeIcon(sourceLogo, 192, resolve(root, "app/icon.png"), PADDING.icon);
+await writeIcon(sourceLogo, 180, resolve(root, "app/apple-icon.png"), PADDING.apple);
 
 const icoBuffers = await Promise.all(
-    [16, 32, 48, 64].map((s) => composeBuffer(sourceLogo, s, TAB_PADDING)),
+    [16, 32, 48, 64].map((s) => composeBuffer(sourceLogo, s, PADDING.favicon)),
 );
 const icoData = await pngToIco(icoBuffers);
 writeFileSync(resolve(root, "app/favicon.ico"), icoData);
-console.log("  wrote app/favicon.ico (16/32/48/64)");
+console.log(`  app/favicon.ico (16/32/48/64, pad ${Math.round(PADDING.favicon * 100)}%)`);
 
-console.log("\n→ GOOGLE variant (public/favicon-google*)");
-await writeIcon(sourceLogo, 192, resolve(root, "public/favicon-google.png"), GOOGLE_PADDING);
-await writeIcon(sourceLogo, 512, resolve(root, "public/favicon-google-512.png"), GOOGLE_PADDING);
+console.log("\n→ GOOGLE variant");
+await writeIcon(sourceLogo, 192, resolve(root, "public/favicon-google.png"), PADDING.google);
+await writeIcon(sourceLogo, 512, resolve(root, "public/favicon-google-512.png"), PADDING.google);
 
-console.log("\n✅ Listo. Verificar que layout.tsx declara ambos en metadata.icons.");
+console.log("\n✅ Listo.");
