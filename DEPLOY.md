@@ -1,5 +1,8 @@
 # Deploy checklist
 
+> **Para fichar un estudio aliado nuevo desde cero**, ver [SETUP_NUEVO_ESTUDIO.md](./SETUP_NUEVO_ESTUDIO.md). Este archivo cubre solo env vars + validación post-deploy.
+
+
 Variables de entorno requeridas por tenant. Verificar **en cada host** (Vercel,
 Cloudflare, etc.) antes de activar clientes. La ausencia de cualquiera rompe
 funcionalidad crítica (auth, realtime, pagos, notificaciones).
@@ -17,10 +20,12 @@ DATABASE_URL=<postgres url>
 ## Integración con Plantilla Web (auto-deploys)
 
 ```
-PLANTILLA_URL=https://plantilla-web-seven.vercel.app
+PLANTILLA_URL=https://www.maicoltoro.site
 PLANTILLA_REVALIDATE_SECRET=<mismo que REVALIDATE_SECRET en la Plantilla>
-PLANTILLA_WILDCARD_DOMAIN=maicoltoro.com
+PLANTILLA_WILDCARD_DOMAIN=maicoltoro.site
 ```
+
+`PLANTILLA_URL` apunta al **dominio custom estable** `www.maicoltoro.site`, nunca al `*.vercel.app` auto-generado (ese puede rotar y devolver `DEPLOYMENT_NOT_FOUND`).
 
 Sin estas vars, los cambios del onboarding no invalidan el cache del sitio
 del cliente — el visitante puede ver datos viejos durante hasta 60s.
@@ -43,7 +48,7 @@ Ver detalles completos del flujo en `Plantilla Web ( Clientes )/DEPLOY.md`.
 
 ## Valores por tenant
 
-### Alkubo (deploy en alkubosoluciones.com)
+### InZidium (deploy en inzidium.com)
 ```
 ESTUDIO_ID=41aecd42-605f-4f1d-887a-20d3f54d3431
 NEXT_PUBLIC_ESTUDIO_ID=41aecd42-605f-4f1d-887a-20d3f54d3431
@@ -53,6 +58,12 @@ NEXT_PUBLIC_ESTUDIO_ID=41aecd42-605f-4f1d-887a-20d3f54d3431
 ```
 ESTUDIO_ID=38b171a1-7241-4410-99fe-0f3499e100fe
 NEXT_PUBLIC_ESTUDIO_ID=38b171a1-7241-4410-99fe-0f3499e100fe
+```
+
+### Alkubo (deploy en alkubosoluciones.com)
+```
+ESTUDIO_ID=639b2e2e-f822-4283-b1b5-c866213a3e9d
+NEXT_PUBLIC_ESTUDIO_ID=639b2e2e-f822-4283-b1b5-c866213a3e9d
 ```
 
 ## Verificación rápida post-deploy
