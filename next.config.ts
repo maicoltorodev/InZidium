@@ -35,24 +35,19 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // Headers de seguridad en todas las rutas (sin cache).
         source: "/:path*",
         headers: [
-          {
-            key: "X-DNS-Prefetch-Control",
-            value: "on",
-          },
-          {
-            key: "X-Frame-Options",
-            value: "SAMEORIGIN",
-          },
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "Referrer-Policy",
-            value: "origin-when-cross-origin",
-          },
+          { key: "X-DNS-Prefetch-Control", value: "on" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "origin-when-cross-origin" },
+        ],
+      },
+      {
+        // Cache agresivo SOLO para assets estáticos hasheables.
+        source: "/_next/static/:path*",
+        headers: [
           {
             key: "Cache-Control",
             value: "public, max-age=31536000, immutable",
@@ -60,7 +55,8 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/logo.webp",
+        // Assets del public con hash implícito (logo/fonts que no cambian).
+        source: "/:file(logo\\.webp|.*\\.(?:woff2?|ttf|otf))",
         headers: [
           {
             key: "Cache-Control",

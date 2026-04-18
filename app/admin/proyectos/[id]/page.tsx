@@ -13,7 +13,6 @@ import {
   deleteProyecto,
   addChatMessage,
   updateProyectoPrecioCustom,
-  updateProyectoPagoRecibido,
 } from "@/lib/actions";
 import { useToast } from "@/app/providers/ToastProvider";
 import {
@@ -730,10 +729,6 @@ export default function ProyectoDetalle() {
                   projectId={params.id as string}
                   onUpdatePrecio={async (precio) => {
                     await updateProyectoPrecioCustom(params.id as string, precio);
-                    await loadProject(true);
-                  }}
-                  onUpdatePagoRecibido={async (recibido) => {
-                    await updateProyectoPagoRecibido(params.id as string, recibido);
                     await loadProject(true);
                   }}
                 />

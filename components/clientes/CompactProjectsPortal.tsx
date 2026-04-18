@@ -7,12 +7,14 @@ import {
   loginCliente,
   resumeClienteSession,
   logoutCliente,
+  validateClienteSession,
 } from "@/lib/actions";
 import { useRealtimeRefresh } from "@/hooks/use-realtime-refresh";
 import { useSessionEviction } from "@/hooks/use-session-eviction";
 import { useToast } from "@/app/providers/ToastProvider";
 import { LoginScreen, ProjectSelector } from "./portal/LoginScreen";
 import { PortalPage } from "./portal/PortalPage";
+import { SupportFab } from "./portal/SupportFab";
 import { AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -52,11 +54,16 @@ export default function CompactProjectsPortal({
   }, []);
 
   // Evicción en tiempo real: si otro dispositivo inicia sesión, cierra esta
-  useSessionEviction(data?.cliente?.id ?? null, () => {
-    setEvicted(true);
-    setData(null);
-    setSelectedProject(null);
-    setCedula("");
+  useSessionEviction({
+    userId: data?.cliente?.id ?? null,
+    table: "clientes",
+    validate: validateClienteSession,
+    onEvicted: () => {
+      setEvicted(true);
+      setData(null);
+      setSelectedProject(null);
+      setCedula("");
+    },
   });
 
   const resetPortal = async () => {
@@ -115,6 +122,10 @@ export default function CompactProjectsPortal({
     setSelectedProject(null);
     try {
       const result = await loginCliente(cedula);
+      if (result.status === "rate_limited") {
+        setError(`Demasiados intentos. Esperá ${(result as any).resetInSec ?? 60}s.`);
+        return;
+      }
       if (result.status === "not_found") { setError("No existe ese cliente."); return; }
       if (result.status === "no_projects") { setError("Aún no tienes proyectos."); return; }
       if (result.status === "all_hidden") { setError("Tus proyectos están ocultos."); return; }
@@ -189,42 +200,51 @@ export default function CompactProjectsPortal({
 
   if (!data) {
     return (
-      <LoginScreen
-        cedula={cedula}
-        setCedula={setCedula}
-        loading={loading}
-        error={error}
-        onSubmit={handleSearch}
-        useDesktopLandingBackground={useDesktopLandingBackground}
-        navbarSlot={navbarSlot}
-        footerSlot={footerSlot}
-      />
+      <>
+        <LoginScreen
+          cedula={cedula}
+          setCedula={setCedula}
+          loading={loading}
+          error={error}
+          onSubmit={handleSearch}
+          useDesktopLandingBackground={useDesktopLandingBackground}
+          navbarSlot={navbarSlot}
+          footerSlot={footerSlot}
+        />
+        <SupportFab cedula={cedula} />
+      </>
     );
   }
 
   if (!selectedProject && data.proyectos?.length > 0) {
     return (
-      <ProjectSelector
-        data={data}
-        onSelect={setSelectedProject}
-        onReset={resetPortal}
-        useDesktopLandingBackground={useDesktopLandingBackground}
-        containerMaxWidth={containerMaxWidth}
-      />
+      <>
+        <ProjectSelector
+          data={data}
+          onSelect={setSelectedProject}
+          onReset={resetPortal}
+          useDesktopLandingBackground={useDesktopLandingBackground}
+          containerMaxWidth={containerMaxWidth}
+        />
+        <SupportFab cedula={cedula} clienteNombre={data.cliente?.nombre} />
+      </>
     );
   }
 
   if (selectedProject) {
     return (
-      <PortalPage
-        project={selectedProject}
-        clientName={data.cliente.nombre}
-        savePatch={savePatch}
-        onReset={resetPortal}
-        showToast={showToast}
-        device={device}
-        useDesktopLandingBackground={useDesktopLandingBackground}
-      />
+      <>
+        <PortalPage
+          project={selectedProject}
+          clientName={data.cliente.nombre}
+          savePatch={savePatch}
+          onReset={resetPortal}
+          showToast={showToast}
+          device={device}
+          useDesktopLandingBackground={useDesktopLandingBackground}
+        />
+        <SupportFab cedula={cedula} clienteNombre={data.cliente?.nombre} />
+      </>
     );
   }
 

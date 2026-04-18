@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
@@ -14,6 +15,16 @@ export default function AdminMobileNav() {
     const pathname = usePathname();
     const [open, setOpen] = useState(false);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const handleLogoutClick = () => {
+        setOpen(false);
+        setTimeout(() => setShowLogoutConfirm(true), 260);
+    };
 
     return (
         <>
@@ -116,7 +127,7 @@ export default function AdminMobileNav() {
 
                         <div className="border-t border-white/5 p-6">
                             <button
-                                onClick={() => setShowLogoutConfirm(true)}
+                                onClick={handleLogoutClick}
                                 className="group flex w-full items-center gap-4 rounded-2xl border border-transparent px-5 py-4 text-gray-400 transition hover:border-red-500/10 hover:bg-red-500/5 hover:text-red-400"
                             >
                                 <div className="rounded-xl bg-white/5 p-2 transition group-hover:bg-red-500/10">
@@ -129,52 +140,56 @@ export default function AdminMobileNav() {
                 </Drawer.Portal>
             </Drawer.Root>
 
-            <AnimatePresence>
-                {showLogoutConfirm && (
-                    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setShowLogoutConfirm(false)}
-                            className="absolute inset-0 bg-black/80 backdrop-blur-md"
-                        />
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                            className="relative z-10 w-full max-w-sm overflow-hidden rounded-3xl border border-white/10 bg-[#060214]/95 p-8 shadow-2xl"
-                        >
-                            <div className="absolute top-0 right-0 -z-10 h-32 w-32 bg-red-500/10 blur-[50px]" />
-                            <div className="text-center">
-                                <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-red-500/20 bg-red-500/10 text-red-500">
-                                    <LogOut className="ml-1 h-8 w-8" />
-                                </div>
-                                <h3 className="mb-2 text-xl font-black uppercase tracking-tighter text-white">
-                                    ¿Cerrar Sesión?
-                                </h3>
-                                <p className="mb-8 text-xs font-medium leading-relaxed text-gray-400">
-                                    Tendrás que volver a autenticarte para acceder al panel de control.
-                                </p>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <button
-                                        onClick={() => setShowLogoutConfirm(false)}
-                                        className="rounded-xl border border-white/10 bg-white/5 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-400 transition hover:bg-white/10 hover:text-white"
-                                    >
-                                        Cancelar
-                                    </button>
-                                    <button
-                                        onClick={() => signOut({ callbackUrl: '/' })}
-                                        className="rounded-xl bg-red-600 py-3 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-red-600/20 transition hover:bg-red-700"
-                                    >
-                                        Confirmar
-                                    </button>
-                                </div>
+            {mounted &&
+                createPortal(
+                    <AnimatePresence>
+                        {showLogoutConfirm && (
+                            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    onClick={() => setShowLogoutConfirm(false)}
+                                    className="absolute inset-0 bg-black/80 backdrop-blur-md"
+                                />
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                    className="relative z-10 w-full max-w-sm overflow-hidden rounded-3xl border border-white/10 bg-[#060214]/95 p-8 shadow-2xl"
+                                >
+                                    <div className="absolute top-0 right-0 -z-10 h-32 w-32 bg-red-500/10 blur-[50px]" />
+                                    <div className="text-center">
+                                        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-red-500/20 bg-red-500/10 text-red-500">
+                                            <LogOut className="ml-1 h-8 w-8" />
+                                        </div>
+                                        <h3 className="mb-2 text-xl font-black uppercase tracking-tighter text-white">
+                                            ¿Cerrar Sesión?
+                                        </h3>
+                                        <p className="mb-8 text-xs font-medium leading-relaxed text-gray-400">
+                                            Tendrás que volver a autenticarte para acceder al panel de control.
+                                        </p>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <button
+                                                onClick={() => setShowLogoutConfirm(false)}
+                                                className="rounded-xl border border-white/10 bg-white/5 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-400 transition hover:bg-white/10 hover:text-white"
+                                            >
+                                                Cancelar
+                                            </button>
+                                            <button
+                                                onClick={() => signOut({ callbackUrl: '/' })}
+                                                className="rounded-xl bg-red-600 py-3 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-red-600/20 transition hover:bg-red-700"
+                                            >
+                                                Confirmar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </motion.div>
                             </div>
-                        </motion.div>
-                    </div>
+                        )}
+                    </AnimatePresence>,
+                    document.body,
                 )}
-            </AnimatePresence>
         </>
     );
 }

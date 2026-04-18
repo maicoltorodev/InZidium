@@ -13,16 +13,43 @@ import { estudioId } from "@/lib/env";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
-import { getServerSession } from "next-auth";
+import { auth as getSession } from "@/auth";
 import { db } from "./db";
 import { clientes as clientesTable } from "./db/schema";
 import { eq } from "drizzle-orm";
-import { authOptions } from "./auth-options";
 import { isOnboardingComplete } from "./completion";
 import type { ProjectFase } from "./data/types";
+import type { Pago, PagoTipo } from "./finance";
+import { supabaseUrl } from "@/lib/env";
+import { rateLimit, getClientIp } from "./rate-limit";
+
+/**
+ * Dispara push a la app InZidium vía edge function `notify-event`. Fire-and-forget:
+ * cualquier error se loguea pero no rompe el flujo del server action.
+ */
+async function notifyEvent(
+  event: string,
+  record: Record<string, any>,
+  extra?: Record<string, any>,
+) {
+  try {
+    const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!supabaseUrl || !anon) return;
+    await fetch(`${supabaseUrl}/functions/v1/notify-event`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${anon}`,
+      },
+      body: JSON.stringify({ event, record, extra }),
+    });
+  } catch (e) {
+    console.error("[notify-event] fire failed:", (e as Error).message);
+  }
+}
 
 async function requireAuthenticatedAdmin() {
-  const session = await getServerSession(authOptions);
+  const session = await getSession();
   return Boolean(session?.user);
 }
 
@@ -79,6 +106,16 @@ export async function getProyectos() {
 }
 
 export async function getProyectoByCedula(cedula: string) {
+  // Rate limit por IP: 10 intentos / 60s. Mitiga enumeración de cédulas.
+  const ip = await getClientIp();
+  const rl = await rateLimit(`cedula-lookup:${ip}`, { max: 10, windowMs: 60_000 });
+  if (!rl.ok) {
+    return {
+      status: "rate_limited",
+      resetInSec: rl.resetInSec,
+    } as const;
+  }
+
   const cliente = await clientes.getByCedula(cedula.trim());
   if (!cliente) return { status: "not_found" } as const;
 
@@ -162,19 +199,35 @@ export async function updateProyectoOnboarding(
   step: number,
   data: any,
 ) {
+  // Leer estado previo para detectar "onboarding iniciado" (primer campo
+  // llenado) y evitar spam si el proyecto ya tenía datos.
+  const all = await proyectos.getAll();
+  const prev = (all as any[]).find((p: any) => p.id === id);
+  const prevData = (prev?.onboardingData as any) ?? {};
+  const prevHadData = Object.keys(prevData).some(
+    (k) => k !== "briefing" && prevData[k] != null && prevData[k] !== "",
+  );
+
   const res = await proyectos.update(id, { onboardingStep: step, onboardingData: data });
   if (!res.success) return res;
+
+  // Noti: primer campo llenado del onboarding.
+  const nextHasData = Object.keys(data ?? {}).some(
+    (k) => k !== "briefing" && data[k] != null && data[k] !== "",
+  );
+  if (!prevHadData && nextHasData && prev) {
+    notifyEvent("onboarding.started", prev);
+  }
 
   // Auto-transición: si el cliente completó el 100% y sigue en 'onboarding',
   // pasamos a 'construccion' y arrancamos el countdown de 48h.
   try {
-    const all = await proyectos.getAll();
-    const project = (all as any[]).find((p: any) => p.id === id);
-    if (project && project.fase === "onboarding" && isOnboardingComplete(data)) {
+    if (prev && prev.fase === "onboarding" && isOnboardingComplete(data)) {
       await proyectos.update(id, {
         fase: "construccion",
         buildStartedAt: new Date(),
       } as any);
+      notifyEvent("onboarding.completed", prev);
     }
   } catch {
     // Nunca bloquear el savePatch del cliente por error en transición.
@@ -189,10 +242,9 @@ export async function updateProyectoOnboarding(
 
 export async function setProyectoFase(id: string, fase: ProjectFase) {
   const patch: Record<string, any> = { fase };
+  const all = await proyectos.getAll();
+  const project = (all as any[]).find((p: any) => p.id === id);
   if (fase === "construccion") {
-    // Leer proyecto para no sobrescribir buildStartedAt ya seteado.
-    const all = await proyectos.getAll();
-    const project = (all as any[]).find((p: any) => p.id === id);
     if (!project?.buildStartedAt) patch.buildStartedAt = new Date();
   } else if (fase === "onboarding") {
     patch.buildStartedAt = null;
@@ -201,6 +253,10 @@ export async function setProyectoFase(id: string, fase: ProjectFase) {
 
   const res = await proyectos.update(id, patch as any);
   if (res.success) {
+    // Noti: paso manual de onboarding → construccion (inicio del countdown).
+    if (project && project.fase === "onboarding" && fase === "construccion") {
+      notifyEvent("onboarding.completed", project);
+    }
     revalidatePath("/admin");
     revalidateClientProjects();
   }
@@ -231,8 +287,103 @@ export async function updateProyectoPrecioCustom(id: string, precio: number) {
   return mergeProyectoOnboardingData(id, { precioCustom: precio });
 }
 
-export async function updateProyectoPagoRecibido(id: string, recibido: boolean) {
-  return mergeProyectoOnboardingData(id, { pagoRecibido: recibido });
+export async function updateProyectoBriefing(id: string, briefing: string) {
+  const res = await mergeProyectoOnboardingData(id, { briefing });
+  if (res.success) revalidateClientProjects();
+  return res;
+}
+
+/**
+ * Mergea un parche parcial en la cuota correspondiente (o la crea si no existe)
+ * dentro de `onboardingData.pagos`.
+ */
+async function mergePagoPatch(
+  projectId: string,
+  tipo: PagoTipo,
+  patch: Partial<Pago>,
+) {
+  const all = await proyectos.getAll();
+  const project = (all as any[]).find((p: any) => p.id === projectId);
+  if (!project) return { success: false, error: "Proyecto no encontrado" };
+
+  const currentData = (project.onboardingData as any) ?? {};
+  const existing: Pago[] = Array.isArray(currentData.pagos)
+    ? currentData.pagos
+    : [];
+  const next = [...existing];
+  const idx = next.findIndex((p) => p.tipo === tipo);
+  if (idx >= 0) {
+    next[idx] = { ...next[idx], ...patch };
+  } else {
+    next.push({ tipo, monto: 0, ...patch } as Pago);
+  }
+
+  const res = await proyectos.update(projectId, {
+    onboardingData: { ...currentData, pagos: next },
+  });
+  return res;
+}
+
+export async function uploadComprobantePago(
+  projectId: string,
+  tipo: PagoTipo,
+  comprobanteUrl: string,
+) {
+  const res = await mergePagoPatch(projectId, tipo, {
+    comprobanteUrl,
+    uploadedAt: new Date().toISOString(),
+    approvedAt: undefined,
+    rejectedAt: undefined,
+    rejectionReason: undefined,
+  });
+  if (res.success) {
+    // Push a InZidium para revisar y aprobar el comprobante.
+    try {
+      const all = await proyectos.getAll();
+      const project = (all as any[]).find((p: any) => p.id === projectId);
+      if (project) notifyEvent("pago.comprobante_subido", project, { tipo });
+    } catch {
+      // No bloquear si la noti falla.
+    }
+    revalidatePath("/admin");
+    revalidateClientProjects();
+  }
+  return res;
+}
+
+export async function approveComprobantePago(
+  projectId: string,
+  tipo: PagoTipo,
+) {
+  const session = await getSession();
+  if ((session?.user as any)?.username !== "InZidium") {
+    return { success: false, error: "Solo InZidium puede aprobar." };
+  }
+  const res = await mergePagoPatch(projectId, tipo, {
+    approvedAt: new Date().toISOString(),
+    rejectedAt: undefined,
+    rejectionReason: undefined,
+  });
+  if (res.success) revalidatePath("/admin");
+  return res;
+}
+
+export async function rejectComprobantePago(
+  projectId: string,
+  tipo: PagoTipo,
+  reason: string,
+) {
+  const session = await getSession();
+  if ((session?.user as any)?.username !== "InZidium") {
+    return { success: false, error: "Solo InZidium puede rechazar." };
+  }
+  const res = await mergePagoPatch(projectId, tipo, {
+    rejectedAt: new Date().toISOString(),
+    rejectionReason: reason,
+    approvedAt: undefined,
+  });
+  if (res.success) revalidatePath("/admin");
+  return res;
 }
 
 export async function deleteProyecto(id: string) {
@@ -500,6 +651,31 @@ export async function validateClienteSession() {
       columns: { activeSessionId: true },
     });
     return { valid: cliente?.activeSessionId === sessionId };
+  } catch {
+    return { valid: false };
+  }
+}
+
+export async function validateAdminSession() {
+  const session = await getSession();
+  if (!session?.user) return { valid: false };
+
+  const adminId = (session.user as any).id as string | undefined;
+  const sessionId = (session.user as any).sessionId as string | undefined;
+  if (!adminId || !sessionId) return { valid: false };
+
+  try {
+    const admin = await auth.getUserById(adminId);
+    if (!admin) return { valid: false };
+
+    // Sólo comparamos si el activeSessionId pertenece al mismo entorno
+    // (prefijo `prod:` o `dev:`). Así el server local no invalida a Vercel.
+    const currentEnv = process.env.NODE_ENV === "production" ? "prod" : "dev";
+    const dbSessionEnv = admin.activeSessionId?.split(":")[0];
+    if (!admin.activeSessionId || dbSessionEnv !== currentEnv) {
+      return { valid: true };
+    }
+    return { valid: admin.activeSessionId === sessionId };
   } catch {
     return { valid: false };
   }

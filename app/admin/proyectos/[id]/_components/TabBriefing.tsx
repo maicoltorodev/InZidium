@@ -99,13 +99,63 @@ const tipoLabels: Record<string, { label: string; icon: React.ElementType }> = {
   menu: { label: "Menú", icon: UtensilsCrossed },
 };
 
+function hasValue(v: unknown): boolean {
+  if (v == null) return false;
+  if (typeof v === "string") return v.trim().length > 0;
+  if (Array.isArray(v)) return v.length > 0;
+  if (typeof v === "object") return Object.keys(v).length > 0;
+  return true;
+}
+
 export function TabBriefing({ project }: TabBriefingProps) {
   const d: any = project.onboardingData || {};
-  const hasData = Object.keys(d).length > 0;
   const catalogo: any[] = d.catalogo || [];
   const categorias: string[] = d.categorias || [];
   const tipo = d.tipoCatalogo || "servicios";
   const { label: tipoLabel, icon: TipoIcon } = tipoLabels[tipo] ?? tipoLabels.servicios;
+  const isCustom = project?.plan === "A la medida";
+  const briefing: string = d.briefing ?? "";
+  // Data del wizard estándar (todo lo que no sea briefing).
+  const hasEstandarData = Object.keys(d).some(
+    (k) => k !== "briefing" && hasValue(d[k]),
+  );
+  const hasBrief = briefing.trim().length > 0;
+
+  // Plan "a la medida": primary = brief, secondary = info del wizard estándar
+  // si el proyecto vino de ese plan antes (referencia para el admin).
+  if (isCustom) {
+    return (
+      <motion.div
+        key="briefing-custom"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+      >
+        <div className="mb-8">
+          <h2 className="text-3xl font-black uppercase tracking-tighter text-white">
+            Brief del cliente
+          </h2>
+          <p className="mt-1 text-xs font-bold uppercase tracking-widest text-gray-500">
+            Proyecto a la medida — el cliente escribe el scope libremente y
+            comparte archivos por chat. Se actualiza en tiempo real.
+          </p>
+        </div>
+        <div className="rounded-3xl border border-white/8 bg-white/[0.04] backdrop-blur-xl p-6 sm:p-8 mb-6">
+          {!hasBrief ? (
+            <p className="text-xs font-black uppercase tracking-widest text-gray-500 text-center py-8">
+              El cliente aún no ha escrito nada en el brief
+            </p>
+          ) : (
+            <pre className="whitespace-pre-wrap break-words font-sans text-sm leading-relaxed text-gray-200">
+              {briefing}
+            </pre>
+          )}
+        </div>
+
+        {hasEstandarData && <PreviousEstandarSummary d={d} />}
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -123,7 +173,9 @@ export function TabBriefing({ project }: TabBriefingProps) {
         </p>
       </div>
 
-      {!hasData ? (
+      {hasBrief && <PreviousBriefingCard briefing={briefing} />}
+
+      {!hasEstandarData ? (
         <div className="rounded-3xl border border-white/5 p-8 sm:p-12 text-center text-gray-500">
           <p className="text-xs font-black uppercase tracking-widest">
             El cliente aún no ha completado ningún campo
@@ -416,5 +468,82 @@ export function TabBriefing({ project }: TabBriefingProps) {
         </div>
       )}
     </motion.div>
+  );
+}
+
+// ─── Paneles cruzados: info conservada al cambiar de plan ────────────────────
+
+function PreviousEstandarSummary({ d }: { d: any }) {
+  const nombre = d.nombreComercial;
+  const slogan = d.slogan;
+  const descripcion = d.descripcion;
+  const logo = d.logo;
+  const catalogoCount = Array.isArray(d.catalogo) ? d.catalogo.length : 0;
+  const colores = [d.colorPrimario ?? d.colorAcento, d.colorAcento2].filter(Boolean);
+  const contacto = [d.whatsapp, d.telefono, d.email].filter(Boolean);
+
+  return (
+    <div className="rounded-3xl border border-amber-500/15 bg-amber-500/[0.02] p-6 sm:p-8">
+      <div className="mb-5 flex items-center gap-3 border-b border-white/5 pb-5">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
+          <BriefcaseBusiness className="h-5 w-5" />
+        </div>
+        <div>
+          <h3 className="text-sm font-black uppercase tracking-tight text-white">
+            Info del plan estándar previo
+          </h3>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+            El cliente había llenado el wizard — conservado como referencia
+          </p>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {logo && (
+          <div className="sm:row-span-2 flex items-center justify-center rounded-2xl bg-black/40 border border-white/10 p-4">
+            <img src={logo} alt="logo" className="max-h-32 max-w-full object-contain" />
+          </div>
+        )}
+        <div className={logo ? "sm:col-span-2 space-y-3" : "sm:col-span-3 space-y-3"}>
+          {nombre && <Field label="Nombre" value={nombre} />}
+          {slogan && <Field label="Slogan" value={`"${slogan}"`} />}
+          {descripcion && <Field label="Descripción" value={descripcion} />}
+        </div>
+        {colores.length > 0 && (
+          <div>
+            <span className="text-[9px] font-black uppercase tracking-widest text-gray-500 block mb-2">Colores</span>
+            <div className="flex gap-2">
+              {colores.map((c: string, i: number) => (
+                <div key={i} className="h-8 w-8 rounded-lg border border-white/10" style={{ background: c }} title={c} />
+              ))}
+            </div>
+          </div>
+        )}
+        {catalogoCount > 0 && <Field label="Catálogo" value={`${catalogoCount} ítems`} />}
+        {contacto.length > 0 && <Field label="Contacto" value={contacto.join(" · ")} />}
+      </div>
+    </div>
+  );
+}
+
+function PreviousBriefingCard({ briefing }: { briefing: string }) {
+  return (
+    <div className="mb-5 rounded-3xl border border-amber-500/15 bg-amber-500/[0.02] p-5 sm:p-6">
+      <div className="mb-3 flex items-center gap-3 border-b border-white/5 pb-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-400">
+          <Tag className="h-4 w-4" />
+        </div>
+        <div>
+          <h3 className="text-sm font-black uppercase tracking-tight text-white">
+            Brief del plan a la medida previo
+          </h3>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+            Conservado como referencia tras el cambio de plan
+          </p>
+        </div>
+      </div>
+      <pre className="whitespace-pre-wrap break-words font-sans text-sm leading-relaxed text-gray-200">
+        {briefing}
+      </pre>
+    </div>
   );
 }

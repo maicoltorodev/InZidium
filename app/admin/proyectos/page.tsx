@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { PLANS, PLANS_ARRAY } from "@/lib/constants";
+import { PLANS, PLANS_ARRAY, BUILD_DURATION_HOURS } from "@/lib/constants";
 import { AdminLoading } from "@/lib/ui/AdminLoading";
 import { useRealtimeRefresh } from "@/hooks/use-realtime-refresh";
 
@@ -159,8 +159,11 @@ export default function ProjectsAdmin() {
                             </h3>
                           </div>
                         </div>
-                        <div className="self-start sm:self-auto">
+                        <div className="self-start sm:self-auto flex flex-col gap-2 items-end">
                           <StatusBadge status={project.estado} />
+                          {project.fase === "construccion" && project.buildStartedAt && (
+                            <CountdownBadge buildStartedAt={project.buildStartedAt} />
+                          )}
                         </div>
                       </div>
 
@@ -632,6 +635,38 @@ function PremiumInput({
           100% { background-position: 1rem 1rem; }
         }
       `}</style>
+    </div>
+  );
+}
+
+function CountdownBadge({ buildStartedAt }: { buildStartedAt: Date | string }) {
+  const startMs =
+    typeof buildStartedAt === "string"
+      ? new Date(buildStartedAt).getTime()
+      : buildStartedAt.getTime();
+  const endMs = startMs + BUILD_DURATION_HOURS * 3600 * 1000;
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  const remaining = endMs - now;
+  const done = remaining <= 0;
+  const totalMin = done ? 0 : Math.floor(remaining / 60_000);
+  const hh = Math.floor(totalMin / 60);
+  const mm = totalMin % 60;
+
+  return (
+    <div
+      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest ${
+        done
+          ? "bg-red-500/10 border-red-500/30 text-red-400"
+          : "bg-cyan-400/10 border-cyan-400/30 text-cyan-300"
+      }`}
+    >
+      <Clock className="w-3 h-3" />
+      {done ? "Vencido" : `${hh}h ${String(mm).padStart(2, "0")}m`}
     </div>
   );
 }

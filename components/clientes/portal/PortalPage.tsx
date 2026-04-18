@@ -5,6 +5,8 @@ import { uploadProjectFile } from "@/lib/client/upload-archivo";
 import { MobileOnboarding } from "./mobile/MobileOnboarding";
 import { TabletOnboarding } from "./tablet/TabletOnboarding";
 import { DesktopOnboarding } from "./desktop/DesktopOnboarding";
+import { CustomProjectView } from "./custom/CustomProjectView";
+import { PLANS } from "@/lib/constants";
 
 export type PortalDevice = "desktop" | "tablet" | "mobile";
 
@@ -64,6 +66,21 @@ export function PortalPage({
     uploadingNosotros,
     setUploadingNosotros,
   };
+
+  // Plan "a la medida": el producto no mapea a un wizard de secciones.
+  // Usamos una vista libre con brief + chat; los archivos se mandan por chat.
+  const isCustom = project?.plan === PLANS.ala_medida.title;
+  if (isCustom) {
+    return (
+      <CustomProjectView
+        project={project}
+        clientName={clientName}
+        onReset={onReset}
+        showToast={showToast}
+        device={device}
+      />
+    );
+  }
 
   if (device === "desktop") return <DesktopOnboarding {...sharedProps} />;
   if (device === "tablet") return <TabletOnboarding {...sharedProps} />;

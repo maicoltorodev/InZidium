@@ -1,24 +1,41 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Edit2,
   Check,
   X,
   Lock,
   Loader2,
-  ArrowRight,
   AlertTriangle,
-  Camera,
+  Upload,
   CheckCircle2,
   Clock,
+  XCircle,
+  ImageIcon,
+  Ban,
+  FileText,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
-
-const PRECIO_TOTAL_ESTANDAR = 499000;
-const PCT_INZIDIUM = 0.8;
-const PCT_ESTUDIO = 0.2;
+import {
+  approveComprobantePago,
+  rejectComprobantePago,
+  uploadComprobantePago,
+} from "@/lib/actions";
+import { uploadProjectFile } from "@/lib/client/upload-archivo";
+import {
+  getPagos,
+  getPagoStatus,
+  getPrecioTotal,
+  isPagoUnlocked,
+  PCT_ESTUDIO,
+  PCT_INZIDIUM,
+  PLAN_ALA_MEDIDA_TITLE,
+  PLAN_ESTANDAR_TITLE,
+  type Pago,
+  type PagoStatus,
+} from "@/lib/finance";
 
 const COP = (n: number) => "$" + n.toLocaleString("es-CO") + " COP";
 
@@ -26,45 +43,26 @@ interface TabFinanceProps {
   project: any;
   projectId: string;
   onUpdatePrecio: (precio: number) => Promise<void>;
-  onUpdatePagoRecibido: (recibido: boolean) => Promise<void>;
 }
 
 export function TabFinance({
   project,
   projectId,
   onUpdatePrecio,
-  onUpdatePagoRecibido,
 }: TabFinanceProps) {
   const { data: session } = useSession();
   const isInZidium = (session?.user as any)?.username === "InZidium";
-  const isEstandar = project.plan === "Plan Estándar";
+  const isEstandar = project.plan === PLAN_ESTANDAR_TITLE;
+  const isAlaMedida = project.plan === PLAN_ALA_MEDIDA_TITLE;
 
-  const precioCustom: number | null = project.onboardingData?.precioCustom ?? null;
-  const pagoRecibido: boolean = project.onboardingData?.pagoRecibido ?? false;
-
-  const precioTotal = isEstandar ? PRECIO_TOTAL_ESTANDAR : precioCustom;
-  const montoInzidium = precioTotal ? Math.round(precioTotal * PCT_INZIDIUM) : null;
-  const montoEstudio = precioTotal ? Math.round(precioTotal * PCT_ESTUDIO) : null;
-
-  const [editingPrecio, setEditingPrecio] = useState(false);
-  const [tempPrecio, setTempPrecio] = useState("");
-  const [savingPrecio, setSavingPrecio] = useState(false);
-  const [togglingPago, setTogglingPago] = useState(false);
-
-  const handleSavePrecio = async () => {
-    const num = parseInt(tempPrecio.replace(/\D/g, ""), 10);
-    if (!num || num <= 0) return;
-    setSavingPrecio(true);
-    await onUpdatePrecio(num);
-    setSavingPrecio(false);
-    setEditingPrecio(false);
-  };
-
-  const handleTogglePago = async () => {
-    setTogglingPago(true);
-    await onUpdatePagoRecibido(!pagoRecibido);
-    setTogglingPago(false);
-  };
+  const precioTotal = getPrecioTotal(project);
+  const montoInzidiumTotal = precioTotal
+    ? Math.round(precioTotal * PCT_INZIDIUM)
+    : null;
+  const montoEstudioTotal = precioTotal
+    ? Math.round(precioTotal * PCT_ESTUDIO)
+    : null;
+  const pagos = getPagos(project);
 
   return (
     <motion.div
@@ -74,187 +72,88 @@ export function TabFinance({
       exit={{ opacity: 0, y: -10 }}
       className="max-w-3xl mx-auto space-y-6"
     >
-
-      {/* ── HERO: MONTO A TRANSFERIR ── */}
-      <div className={`relative bg-white/[0.04] backdrop-blur-xl border rounded-3xl p-6 sm:p-8 lg:p-10 overflow-hidden transition-colors ${pagoRecibido ? "border-emerald-500/30" : "border-white/8"}`}>
-
-        {/* Glow de fondo según estado */}
-        <div className={`absolute inset-0 rounded-3xl transition-opacity duration-700 ${pagoRecibido ? "opacity-100" : "opacity-0"}`}
-          style={{ background: "radial-gradient(ellipse 80% 60% at 50% 100%, rgba(16,185,129,0.06) 0%, transparent 70%)" }}
-        />
-
-        <div className="relative z-10 space-y-8">
-
-          {/* Encabezado */}
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-500 mb-2">
-                Transferencia a InZidium
-              </p>
-              <div className="flex items-baseline gap-3">
-                {montoInzidium ? (
-                  <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight break-all">
-                    {COP(montoInzidium)}
-                  </span>
-                ) : (
-                  <span className="text-xl sm:text-2xl font-black text-gray-600 uppercase tracking-widest">
-                    Monto no definido
-                  </span>
+      {/* HEADER con total */}
+      <div className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 sm:p-8">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-500 mb-2">
+              A transferir a InZidium
+            </p>
+            {montoInzidiumTotal ? (
+              <>
+                <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight break-all">
+                  {COP(montoInzidiumTotal)}
+                </span>
+                {precioTotal && (
+                  <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mt-2">
+                    80% de {COP(precioTotal)} · {project.plan}
+                  </p>
                 )}
-              </div>
-              {precioTotal && (
-                <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mt-2">
-                  80% de {COP(precioTotal)} · {project.plan}
-                </p>
-              )}
-            </div>
-
-            {/* Badge plan */}
-            <div className="px-4 py-2 rounded-2xl bg-white/5 border border-white/10 text-right shrink-0">
-              <p className="text-[8px] font-black uppercase tracking-widest text-gray-600 mb-0.5">Plan</p>
-              <p className="text-xs font-black text-white uppercase">{project.plan}</p>
-            </div>
+              </>
+            ) : (
+              <span className="text-xl sm:text-2xl font-black text-gray-600 uppercase tracking-widest">
+                Monto no definido
+              </span>
+            )}
           </div>
-
-          {/* Toggle de estado de pago */}
-          {montoInzidium && (
-            <button
-              onClick={handleTogglePago}
-              disabled={togglingPago}
-              className={`w-full flex items-center justify-between px-8 py-5 rounded-2xl border transition-all duration-300 ${
-                pagoRecibido
-                  ? "bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/15"
-                  : "bg-white/[0.03] border-white/10 hover:bg-white/[0.05] hover:border-white/20"
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                {togglingPago ? (
-                  <Loader2 className="w-5 h-5 animate-spin text-gray-500" />
-                ) : pagoRecibido ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                ) : (
-                  <Clock className="w-5 h-5 text-gray-500" />
-                )}
-                <div className="text-left">
-                  <p className={`text-sm font-black uppercase tracking-widest ${pagoRecibido ? "text-emerald-400" : "text-gray-400"}`}>
-                    {pagoRecibido ? "Transferencia recibida" : "Pendiente de transferencia"}
-                  </p>
-                  <p className="text-[9px] font-bold text-gray-600 uppercase tracking-widest mt-0.5">
-                    {pagoRecibido ? "El estudio realizó el pago correctamente" : "El estudio aún no ha transferido"}
-                  </p>
-                </div>
-              </div>
-              <div className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border ${
-                pagoRecibido
-                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
-                  : "bg-white/5 border-white/10 text-gray-500"
-              }`}>
-                {pagoRecibido ? "Marcar pendiente" : "Marcar recibido"}
-              </div>
-            </button>
-          )}
-
-          {/* Editor de precio para A la medida */}
-          {!isEstandar && (
-            <div className="border-t border-white/5 pt-6">
-              <AnimatePresence mode="wait">
-                {editingPrecio ? (
-                  <motion.div
-                    key="editing"
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    className="space-y-4"
-                  >
-                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
-                      Precio total del proyecto (COP)
-                    </p>
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl font-black text-gray-500">$</span>
-                      <input
-                        type="text"
-                        value={tempPrecio}
-                        onChange={(e) => setTempPrecio(e.target.value.replace(/\D/g, ""))}
-                        placeholder="0"
-                        className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-2xl font-black text-white outline-none focus:border-[#22d3ee]/50"
-                        autoFocus
-                      />
-                      <span className="text-sm font-black text-gray-600">COP</span>
-                    </div>
-                    {tempPrecio && parseInt(tempPrecio) > 0 && (
-                      <div className="flex gap-3 text-[10px] font-black uppercase tracking-widest">
-                        <span className="text-gray-500">InZidium recibirá:</span>
-                        <span className="text-[#22d3ee]">
-                          {COP(Math.round(parseInt(tempPrecio) * 0.8))}
-                        </span>
-                        <span className="text-gray-600">·</span>
-                        <span className="text-gray-500">Estudio:</span>
-                        <span className="text-gray-400">
-                          {COP(Math.round(parseInt(tempPrecio) * 0.2))}
-                        </span>
-                      </div>
-                    )}
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => { setEditingPrecio(false); setTempPrecio(""); }}
-                        className="flex-1 py-3 rounded-xl border border-white/10 text-gray-500 font-bold text-xs uppercase hover:bg-white/5 flex items-center justify-center gap-2"
-                      >
-                        <X className="w-4 h-4" /> Cancelar
-                      </button>
-                      <button
-                        onClick={handleSavePrecio}
-                        disabled={savingPrecio || !tempPrecio || parseInt(tempPrecio) <= 0}
-                        className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#a855f7] to-[#22d3ee] text-white font-black text-xs uppercase hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
-                      >
-                        {savingPrecio ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                        Confirmar
-                      </button>
-                    </div>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="display"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex items-center justify-between"
-                  >
-                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">
-                      {precioTotal ? `Precio total acordado: ${COP(precioTotal)}` : "Precio total sin definir"}
-                    </p>
-                    {isInZidium ? (
-                      <button
-                        onClick={() => { setTempPrecio(precioCustom ? String(precioCustom) : ""); setEditingPrecio(true); }}
-                        className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5"
-                      >
-                        <Edit2 className="w-3 h-3" /> Editar precio
-                      </button>
-                    ) : (
-                      <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-gray-600">
-                        <Lock className="w-3 h-3" /> Solo InZidium
-                      </div>
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          )}
+          <div className="px-4 py-2 rounded-2xl bg-white/5 border border-white/10 shrink-0 self-start">
+            <p className="text-[8px] font-black uppercase tracking-widest text-gray-600 mb-0.5">
+              Plan
+            </p>
+            <p className="text-xs font-black text-white uppercase">{project.plan}</p>
+          </div>
         </div>
+
+        {/* Editor de precio sólo para A la medida — sólo InZidium puede editar */}
+        {isAlaMedida && (
+          <div className="border-t border-white/5 pt-6">
+            <PrecioCustomEditor
+              project={project}
+              precioTotal={precioTotal}
+              isInZidium={isInZidium}
+              onSave={onUpdatePrecio}
+            />
+          </div>
+        )}
       </div>
 
-      {/* ── DESGLOSE 80 / 20 ── */}
+      {/* CARDS DE PAGOS */}
+      {pagos.length === 0 ? (
+        <div className="rounded-3xl border border-white/5 bg-white/[0.02] p-8 text-center text-gray-500">
+          <p className="text-xs font-black uppercase tracking-widest">
+            {isAlaMedida
+              ? "InZidium debe definir el precio antes de habilitar los pagos"
+              : "Plan no reconocido"}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {pagos.map((pago) => (
+            <PagoCard
+              key={pago.tipo}
+              pago={pago}
+              project={project}
+              projectId={projectId}
+              isInZidium={isInZidium}
+              isSinglePayment={pagos.length === 1}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* DESGLOSE 80/20 */}
       {precioTotal && (
         <div className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 sm:p-8">
           <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gray-500 mb-6">
             Distribución del proyecto
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-5 sm:p-6 rounded-2xl bg-[#22d3ee]/5 border border-[#22d3ee]/20 space-y-1">
-              <p className="text-[9px] font-black uppercase tracking-widest text-[#22d3ee]/60">
+            <div className="p-5 sm:p-6 rounded-2xl bg-[#FFD700]/5 border border-[#FFD700]/20 space-y-1">
+              <p className="text-[9px] font-black uppercase tracking-widest text-[#FFD700]/60">
                 InZidium · 80%
               </p>
-              <p className="text-2xl font-black text-[#22d3ee]">
-                {COP(montoInzidium!)}
+              <p className="text-2xl font-black text-[#FFD700]">
+                {COP(montoInzidiumTotal!)}
               </p>
               <p className="text-[9px] text-gray-600 font-bold uppercase tracking-widest">
                 Desarrollo & plataforma
@@ -265,7 +164,7 @@ export function TabFinance({
                 Estudio · 20%
               </p>
               <p className="text-2xl font-black text-white">
-                {COP(montoEstudio!)}
+                {COP(montoEstudioTotal!)}
               </p>
               <p className="text-[9px] text-gray-600 font-bold uppercase tracking-widest">
                 Comisión comercial
@@ -273,56 +172,507 @@ export function TabFinance({
             </div>
           </div>
 
-          {/* Nota pasarela */}
           <div className="mt-4 flex items-start gap-3 p-4 rounded-2xl bg-amber-500/5 border border-amber-500/10">
             <AlertTriangle className="w-4 h-4 text-amber-500/60 shrink-0 mt-0.5" />
             <p className="text-[10px] text-gray-500 leading-relaxed">
-              Si el cliente pagó mediante pasarela de pago, la comisión de la pasarela
+              Si el cliente pagó mediante pasarela de pago, la comisión
               {" "}<span className="text-amber-400/80 font-black">(3–4%)</span>{" "}
-              se descuenta del 20% del estudio. La transferencia a InZidium es siempre fija.
+              se descuenta del 20% del estudio. La transferencia a InZidium es
+              siempre fija.
             </p>
           </div>
         </div>
       )}
+    </motion.div>
+  );
+}
 
-      {/* ── COMPROBANTE ── */}
-      <div className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 sm:p-8 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gray-500 mb-1">
-              Comprobante de transferencia
+// ─── Card por cuota ──────────────────────────────────────────────────────────
+
+function PagoCard({
+  pago,
+  project,
+  projectId,
+  isInZidium,
+  isSinglePayment,
+}: {
+  pago: Pago;
+  project: any;
+  projectId: string;
+  isInZidium: boolean;
+  isSinglePayment: boolean;
+}) {
+  const unlocked = isPagoUnlocked(pago, project);
+  const status = getPagoStatus(pago);
+
+  const [busy, setBusy] = useState<null | "upload" | "approve" | "reject">(
+    null,
+  );
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const label = pago.tipo === "arranque" ? "Pago de arranque" : "Pago de entrega";
+  const subtitle = isSinglePayment
+    ? "Transferencia a InZidium al crear el proyecto"
+    : pago.tipo === "arranque"
+      ? "50% inicial — al crear el proyecto"
+      : "50% restante — al publicarse";
+
+  const handleFile = async (file: File) => {
+    setBusy("upload");
+    try {
+      const uploaded = await uploadProjectFile({
+        file,
+        proyectoId: projectId,
+        subidoPor: "admin",
+        oldUrl: pago.comprobanteUrl,
+      });
+      if (!uploaded.success || !uploaded.url) {
+        throw new Error(uploaded.error || "Error subiendo comprobante");
+      }
+      const res = await uploadComprobantePago(
+        projectId,
+        pago.tipo,
+        uploaded.url,
+      );
+      if (!res.success) throw new Error((res as any).error);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const handleApprove = async () => {
+    setBusy("approve");
+    await approveComprobantePago(projectId, pago.tipo);
+    setBusy(null);
+  };
+
+  const handleReject = async () => {
+    if (!rejectReason.trim()) return;
+    setBusy("reject");
+    await rejectComprobantePago(projectId, pago.tipo, rejectReason.trim());
+    setRejectOpen(false);
+    setRejectReason("");
+    setBusy(null);
+  };
+
+  const statusStyle = STATUS_STYLES[status];
+
+  return (
+    <div
+      className={`bg-white/[0.04] backdrop-blur-xl border rounded-3xl p-6 sm:p-7 transition-colors ${
+        status === "aprobado"
+          ? "border-emerald-500/30"
+          : status === "rechazado"
+            ? "border-red-500/30"
+            : status === "enviado"
+              ? "border-amber-500/30"
+              : "border-white/8"
+      }`}
+    >
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 mb-2">
+            <p className="text-sm font-black uppercase tracking-tight text-white">
+              {label}
             </p>
-            <p className="text-[9px] text-gray-600 font-bold uppercase tracking-widest">
-              El estudio adjunta el soporte cuando realiza el pago
-            </p>
+            {!unlocked && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[8px] font-black uppercase tracking-widest text-gray-500">
+                <Lock className="w-2.5 h-2.5" /> Bloqueado
+              </span>
+            )}
           </div>
-          <div className="text-[9px] font-black uppercase tracking-widest text-gray-600 px-3 py-1.5 rounded-full border border-white/5 self-start sm:self-auto">
-            #{projectId?.toString().slice(-6).toUpperCase()}
-          </div>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4">
+            {subtitle}
+          </p>
+          <p className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            {COP(pago.monto)}
+          </p>
         </div>
+        <StatusBadge status={status} />
+      </div>
 
-        <div className="flex items-center justify-center aspect-[3/1] rounded-2xl border-2 border-dashed border-white/5 bg-black/20 hover:border-white/10 hover:bg-white/[0.02] transition-all cursor-pointer group">
-          <div className="flex flex-col items-center gap-3 text-gray-600 group-hover:text-gray-400 transition-colors">
-            <Camera className="w-8 h-8" />
-            <div className="text-center">
-              <p className="text-[10px] font-black uppercase tracking-widest">
-                Subir comprobante
-              </p>
-              <p className="text-[8px] font-bold uppercase tracking-widest opacity-60 mt-0.5">
-                JPG, PNG o PDF
-              </p>
+      {/* Estado contextual */}
+      {!unlocked ? (
+        <div className="mt-5 flex items-start gap-3 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
+          <Ban className="w-4 h-4 text-gray-500 shrink-0 mt-0.5" />
+          <p className="text-[10px] text-gray-500 leading-relaxed">
+            Esta cuota se habilita cuando el proyecto esté publicado.
+          </p>
+        </div>
+      ) : (
+        <div className="mt-5 space-y-4">
+          {/* Nota de rechazo visible si existe */}
+          {status === "rechazado" && pago.rejectionReason && (
+            <div className="flex items-start gap-3 p-4 rounded-2xl bg-red-500/5 border border-red-500/20">
+              <XCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-red-400 mb-1">
+                  Comprobante rechazado
+                </p>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  {pago.rejectionReason}
+                </p>
+              </div>
             </div>
+          )}
+
+          {/* Preview del comprobante */}
+          {pago.comprobanteUrl && (
+            <ComprobantePreview
+              url={pago.comprobanteUrl}
+              uploadedAt={pago.uploadedAt}
+              approvedAt={pago.approvedAt}
+            />
+          )}
+
+          {/* Acciones */}
+          <div className="flex flex-col sm:flex-row gap-2">
+            {/* Estudio: subir comprobante (mientras no esté aprobado) */}
+            {status !== "aprobado" && (
+              <>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,application/pdf"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    e.target.value = "";
+                    if (file) handleFile(file);
+                  }}
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={busy !== null}
+                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white/5 border border-white/10 text-xs font-black uppercase tracking-widest text-gray-300 hover:bg-white/10 hover:text-white transition-all disabled:opacity-50"
+                >
+                  {busy === "upload" ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Upload className="w-4 h-4" />
+                  )}
+                  {pago.comprobanteUrl
+                    ? status === "rechazado"
+                      ? "Subir nuevo comprobante"
+                      : "Reemplazar comprobante"
+                    : "Subir comprobante"}
+                </button>
+              </>
+            )}
+
+            {/* InZidium: aprobar / rechazar (sólo cuando hay comprobante en revisión) */}
+            {isInZidium && status === "enviado" && (
+              <>
+                <button
+                  onClick={handleApprove}
+                  disabled={busy !== null}
+                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-xs font-black uppercase tracking-widest text-emerald-300 hover:bg-emerald-500/30 transition-all disabled:opacity-50"
+                >
+                  {busy === "approve" ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Check className="w-4 h-4" />
+                  )}
+                  Aprobar
+                </button>
+                <button
+                  onClick={() => setRejectOpen(true)}
+                  disabled={busy !== null}
+                  className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs font-black uppercase tracking-widest text-red-300 hover:bg-red-500/20 transition-all disabled:opacity-50"
+                >
+                  <X className="w-4 h-4" />
+                  Rechazar
+                </button>
+              </>
+            )}
           </div>
         </div>
+      )}
 
-        <div className="flex items-center gap-3">
-          <ArrowRight className="w-3 h-3 text-gray-600 shrink-0" />
-          <p className="text-[9px] text-gray-600 leading-relaxed font-bold uppercase tracking-widest">
-            Concepto: Infraestructura & Desarrollo · {project.plan}
+      {/* Modal de rechazo */}
+      <AnimatePresence>
+        {rejectOpen && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !busy && setRejectOpen(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative z-10 w-full max-w-md rounded-3xl border border-red-500/20 bg-[#060214]/95 p-6 sm:p-8 shadow-2xl"
+            >
+              <div className="mb-6">
+                <div className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 mb-4">
+                  <XCircle className="w-6 h-6" />
+                </div>
+                <h3 className="text-xl font-black uppercase tracking-tighter text-white mb-2">
+                  Rechazar comprobante
+                </h3>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  El estudio verá esta nota y podrá re-subir el comprobante.
+                </p>
+              </div>
+              <textarea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="Ej: foto borrosa, monto no coincide, falta fecha..."
+                rows={4}
+                className="w-full bg-black/40 border border-white/10 rounded-2xl p-4 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-red-500/40 resize-none"
+              />
+              <div className="grid grid-cols-2 gap-3 mt-6">
+                <button
+                  onClick={() => setRejectOpen(false)}
+                  disabled={busy !== null}
+                  className="py-3 rounded-xl border border-white/10 text-gray-500 font-black text-[10px] uppercase tracking-widest hover:bg-white/5"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleReject}
+                  disabled={busy !== null || !rejectReason.trim()}
+                  className="py-3 rounded-xl bg-red-500 text-white font-black text-[10px] uppercase tracking-widest hover:bg-red-600 disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {busy === "reject" ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : null}
+                  Confirmar rechazo
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ─── Helpers UI ──────────────────────────────────────────────────────────────
+
+const STATUS_STYLES: Record<
+  PagoStatus,
+  { label: string; icon: any; color: string; bg: string; border: string }
+> = {
+  pendiente: {
+    label: "Pendiente",
+    icon: Clock,
+    color: "text-gray-400",
+    bg: "bg-white/5",
+    border: "border-white/10",
+  },
+  enviado: {
+    label: "En revisión",
+    icon: Clock,
+    color: "text-amber-400",
+    bg: "bg-amber-500/10",
+    border: "border-amber-500/20",
+  },
+  aprobado: {
+    label: "Aprobado",
+    icon: CheckCircle2,
+    color: "text-emerald-400",
+    bg: "bg-emerald-500/10",
+    border: "border-emerald-500/20",
+  },
+  rechazado: {
+    label: "Rechazado",
+    icon: XCircle,
+    color: "text-red-400",
+    bg: "bg-red-500/10",
+    border: "border-red-500/20",
+  },
+};
+
+function StatusBadge({ status }: { status: PagoStatus }) {
+  const s = STATUS_STYLES[status];
+  const Icon = s.icon;
+  return (
+    <div
+      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest shrink-0 self-start ${s.bg} ${s.border} ${s.color}`}
+    >
+      <Icon className="w-3 h-3" />
+      {s.label}
+    </div>
+  );
+}
+
+function ComprobantePreview({
+  url,
+  uploadedAt,
+  approvedAt,
+}: {
+  url: string;
+  uploadedAt?: string;
+  approvedAt?: string;
+}) {
+  const isImage = /\.(jpg|jpeg|png|webp|gif)$/i.test(url);
+  const isPdf = /\.pdf$/i.test(url);
+
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group block rounded-2xl border border-white/10 bg-black/30 overflow-hidden hover:border-white/20 transition-colors"
+    >
+      <div className="flex">
+        {isImage ? (
+          <img
+            src={url}
+            alt="Comprobante"
+            className="h-24 w-24 object-cover shrink-0"
+          />
+        ) : (
+          <div className="h-24 w-24 shrink-0 flex items-center justify-center bg-white/5">
+            {isPdf ? (
+              <FileText className="w-8 h-8 text-red-400/70" />
+            ) : (
+              <ImageIcon className="w-8 h-8 text-gray-500" />
+            )}
+          </div>
+        )}
+        <div className="p-4 flex-1 min-w-0">
+          <p className="text-xs font-black uppercase tracking-widest text-white mb-1">
+            Comprobante adjunto
+          </p>
+          {uploadedAt && (
+            <p className="text-[10px] text-gray-500">
+              Subido: {new Date(uploadedAt).toLocaleString("es-CO")}
+            </p>
+          )}
+          {approvedAt && (
+            <p className="text-[10px] text-emerald-400">
+              Aprobado: {new Date(approvedAt).toLocaleString("es-CO")}
+            </p>
+          )}
+          <p className="text-[9px] text-gray-600 uppercase tracking-widest mt-2 group-hover:text-gray-400 transition-colors">
+            Click para ver →
           </p>
         </div>
       </div>
+    </a>
+  );
+}
 
-    </motion.div>
+// ─── Editor de precio custom ─────────────────────────────────────────────────
+
+function PrecioCustomEditor({
+  project,
+  precioTotal,
+  isInZidium,
+  onSave,
+}: {
+  project: any;
+  precioTotal: number | null;
+  isInZidium: boolean;
+  onSave: (precio: number) => Promise<void>;
+}) {
+  const precioCustom: number | null = project.onboardingData?.precioCustom ?? null;
+  const [editing, setEditing] = useState(false);
+  const [temp, setTemp] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    const num = parseInt(temp.replace(/\D/g, ""), 10);
+    if (!num || num <= 0) return;
+    setSaving(true);
+    await onSave(num);
+    setSaving(false);
+    setEditing(false);
+  };
+
+  if (editing) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-4"
+      >
+        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+          Precio total del proyecto (COP)
+        </p>
+        <div className="flex items-center gap-3">
+          <span className="text-xl font-black text-gray-500">$</span>
+          <input
+            type="text"
+            value={temp}
+            onChange={(e) => setTemp(e.target.value.replace(/\D/g, ""))}
+            placeholder="0"
+            className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-2xl font-black text-white outline-none focus:border-[#FFD700]/50"
+            autoFocus
+          />
+          <span className="text-sm font-black text-gray-600">COP</span>
+        </div>
+        {temp && parseInt(temp) > 0 && (
+          <div className="flex gap-3 text-[10px] font-black uppercase tracking-widest flex-wrap">
+            <span className="text-gray-500">InZidium:</span>
+            <span className="text-[#FFD700]">
+              {COP(Math.round(parseInt(temp) * PCT_INZIDIUM))}
+            </span>
+            <span className="text-gray-600">·</span>
+            <span className="text-gray-500">Estudio:</span>
+            <span className="text-gray-400">
+              {COP(Math.round(parseInt(temp) * PCT_ESTUDIO))}
+            </span>
+          </div>
+        )}
+        <div className="flex gap-3">
+          <button
+            onClick={() => {
+              setEditing(false);
+              setTemp("");
+            }}
+            className="flex-1 py-3 rounded-xl border border-white/10 text-gray-500 font-bold text-xs uppercase hover:bg-white/5 flex items-center justify-center gap-2"
+          >
+            <X className="w-4 h-4" /> Cancelar
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving || !temp || parseInt(temp) <= 0}
+            className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#a855f7] to-[#FFD700] text-white font-black text-xs uppercase hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {saving ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Check className="w-4 h-4" />
+            )}
+            Confirmar
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">
+        {precioTotal
+          ? `Precio total acordado: ${COP(precioTotal)}`
+          : "Precio total sin definir"}
+      </p>
+      {isInZidium ? (
+        <button
+          onClick={() => {
+            setTemp(precioCustom ? String(precioCustom) : "");
+            setEditing(true);
+          }}
+          className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5"
+        >
+          <Edit2 className="w-3 h-3" /> Editar precio
+        </button>
+      ) : (
+        <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-gray-600">
+          <Lock className="w-3 h-3" /> Solo InZidium
+        </div>
+      )}
+    </div>
   );
 }

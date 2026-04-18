@@ -1,20 +1,16 @@
 import { IDataProvider } from "../interface";
 import { db } from "../../db";
 import { clientes, proyectos, administradores, chat, archivos } from "../../db/schema";
-import { eq, inArray, desc, sql } from "drizzle-orm";
+import { eq, and, desc, inArray, sql } from "drizzle-orm";
 import { Cliente, Proyecto, AdminUser, ChatMessage, Archivo } from "../types";
 import { authSecret, estudioId, supabaseUrl } from "@/lib/env";
 import { supabaseAdmin } from "@/lib/supabase/server";
 
-// Devuelve los IDs de todos los clientes de este estudio.
-// Usado para filtrar proyectos (que no tienen estudio_id directo).
-async function getClienteIds(): Promise<string[]> {
-  const rows = await db
-    .select({ id: clientes.id })
-    .from(clientes)
-    .where(eq(clientes.estudioId, estudioId));
-  return rows.map((r) => r.id);
-}
+/**
+ * Multitenancy: toda operación scopea por `estudioId` (aislamiento a nivel código).
+ * Cada WHERE combina `id` + `estudioId` para bloquear acceso cross-tenant por UUID
+ * conocido. Cada INSERT setea `estudioId` implícito desde el env var.
+ */
 
 export const DrizzleProvider: IDataProvider = {
   clientes: {
@@ -28,15 +24,17 @@ export const DrizzleProvider: IDataProvider = {
     getById: async (id) => {
       return (
         (await db.query.clientes.findFirst({
-          where: eq(clientes.id, id),
+          where: and(eq(clientes.id, id), eq(clientes.estudioId, estudioId)),
         })) || null
       );
     },
     getByCedula: async (cedula) => {
       return (
         (await db.query.clientes.findFirst({
-          where: (c, { and, eq }) =>
-            and(eq(c.estudioId, estudioId), eq(c.cedula, cedula)),
+          where: and(
+            eq(clientes.estudioId, estudioId),
+            eq(clientes.cedula, cedula),
+          ),
         })) || null
       );
     },
@@ -50,7 +48,10 @@ export const DrizzleProvider: IDataProvider = {
     },
     update: async (id, data) => {
       try {
-        await db.update(clientes).set(data).where(eq(clientes.id, id));
+        await db
+          .update(clientes)
+          .set(data)
+          .where(and(eq(clientes.id, id), eq(clientes.estudioId, estudioId)));
         return { success: true };
       } catch (e) {
         return { success: false, error: "Error al actualizar cliente" };
@@ -58,7 +59,9 @@ export const DrizzleProvider: IDataProvider = {
     },
     delete: async (id) => {
       try {
-        await db.delete(clientes).where(eq(clientes.id, id));
+        await db
+          .delete(clientes)
+          .where(and(eq(clientes.id, id), eq(clientes.estudioId, estudioId)));
         return { success: true };
       } catch (e) {
         return { success: false, error: "Error al eliminar cliente" };
@@ -68,10 +71,8 @@ export const DrizzleProvider: IDataProvider = {
 
   proyectos: {
     getAll: async () => {
-      const clienteIds = await getClienteIds();
-      if (clienteIds.length === 0) return [];
       return (await db.query.proyectos.findMany({
-        where: inArray(proyectos.clienteId, clienteIds),
+        where: eq(proyectos.estudioId, estudioId),
         with: {
           cliente: true,
           archivos: true,
@@ -83,14 +84,17 @@ export const DrizzleProvider: IDataProvider = {
     getById: async (id) => {
       return (
         ((await db.query.proyectos.findFirst({
-          where: eq(proyectos.id, id),
+          where: and(eq(proyectos.id, id), eq(proyectos.estudioId, estudioId)),
           with: { cliente: true, archivos: true, chat: true },
         })) as any) || null
       );
     },
     getByClienteId: async (clienteId) => {
       return (await db.query.proyectos.findMany({
-        where: eq(proyectos.clienteId, clienteId),
+        where: and(
+          eq(proyectos.clienteId, clienteId),
+          eq(proyectos.estudioId, estudioId),
+        ),
         with: {
           cliente: true,
           archivos: true,
@@ -108,7 +112,10 @@ export const DrizzleProvider: IDataProvider = {
     },
     update: async (id, data: any) => {
       try {
-        await db.update(proyectos).set(data).where(eq(proyectos.id, id));
+        await db
+          .update(proyectos)
+          .set(data)
+          .where(and(eq(proyectos.id, id), eq(proyectos.estudioId, estudioId)));
         return { success: true };
       } catch (e) {
         return { success: false, error: "Error al actualizar proyecto" };
@@ -116,7 +123,9 @@ export const DrizzleProvider: IDataProvider = {
     },
     delete: async (id) => {
       try {
-        await db.delete(proyectos).where(eq(proyectos.id, id));
+        await db
+          .delete(proyectos)
+          .where(and(eq(proyectos.id, id), eq(proyectos.estudioId, estudioId)));
         return { success: true };
       } catch (e) {
         return { success: false, error: "Error al eliminar proyecto" };
@@ -136,7 +145,10 @@ export const DrizzleProvider: IDataProvider = {
     getUserById: async (id) => {
       return (
         (await db.query.administradores.findFirst({
-          where: eq(administradores.id, id),
+          where: and(
+            eq(administradores.id, id),
+            eq(administradores.estudioId, estudioId),
+          ),
         })) || null
       );
     },
@@ -144,7 +156,12 @@ export const DrizzleProvider: IDataProvider = {
       await db
         .update(administradores)
         .set({ activeSessionId: sessionId })
-        .where(eq(administradores.id, id));
+        .where(
+          and(
+            eq(administradores.id, id),
+            eq(administradores.estudioId, estudioId),
+          ),
+        );
     },
     getAllAdmins: async () => {
       return await db
@@ -163,7 +180,14 @@ export const DrizzleProvider: IDataProvider = {
     },
     deleteAdmin: async (id) => {
       try {
-        await db.delete(administradores).where(eq(administradores.id, id));
+        await db
+          .delete(administradores)
+          .where(
+            and(
+              eq(administradores.id, id),
+              eq(administradores.estudioId, estudioId),
+            ),
+          );
         return { success: true };
       } catch (e) {
         return { success: false, error: "Error al eliminar admin" };
@@ -182,7 +206,10 @@ export const DrizzleProvider: IDataProvider = {
     },
     getMessagesByProyectoId: async (proyectoId) => {
       const data = await db.query.chat.findMany({
-        where: eq(chat.proyectoId, proyectoId),
+        where: and(
+          eq(chat.proyectoId, proyectoId),
+          eq(chat.estudioId, estudioId),
+        ),
         orderBy: (c, { asc }) => [asc(c.createdAt)],
       });
       return data.map((m) => ({
@@ -193,13 +220,17 @@ export const DrizzleProvider: IDataProvider = {
     },
     pruneMessages: async (proyectoId, keepCount) => {
       const all = await db.query.chat.findMany({
-        where: eq(chat.proyectoId, proyectoId),
+        where: and(
+          eq(chat.proyectoId, proyectoId),
+          eq(chat.estudioId, estudioId),
+        ),
         orderBy: (c, { asc }) => [asc(c.createdAt)],
       });
       if (all.length <= keepCount) return { deletedImageUrls: [] };
       const toDelete = all.slice(0, all.length - keepCount);
       const ids = toDelete.map((m) => m.id);
       const imageUrls = toDelete.flatMap((m) => (m.imagenes as string[]) || []);
+      // inArray por id es seguro: los ids vienen del query ya filtrado por estudio.
       await db.delete(chat).where(inArray(chat.id, ids));
       return { deletedImageUrls: imageUrls };
     },
@@ -220,16 +251,24 @@ export const DrizzleProvider: IDataProvider = {
         const [archivo] = await db
           .select({ storagePath: archivos.storagePath })
           .from(archivos)
-          .where(eq(archivos.id, id))
+          .where(and(eq(archivos.id, id), eq(archivos.estudioId, estudioId)))
           .limit(1);
-        await db.delete(archivos).where(eq(archivos.id, id));
-        return { success: true, storagePath: archivo?.storagePath ?? null };
+        if (!archivo) {
+          return { success: false, error: "Archivo no encontrado" };
+        }
+        await db
+          .delete(archivos)
+          .where(and(eq(archivos.id, id), eq(archivos.estudioId, estudioId)));
+        return { success: true, storagePath: archivo.storagePath ?? null };
       } catch (e) {
         return { success: false, error: "Error al eliminar archivo" };
       }
     },
     getAll: async () => {
-      const data = await db.select().from(archivos);
+      const data = await db
+        .select()
+        .from(archivos)
+        .where(eq(archivos.estudioId, estudioId));
       return data.map((a) => ({
         ...a,
         subidoPor: a.subidoPor as "admin" | "cliente",

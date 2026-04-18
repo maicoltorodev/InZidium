@@ -1,8 +1,7 @@
 import React from "react";
 import { headers } from "next/headers";
-import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import { authOptions } from "@/lib/auth-options";
+import { auth } from "@/auth";
 import { auth as authService } from "@/lib/data/service";
 import { AdminDesktopShell } from "@/components/desktop/admin/AdminDesktopShell";
 import { AuthProvider } from "@/app/providers/AuthProvider";
@@ -17,7 +16,7 @@ export default async function AdminLayout({
   const isLoginPage = pathname === "/admin/login";
 
   if (!isLoginPage) {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user) {
       redirect("/admin/login");

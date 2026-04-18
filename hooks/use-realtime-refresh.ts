@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { supabaseClient } from "@/lib/supabase/client";
+import { publicEstudioId } from "@/lib/env";
 
 type RealtimeTable = "clientes" | "proyectos" | "archivos" | "chat" | "administradores";
 
@@ -29,18 +30,30 @@ export function useRealtimeRefresh(
     const channelName = `rt-${tables.join("-")}-${Math.random().toString(36).slice(2, 7)}`;
     const channel = supabaseClient.channel(channelName);
 
+    const isDev = process.env.NODE_ENV === "development";
+
     tables.forEach((table) => {
       channel.on(
         "postgres_changes" as any,
-        { event: "*", schema: "public", table },
+        {
+          event: "*",
+          schema: "public",
+          table,
+          // Filtro por tenant: el cliente sólo recibe eventos de su estudio.
+          // Evita re-renders innecesarios por actividad de otros tenants.
+          filter: `estudio_id=eq.${publicEstudioId}`,
+        },
         (payload: any) => {
-          console.log(`[Realtime] Cambio detectado en "${table}":`, payload.eventType);
+          if (isDev) {
+            console.log(`[Realtime] Cambio en "${table}":`, payload.eventType);
+          }
           onRefreshRef.current();
         }
       );
     });
 
     channel.subscribe((status: string, error?: Error) => {
+      if (!isDev) return;
       if (status === "SUBSCRIBED") {
         console.log(`[Realtime] ✅ Suscrito a: ${tables.join(", ")}`);
       } else if (status === "CHANNEL_ERROR") {
