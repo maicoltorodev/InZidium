@@ -97,8 +97,12 @@ export const metadata: Metadata = {
   category: "Desarrollo Web",
   icons: {
     icon: [
+      // Tab variant — la que se ve en la pestaña del navegador
       { url: "/favicon.ico", sizes: "any" },
       { url: "/icon.png", type: "image/png", sizes: "192x192" },
+      // Google variant — para resultados de búsqueda (múltiplo de 48)
+      { url: "/favicon-google.png", type: "image/png", sizes: "192x192" },
+      { url: "/favicon-google-512.png", type: "image/png", sizes: "512x512" },
     ],
     apple: [
       { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
