@@ -14,6 +14,24 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<jwt anon>
 DATABASE_URL=<postgres url>
 ```
 
+## Integración con Plantilla Web (auto-deploys)
+
+```
+PLANTILLA_URL=https://plantilla-web-seven.vercel.app
+PLANTILLA_REVALIDATE_SECRET=<mismo que REVALIDATE_SECRET en la Plantilla>
+PLANTILLA_WILDCARD_DOMAIN=maicoltoro.com
+```
+
+Sin estas vars, los cambios del onboarding no invalidan el cache del sitio
+del cliente — el visitante puede ver datos viejos durante hasta 60s.
+
+Con ellas, cada cambio en `updateProyectoOnboarding`, `setProyectoFase`,
+`updateProyectoVisibilidad`, `updateProyectoLink`, `updateProyectoPlan`,
+`toggleProyectoFreezeMode` dispara un POST al `/api/revalidate` de la
+Plantilla → cache se invalida instantáneo → próxima visita ve lo nuevo.
+
+Ver detalles completos del flujo en `Plantilla Web ( Clientes )/DEPLOY.md`.
+
 ## Específicas por tenant
 
 | Var | Propósito | Falta → qué pasa |

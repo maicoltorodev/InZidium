@@ -12,6 +12,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { PLANS_ARRAY } from "@/lib/constants";
 import { ModalConfirm } from "./ModalConfirm";
+import { DeployPanel } from "./DeployPanel";
 
 interface TabSettingsProps {
   project: any;
@@ -104,6 +105,8 @@ export function TabSettings({
         exit={{ opacity: 0, y: -10 }}
         className="max-w-3xl mx-auto space-y-8"
       >
+        <DeployPanel project={project} />
+
         <div className="p-6 sm:p-8 rounded-3xl bg-white/[0.04] backdrop-blur-xl border border-white/8 space-y-6 sm:space-y-8">
           <div className="flex items-center gap-4 border-b border-white/5 pb-6">
             <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white shrink-0">

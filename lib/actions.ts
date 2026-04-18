@@ -22,6 +22,7 @@ import type { ProjectFase } from "./data/types";
 import type { Pago, PagoTipo } from "./finance";
 import { supabaseUrl } from "@/lib/env";
 import { rateLimit, getClientIp } from "./rate-limit";
+import { notifyPlantillaRevalidate } from "./plantilla-deploy";
 
 /**
  * Dispara push a la app InZidium vía edge function `notify-event`. Fire-and-forget:
@@ -166,6 +167,7 @@ export async function updateProyectoVisibilidad(
   if (res.success) {
     revalidatePath("/admin");
     revalidateClientProjects();
+    notifyPlantillaRevalidate(id);
   }
   return res;
 }
@@ -175,6 +177,7 @@ export async function updateProyectoPlan(id: string, plan: string) {
   if (res.success) {
     revalidatePath("/admin");
     revalidateClientProjects();
+    notifyPlantillaRevalidate(id);
   }
   return res;
 }
@@ -190,6 +193,21 @@ export async function updateProyectoLink(id: string, link: string) {
   if (res.success) {
     revalidatePath("/admin");
     revalidateClientProjects();
+    notifyPlantillaRevalidate(id);
+  }
+  return res;
+}
+
+/**
+ * Toggle del "modo revisión" del proyecto: cuando está activo, los cambios
+ * del cliente se siguen guardando en DB pero la plantilla le sirve el
+ * último estado aprobado (no los cambios pending de aprobación).
+ */
+export async function toggleProyectoFreezeMode(id: string, freezeMode: boolean) {
+  const res = await proyectos.update(id, { freezeMode } as any);
+  if (res.success) {
+    revalidatePath("/admin");
+    notifyPlantillaRevalidate(id);
   }
   return res;
 }
@@ -235,6 +253,7 @@ export async function updateProyectoOnboarding(
 
   revalidatePath("/admin");
   revalidateClientProjects();
+  notifyPlantillaRevalidate(id);
   return res;
 }
 
@@ -259,8 +278,34 @@ export async function setProyectoFase(id: string, fase: ProjectFase) {
     }
     revalidatePath("/admin");
     revalidateClientProjects();
+    notifyPlantillaRevalidate(id);
   }
   return res;
+}
+
+/**
+ * Devuelve las URLs donde el proyecto del cliente está disponible:
+ *   - preview: subdomain auto en el wildcard (ej: pizzeria.maicoltoro.com)
+ *   - custom:  dominio propio si lo configuró en `link`
+ */
+export async function getProyectoUrls(projectId: string) {
+  const all = await proyectos.getAll();
+  const project = (all as any[]).find((p: any) => p.id === projectId);
+  if (!project) return null;
+
+  const wildcardDomain = process.env.PLANTILLA_WILDCARD_DOMAIN ?? "maicoltoro.com";
+  const slug = (project.nombre || "proyecto")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 63);
+
+  return {
+    preview: `https://${slug}.${wildcardDomain}`,
+    custom: project.link ? `https://${project.link.replace(/^https?:\/\//, "")}` : null,
+  };
 }
 
 export async function resetBuildTimer(id: string) {
