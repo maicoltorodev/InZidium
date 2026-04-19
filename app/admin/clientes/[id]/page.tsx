@@ -30,6 +30,7 @@ export default function ClienteDetalle() {
   const [formData, setFormData] = useState<any>({});
   const [errors, setErrors] = useState<any>({});
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
@@ -57,6 +58,8 @@ export default function ClienteDetalle() {
   }
 
   async function handleSave() {
+    if (saving) return;
+
     const newErrors: any = {};
 
     if (!formData.nombre) newErrors.nombre = "El nombre es requerido";
@@ -83,12 +86,15 @@ export default function ClienteDetalle() {
   }
 
   async function handleDelete() {
+    if (deleting) return;
+    setDeleting(true);
     try {
       await deleteCliente(params.id as string);
       showToast("Cliente eliminado con éxito", "success");
       router.push("/admin/clientes");
     } catch (error) {
       showToast("Error al eliminar el cliente", "error");
+      setDeleting(false);
     }
   }
 

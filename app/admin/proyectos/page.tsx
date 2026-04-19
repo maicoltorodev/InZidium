@@ -21,6 +21,7 @@ import {
   X,
   CheckCircle2,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -41,6 +42,7 @@ export default function ProjectsAdmin() {
   const [clientSearch, setClientSearch] = useState("");
   const [deliveryDate, setDeliveryDate] = useState("");
   const [selectedPlanId, setSelectedPlanId] = useState(PLANS_ARRAY[0].id);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -299,6 +301,8 @@ export default function ProjectsAdmin() {
               <form
                 onSubmit={async (e) => {
                   e.preventDefault();
+                  if (isSaving) return;
+
                   const formData = new FormData(e.currentTarget);
                   const newErrors: any = {};
 
@@ -314,13 +318,18 @@ export default function ProjectsAdmin() {
                     return;
                   }
 
-                  await createProyecto(formData);
-                  showToast("PROYECTO INICIALIZADO EXITOSAMENTE", "success");
-                  setIsAdding(false);
-                  setSelectedClient(null);
-                  setDeliveryDate("");
-                  setErrors({});
-                  loadData();
+                  setIsSaving(true);
+                  try {
+                    await createProyecto(formData);
+                    showToast("PROYECTO INICIALIZADO EXITOSAMENTE", "success");
+                    setIsAdding(false);
+                    setSelectedClient(null);
+                    setDeliveryDate("");
+                    setErrors({});
+                    loadData();
+                  } finally {
+                    setIsSaving(false);
+                  }
                 }}
                 className="space-y-8"
               >
@@ -539,10 +548,14 @@ export default function ProjectsAdmin() {
 
                 <button
                   type="submit"
-                  className="relative group w-full py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-sm transition-all hover:scale-[1.02] active:scale-95 overflow-hidden shadow-[0_10px_30px_rgba(168,85,247,0.15),_0_10px_30px_rgba(34,211,238,0.1)] mt-6"
+                  disabled={isSaving}
+                  className="relative group w-full py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-sm transition-all hover:scale-[1.02] active:scale-95 overflow-hidden shadow-[0_10px_30px_rgba(168,85,247,0.15),_0_10px_30px_rgba(34,211,238,0.1)] mt-6 disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] animate-gradient bg-[length:200%_auto]" />
-                  <span className="relative text-white">Crear proyecto</span>
+                  <span className="relative text-white flex items-center justify-center gap-2">
+                    {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
+                    {isSaving ? "Creando…" : "Crear proyecto"}
+                  </span>
                 </button>
               </form>
             </motion.div>

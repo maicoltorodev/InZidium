@@ -38,6 +38,7 @@ export default function ClientsAdmin() {
   const [isTripleConfirm, setIsTripleConfirm] = useState(false);
   const [docInput, setDocInput] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     loadClients();
@@ -55,6 +56,7 @@ export default function ClientsAdmin() {
 
   async function handleDelete() {
     if (!confirmDelete || docInput !== confirmDelete.cedula) return;
+    if (isDeleting) return;
     setIsDeleting(true);
     await deleteCliente(confirmDelete.id);
     showToast(
@@ -290,6 +292,11 @@ export default function ClientsAdmin() {
               <form
                 onSubmit={async (e) => {
                   e.preventDefault();
+                  // Guard contra doble submit — sin esto, un click rápido
+                  // creaba el cliente en la primera llamada y la segunda
+                  // devolvía "ya registrado" (toast falso positivo).
+                  if (isSaving) return;
+
                   const formData = new FormData(e.currentTarget);
                   const newErrors: any = {};
 
@@ -307,18 +314,23 @@ export default function ClientsAdmin() {
                     return;
                   }
 
-                  const result = await createCliente(formData);
+                  setIsSaving(true);
+                  try {
+                    const result = await createCliente(formData);
 
-                  if (result?.error) {
-                    setErrors({ cedula: result.error });
-                    showToast(result.error, "error");
-                    return;
+                    if (result?.error) {
+                      setErrors({ cedula: result.error });
+                      showToast(result.error, "error");
+                      return;
+                    }
+
+                    showToast("CLIENTE REGISTRADO CON ÉXITO", "success");
+                    setIsAdding(false);
+                    setErrors({});
+                    loadClients();
+                  } finally {
+                    setIsSaving(false);
                   }
-
-                  showToast("CLIENTE REGISTRADO CON ÉXITO", "success");
-                  setIsAdding(false);
-                  setErrors({});
-                  loadClients();
                 }}
                 className="space-y-5 relative"
               >
@@ -355,13 +367,15 @@ export default function ClientsAdmin() {
                 <div className="pt-6">
                   <button
                     type="submit"
-                    className="group relative w-full h-16 rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 hover:scale-[1.02] active:scale-95"
+                    disabled={isSaving}
+                    className="group relative w-full h-16 rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 hover:scale-[1.02] active:scale-95 disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] bg-[length:200%_auto] animate-gradient" />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
-                    <div className="relative flex items-center justify-center">
+                    <div className="relative flex items-center justify-center gap-2">
+                      {isSaving && <Loader2 className="w-4 h-4 animate-spin text-white" />}
                       <span className="font-black text-white uppercase tracking-[0.2em] text-xs">
-                        Guardar cliente
+                        {isSaving ? "Guardando…" : "Guardar cliente"}
                       </span>
                     </div>
                   </button>

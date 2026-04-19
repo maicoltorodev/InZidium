@@ -30,6 +30,7 @@ export default function AdminsPage() {
   const [errors, setErrors] = useState<any>({});
   const [adminToDelete, setAdminToDelete] = useState<any>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [confirmUsername, setConfirmUsername] = useState("");
 
   useEffect(() => {
@@ -251,6 +252,8 @@ export default function AdminsPage() {
               <form
                 onSubmit={async (e) => {
                   e.preventDefault();
+                  if (isSaving) return;
+
                   const formData = new FormData(e.currentTarget);
                   const newErrors: any = {};
 
@@ -271,18 +274,23 @@ export default function AdminsPage() {
                     return;
                   }
 
-                  const result = await createAdmin(formData);
+                  setIsSaving(true);
+                  try {
+                    const result = await createAdmin(formData);
 
-                  if (result?.error) {
-                    setErrors({ username: result.error });
-                    showToast(result.error, "error");
-                    return;
+                    if (result?.error) {
+                      setErrors({ username: result.error });
+                      showToast(result.error, "error");
+                      return;
+                    }
+
+                    showToast("ADMINISTRADOR CREADO CON ÉXITO", "success");
+                    setIsAdding(false);
+                    setErrors({});
+                    loadAdmins();
+                  } finally {
+                    setIsSaving(false);
                   }
-
-                  showToast("ADMINISTRADOR CREADO CON ÉXITO", "success");
-                  setIsAdding(false);
-                  setErrors({});
-                  loadAdmins();
                 }}
                 className="space-y-6"
               >
@@ -327,11 +335,13 @@ export default function AdminsPage() {
 
                 <button
                   type="submit"
-                  className="relative group w-full py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-sm transition-all hover:scale-[1.02] active:scale-95 overflow-hidden shadow-[0_10px_30px_rgba(168,85,247,0.15),_0_10px_30px_rgba(34,211,238,0.1)] mt-6"
+                  disabled={isSaving}
+                  className="relative group w-full py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-sm transition-all hover:scale-[1.02] active:scale-95 overflow-hidden shadow-[0_10px_30px_rgba(168,85,247,0.15),_0_10px_30px_rgba(34,211,238,0.1)] mt-6 disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] animate-gradient bg-[length:200%_auto]" />
-                  <span className="relative text-white">
-                    Crear administrador
+                  <span className="relative text-white flex items-center justify-center gap-2">
+                    {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
+                    {isSaving ? "Creando…" : "Crear administrador"}
                   </span>
                 </button>
               </form>

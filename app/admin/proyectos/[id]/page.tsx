@@ -173,6 +173,7 @@ export default function ProyectoDetalle() {
   };
 
   async function handleSyncChanges() {
+    if (saving) return;
     setSaving(true);
     const result = await updateProyectoProgreso(
       params.id as string,
@@ -195,6 +196,7 @@ export default function ProyectoDetalle() {
 
   const handleConfirmLinkChange = async () => {
     if (!project) return;
+    if (saving) return;
     setSaving(true);
     try {
       const result = await updateProyectoLink(project.id, tempLink);
@@ -242,6 +244,7 @@ export default function ProyectoDetalle() {
 
   const handleSendReply = async () => {
     if (!replyNote.trim() && !replyImage || !project) return;
+    if (sendingReply) return;
     setSendingReply(true);
     try {
       const imagenes = replyImage ? [replyImage] : [];
@@ -263,6 +266,7 @@ export default function ProyectoDetalle() {
 
   async function handleUpdateFecha() {
     if (!tempDate) return;
+    if (saving) return;
     setSaving(true);
     // Ajustar zona horaria añadiendo 'T12:00:00' para evitar desfases de día
     const result = await updateProyectoFecha(
@@ -280,6 +284,7 @@ export default function ProyectoDetalle() {
   }
 
   async function handleToggleVisibilidad() {
+    if (togglingVisibilidad) return;
     setTogglingVisibilidad(true);
     const nuevaVisibilidad = !visibilidad;
     await updateProyectoVisibilidad(params.id as string, nuevaVisibilidad);
@@ -289,6 +294,7 @@ export default function ProyectoDetalle() {
 
   // --- LOGIC: Files ---
   async function processFile(file: File) {
+    if (uploading) return;
     setUploading(true);
 
     const result = await uploadProjectFile({
@@ -376,6 +382,7 @@ export default function ProyectoDetalle() {
   // --- LOGIC: Planes ---
   async function handleUpdatePlan() {
     if (!pendingPlan || verifyInput.trim() !== project.nombre.trim()) return;
+    if (saving) return;
     setShowVerifyName(false);
     setVerifyInput("");
     setSaving(true);
