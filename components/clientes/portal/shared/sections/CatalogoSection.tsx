@@ -15,6 +15,7 @@ import { BottomSheet } from "../primitives/BottomSheet";
 import { ToggleRow } from "../primitives/ToggleRow";
 import { MOTION } from "../primitives/motion";
 import { BRAND_ICON_STYLE } from "../primitives/BrandDefs";
+import { CatalogoItemEditor, type PreviewTheme } from "../../desktop/CatalogoItemEditor";
 
 const TIPO_CONFIG = {
   servicios: {
@@ -69,11 +70,15 @@ export function CatalogoSection({
   savePatch,
   projectId,
   showToast,
+  device = "mobile",
 }: {
   d: any;
   savePatch: (patch: any) => void;
   projectId: string;
   showToast: (msg: string, type: "success" | "error") => void;
+  /** En desktop usamos un modal centrado con preview fiel al sitio.
+   *  En mobile/tablet mantenemos el BottomSheet. */
+  device?: "desktop" | "tablet" | "mobile";
 }) {
   const tipo: TipoCatalogo = d.tipoCatalogo || "servicios";
   const categorias: string[] = d.categorias || [];
@@ -262,38 +267,78 @@ export function CatalogoSection({
         <AddCategoryInput onAdd={addCategory} />
       </FieldItem>
 
-      {/* BottomSheet edición */}
-      <BottomSheet
-        open={!!editing}
-        onClose={handleCloseSheet}
-        title={sheetTitle}
-        footer={
-          editing && (
-            <button
-              type="button"
-              onClick={() => removeItem(editing.id)}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/[0.06] py-3 text-[11px] font-black uppercase tracking-[0.2em] text-red-400 transition-colors hover:bg-red-500/10"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              Eliminar {cfg.singular.toLowerCase()}
-            </button>
-          )
-        }
-      >
-        {editing && (
-          <ItemForm
-            item={editing}
-            categorias={categorias}
-            cfg={cfg}
-            uploadingImg={uploadingImg}
-            onChange={setItem}
-            onUploadImage={handleItemImage}
-            onAddCategory={addCategory}
-          />
-        )}
-      </BottomSheet>
+      {/* Editor — modal centrado en desktop, BottomSheet en mobile/tablet */}
+      {editing && device === "desktop" ? (
+        <CatalogoItemEditor
+          item={editing}
+          cfg={cfg}
+          categorias={categorias}
+          projectId={projectId}
+          theme={buildPreviewTheme(d)}
+          onChange={setItem}
+          onClose={handleCloseSheet}
+          onRemove={() => removeItem(editing.id)}
+          onAddCategory={addCategory}
+          showToast={showToast}
+        />
+      ) : (
+        <BottomSheet
+          open={!!editing}
+          onClose={handleCloseSheet}
+          title={sheetTitle}
+          footer={
+            editing && (
+              <button
+                type="button"
+                onClick={() => removeItem(editing.id)}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/20 bg-red-500/[0.06] py-3 text-[11px] font-black uppercase tracking-[0.2em] text-red-400 transition-colors hover:bg-red-500/10"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Eliminar {cfg.singular.toLowerCase()}
+              </button>
+            )
+          }
+        >
+          {editing && (
+            <ItemForm
+              item={editing}
+              categorias={categorias}
+              cfg={cfg}
+              uploadingImg={uploadingImg}
+              onChange={setItem}
+              onUploadImage={handleItemImage}
+              onAddCategory={addCategory}
+            />
+          )}
+        </BottomSheet>
+      )}
     </>
   );
+}
+
+// Arma el theme que pasa al editor desktop para el preview WYSIWYG. Los
+// colores vienen del onboarding; text/textMuted se derivan por luminance
+// del bg (fondo claro → texto oscuro, y viceversa).
+function buildPreviewTheme(d: any): PreviewTheme {
+  const bg = d.colorFondo || "#ffffff";
+  const primary = d.colorPrimario || d.colorAcento || "#c8a24a";
+  const accent = d.colorAcento2 || d.colorAcento || d.colorPrimario || "#7a1e2c";
+  const dark = luminanceHex(bg) < 0.5;
+  return {
+    primary,
+    accent,
+    bg,
+    text: dark ? "#f5f5f7" : "#171717",
+    textMuted: dark ? "#9a9aa3" : "#6b6b73",
+  };
+}
+
+function luminanceHex(hex: string): number {
+  const c = hex.replace("#", "").padEnd(6, "0").slice(0, 6);
+  const r = parseInt(c.slice(0, 2), 16) / 255;
+  const g = parseInt(c.slice(2, 4), 16) / 255;
+  const b = parseInt(c.slice(4, 6), 16) / 255;
+  return 0.299 * r + 0.587 * g + 0.114 * b;
 }
 
 // ─── Input inline para categoría (usado fuera y dentro del modal) ────────────

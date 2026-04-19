@@ -1,8 +1,18 @@
 "use client";
 
+import { useEffect } from "react";
 import { AutoField, AutoTextarea, ImageField } from "../../fields";
 import { labelCls } from "../../styles";
 import { FieldItem } from "../primitives/FieldItem";
+
+// Stats de ejemplo que arrancan prellenados. El cliente los puede editar o
+// borrar. Si nunca los toca, aparecen tal cual en el sitio final.
+const DEFAULT_STATS = [
+  { value: "+5",   label: "Años de experiencia" },
+  { value: "+500", label: "Clientes satisfechos" },
+  { value: "5★",   label: "Calificación" },
+  { value: "100%", label: "Compromiso" },
+];
 
 const EMPTY_STATS = [
   { value: "", label: "" },
@@ -10,10 +20,6 @@ const EMPTY_STATS = [
   { value: "", label: "" },
   { value: "", label: "" },
 ];
-
-// Ejemplos por fila: valor y lo que representa. Plantilla mental "+5 años".
-const PLACEHOLDER_VALUES = ["+5",    "+500",     "5★",           "100%"];
-const PLACEHOLDER_LABELS = ["Años",  "Clientes", "Calificación", "Compromiso"];
 
 export function NosotrosSection({
   d,
@@ -27,6 +33,16 @@ export function NosotrosSection({
   onUploadFoto: (file: File) => void;
 }) {
   const stats: { value: string; label: string }[] = d.stats ?? EMPTY_STATS;
+
+  // Si el cliente entra por primera vez y no hay stats guardados, sembramos
+  // los defaults. Una vez guardados, `d.stats` queda definido y no se vuelve
+  // a sembrar aunque el cliente borre todo (respeta su edición explícita).
+  useEffect(() => {
+    if (!d.stats) {
+      savePatch({ stats: DEFAULT_STATS });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const updateStat = (idx: number, key: "value" | "label", v: string) => {
     const next = stats.length === 4 ? [...stats] : [...EMPTY_STATS];
@@ -82,7 +98,8 @@ export function NosotrosSection({
       <FieldItem id="nosotros-stats">
         <label className={labelCls}>4 datos clave</label>
         <p className="mb-3 text-[11px] text-white/30">
-          Estadísticas cortas que generan confianza. Escribe el dato a la izquierda y lo que representa a la derecha.
+          Los valores de ejemplo ya están listos — puedes cambiarlos por los
+          tuyos (años, clientes, calificación, etc).
         </p>
         <div className="overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] divide-y divide-white/[0.05]">
           {[0, 1, 2, 3].map((i) => {
@@ -92,14 +109,14 @@ export function NosotrosSection({
                 <AutoField
                   value={row.value}
                   onSave={(v) => updateStat(i, "value", v)}
-                  placeholder={PLACEHOLDER_VALUES[i]}
+                  placeholder={DEFAULT_STATS[i].value}
                   className="w-[34%] border-0 bg-transparent px-3 py-3 text-base font-black text-white outline-none placeholder:text-white/20 placeholder:font-bold"
                 />
                 <div className="w-px bg-white/[0.05]" aria-hidden />
                 <AutoField
                   value={row.label}
                   onSave={(v) => updateStat(i, "label", v)}
-                  placeholder={PLACEHOLDER_LABELS[i]}
+                  placeholder={DEFAULT_STATS[i].label}
                   className="flex-1 border-0 bg-transparent px-3 py-3 text-[13px] text-white/80 outline-none placeholder:text-white/25"
                 />
               </div>

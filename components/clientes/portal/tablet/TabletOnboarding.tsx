@@ -190,7 +190,7 @@ export function TabletOnboarding({
               <NosotrosSection d={d} savePatch={savePatch} uploadingNosotros={uploadingNosotros} onUploadFoto={handleUploadNosotros} />
             )}
             {view === "catalogo" && (
-              <CatalogoSection d={d} savePatch={savePatch} projectId={project.id} showToast={showToast} />
+              <CatalogoSection d={d} savePatch={savePatch} projectId={project.id} showToast={showToast} device="tablet" />
             )}
             {view === "contacto" && <UbicacionSection d={d} savePatch={savePatch} />}
             {view === "digital" && <ContactoSection d={d} savePatch={savePatch} />}

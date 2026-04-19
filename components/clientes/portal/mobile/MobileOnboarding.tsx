@@ -219,6 +219,7 @@ export function MobileOnboarding({
                 savePatch={savePatch}
                 projectId={project.id}
                 showToast={showToast}
+                device="mobile"
               />
             )}
             {view === "contacto" && <UbicacionSection d={d} savePatch={savePatch} />}
