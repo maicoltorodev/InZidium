@@ -134,8 +134,6 @@ export function DesktopOnboarding({
     return getSectionCompletion(view, d);
   }, [view, d]);
 
-  const currentSubnav = view !== "hub" ? SECTION_REGISTRY[view].subnav : undefined;
-
   return (
     <main>
       <BrandDefs />
@@ -176,7 +174,6 @@ export function DesktopOnboarding({
             completion={activeCompletion}
             onBack={backToHub}
             hideBody={view === "chat"}
-            subnav={currentSubnav}
             headerContent={
               view === "chat" ? (
                 <span className="flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] text-emerald-400">

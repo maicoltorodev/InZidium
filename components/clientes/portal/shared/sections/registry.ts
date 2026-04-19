@@ -64,7 +64,7 @@ export const SECTION_REGISTRY: Record<SectionKey, SectionMeta> = {
   social: {
     icon: AtSign,
     title: "Redes sociales",
-    subtitle: "Deja vacío lo que no uses.",
+    subtitle: "Selecciona almenos dos redes sociales.",
   },
   colores: {
     icon: Palette,
