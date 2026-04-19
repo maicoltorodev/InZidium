@@ -184,41 +184,17 @@ export function CatalogoSection({
             </button>
           </div>
         ) : (
-          <div className="space-y-2.5">
+          /* Grid de cards con el mismo layout del sitio: imagen 4:3 arriba con
+             overlay, categoría como pill gradient, título + descripción +
+             price·edit abajo. Más reconocible que una lista de filas planas. */
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {catalogo.map((item) => (
-              <motion.button
+              <CatalogoCard
                 key={item.id}
-                type="button"
+                item={item}
+                cfg={cfg}
                 onClick={() => setEditingId(item.id)}
-                whileTap={{ scale: 0.98 }}
-                transition={MOTION.tap}
-                className="flex w-full items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3 text-left transition-colors active:bg-white/[0.04]"
-              >
-                <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-white/[0.06] bg-black/20">
-                  {item.imagen ? (
-                    <img src={item.imagen} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-white/20">
-                      <ImageIcon className="h-4 w-4" />
-                    </div>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="truncate text-[13px] font-bold text-white">
-                    {item.titulo || `Nuevo ${cfg.singular.toLowerCase()}`}
-                  </p>
-                  <div className="mt-0.5 flex items-center gap-2 text-[11px] text-white/35">
-                    {item.precio && <span>{item.precio}</span>}
-                    {item.categoria && (
-                      <>
-                        {item.precio && <span className="text-white/20">·</span>}
-                        <span className="truncate">{item.categoria}</span>
-                      </>
-                    )}
-                    {!item.precio && !item.categoria && <span>Sin detalles</span>}
-                  </div>
-                </div>
-              </motion.button>
+              />
             ))}
           </div>
         )}
@@ -331,6 +307,88 @@ function buildPreviewTheme(d: any): PreviewTheme {
     text: dark ? "#f5f5f7" : "#171717",
     textMuted: dark ? "#9a9aa3" : "#6b6b73",
   };
+}
+
+// Card de item en la lista — layout tipo "service card" del sitio pero con
+// paleta admin (dark + gradient brand). Click abre el editor. Grid-friendly
+// (aspect-[4/3]) para que entren 2 en desktop y 1 en mobile.
+function CatalogoCard({
+  item,
+  cfg,
+  onClick,
+}: {
+  item: CatalogoItem;
+  cfg: {
+    singular: string;
+    plural: string;
+    icon: React.ElementType;
+    add: string;
+    placeholders: { titulo: string; descripcion: string; precio: string };
+  };
+  onClick: () => void;
+}) {
+  const Icon = cfg.icon;
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      whileTap={{ scale: 0.99 }}
+      whileHover={{ y: -2 }}
+      transition={MOTION.tap}
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] text-left transition-colors hover:border-[#a855f7]/30"
+    >
+      {/* Imagen 4:3 con overlay y categoría pill */}
+      <div className="relative aspect-[4/3] w-full overflow-hidden">
+        {item.imagen ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={item.imagen}
+            alt=""
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center bg-[linear-gradient(135deg,rgba(232,121,249,0.08)_0%,rgba(168,85,247,0.06)_50%,rgba(96,165,250,0.08)_100%)] text-white/25">
+            <Icon className="h-8 w-8" />
+          </div>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
+        {item.categoria && (
+          <span className="absolute left-3 top-3 rounded-full border border-white/20 bg-[linear-gradient(90deg,rgba(168,85,247,0.9),rgba(96,165,250,0.9))] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.22em] text-white shadow-lg backdrop-blur-sm">
+            {item.categoria}
+          </span>
+        )}
+      </div>
+
+      {/* Body */}
+      <div className="flex flex-1 flex-col gap-2 p-4">
+        <h3 className="text-[14px] font-black leading-tight text-white line-clamp-1">
+          {item.titulo.trim() || `Nuevo ${cfg.singular.toLowerCase()}`}
+        </h3>
+        <p className="line-clamp-2 text-[11px] leading-snug text-white/45">
+          {item.descripcion.trim() || "Sin descripción todavía."}
+        </p>
+        <div className="mt-auto flex items-center justify-between border-t border-white/[0.05] pt-2.5">
+          {item.precio ? (
+            <div className="flex flex-col">
+              <span className="text-[9px] uppercase tracking-[0.2em] text-white/30">
+                Precio
+              </span>
+              <span className="text-[13px] font-bold bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] bg-clip-text text-transparent">
+                {item.precio}
+              </span>
+            </div>
+          ) : (
+            <span className="text-[10px] uppercase tracking-[0.2em] text-white/25">
+              Sin precio
+            </span>
+          )}
+          <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-white/40 group-hover:text-white/70 transition-colors">
+            Editar
+          </span>
+        </div>
+      </div>
+    </motion.button>
+  );
 }
 
 function luminanceHex(hex: string): number {

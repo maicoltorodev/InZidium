@@ -21,8 +21,8 @@ import { RedesSection } from "../shared/sections/RedesSection";
 import { ColoresSection } from "../shared/sections/ColoresSection";
 import { LegalSection } from "../shared/sections/LegalSection";
 import { AvanzadoSection } from "../shared/sections/AvanzadoSection";
-import { MensajesSection } from "../shared/sections/MensajesSection";
 import { AjustesSection } from "../shared/sections/AjustesSection";
+import { SupportFab } from "../shared/SupportFab";
 
 type View = "hub" | SectionKey;
 
@@ -209,10 +209,18 @@ export function DesktopOnboarding({
                 onUploadFavicon={handleUploadFavicon}
               />
             )}
-            {view === "chat" && <MensajesSection project={project} showToast={showToast} variant="desktop" />}
           </DesktopSection>
         )}
       </AnimatePresence>
+
+      {/* FAB de soporte — reemplaza la card "Mensajes" del grid. Persistente
+          en toda la navegación del portal. */}
+      <SupportFab
+        project={project}
+        showToast={showToast}
+        device="desktop"
+        hasUnread={chatInfo.hasUnread}
+      />
     </main>
   );
 }

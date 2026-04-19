@@ -7,6 +7,7 @@ import {
   deleteArchivo,
   updateProyectoPlan,
   updateProyectoLink,
+  updateProyectoNombre,
   deleteProyecto,
   addChatMessage,
   updateProyectoPrecioCustom,
@@ -70,6 +71,8 @@ export default function ProyectoDetalle() {
   const [verifyInput, setVerifyInput] = useState("");
   const [isEditingLink, setIsEditingLink] = useState(false);
   const [tempLink, setTempLink] = useState("");
+  const [isEditingNombre, setIsEditingNombre] = useState(false);
+  const [tempNombre, setTempNombre] = useState("");
   const [showConfirmDeleteProject, setShowConfirmDeleteProject] = useState(false);
   const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
   const [isDeletingProject, setIsDeletingProject] = useState(false);
@@ -124,6 +127,26 @@ export default function ProyectoDetalle() {
       if (!silent) setLoading(false);
     }
   }
+
+  const handleConfirmNombreChange = async () => {
+    if (!project) return;
+    if (saving) return;
+    setSaving(true);
+    try {
+      const result = await updateProyectoNombre(project.id, tempNombre);
+      if (result.success) {
+        showToast("NOMBRE ACTUALIZADO", "success");
+        setIsEditingNombre(false);
+        loadProject();
+      } else {
+        showToast(result.error || "ERROR AL ACTUALIZAR", "error");
+      }
+    } catch (error) {
+      showToast("ERROR DE CONEXIÓN", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleConfirmLinkChange = async () => {
     if (!project) return;
@@ -511,6 +534,11 @@ export default function ProyectoDetalle() {
                   tempLink={tempLink}
                   setTempLink={setTempLink}
                   handleConfirmLinkChange={handleConfirmLinkChange}
+                  isEditingNombre={isEditingNombre}
+                  setIsEditingNombre={setIsEditingNombre}
+                  tempNombre={tempNombre}
+                  setTempNombre={setTempNombre}
+                  handleConfirmNombreChange={handleConfirmNombreChange}
                   showConfirmDeleteProject={showConfirmDeleteProject}
                   setShowConfirmDeleteProject={setShowConfirmDeleteProject}
                   deleteConfirmInput={deleteConfirmInput}

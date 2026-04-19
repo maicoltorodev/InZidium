@@ -39,6 +39,13 @@ interface TabSettingsProps {
   setTempLink: (val: string) => void;
   handleConfirmLinkChange: () => void;
 
+  // Nombre editing
+  isEditingNombre: boolean;
+  setIsEditingNombre: (val: boolean) => void;
+  tempNombre: string;
+  setTempNombre: (val: string) => void;
+  handleConfirmNombreChange: () => void;
+
   // Delete project
   showConfirmDeleteProject: boolean;
   setShowConfirmDeleteProject: (val: boolean) => void;
@@ -70,6 +77,11 @@ export function TabSettings({
   tempLink,
   setTempLink,
   handleConfirmLinkChange,
+  isEditingNombre,
+  setIsEditingNombre,
+  tempNombre,
+  setTempNombre,
+  handleConfirmNombreChange,
   showConfirmDeleteProject,
   setShowConfirmDeleteProject,
   deleteConfirmInput,
@@ -100,6 +112,27 @@ export function TabSettings({
           </div>
 
           <div className="space-y-6">
+            {/* Nombre Editor */}
+            <div className="flex items-center justify-between gap-4 p-4 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+              <div className="min-w-0 flex-1">
+                <h3 className="text-xs font-black uppercase tracking-widest text-white mb-1">
+                  Nombre del proyecto
+                </h3>
+                <p className="text-[10px] text-gray-500 font-bold uppercase truncate">
+                  {project.nombre || "Sin nombre"}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setIsEditingNombre(true);
+                  setTempNombre(project.nombre || "");
+                }}
+                className="p-2 text-gray-500 hover:text-white transition-colors"
+              >
+                <Edit2 className="w-4 h-4" />
+              </button>
+            </div>
+
             {/* Link Editor */}
             <div className="flex items-center justify-between gap-4 p-4 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
               <div>
@@ -295,6 +328,44 @@ export function TabSettings({
           </div>
         )}
       </AnimatePresence>
+
+      {/* Modal NOMBRE EDIT */}
+      {isEditingNombre && (
+        <div className="fixed inset-0 z-[130] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+          <div className="bg-[#060214]/95 border border-white/10 p-6 sm:p-8 rounded-3xl w-full max-w-md">
+            <h3 className="text-white font-black uppercase mb-4 text-center">
+              Editar nombre del proyecto
+            </h3>
+            <input
+              value={tempNombre}
+              onChange={(e) => setTempNombre(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && tempNombre.trim()) {
+                  handleConfirmNombreChange();
+                }
+              }}
+              autoFocus
+              className="w-full bg-white/5 border-white/10 rounded-xl p-4 text-white mb-6 outline-none focus:border-blue-500"
+              placeholder="Ej. Pizzería Don Juan"
+            />
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                onClick={() => setIsEditingNombre(false)}
+                className="py-3 text-xs font-bold text-gray-500 border border-white/10 rounded-xl"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmNombreChange}
+                disabled={!tempNombre.trim()}
+                className="py-3 text-xs font-black text-black bg-white rounded-xl disabled:opacity-40"
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal LINK EDIT */}
       {isEditingLink && (

@@ -231,11 +231,11 @@ export function DesktopCustomProjectView({
                             Hola, {clientName.split(" ")[0] || "bienvenido"} · Proyecto a la medida
                         </p>
                         <h1 className="mt-5 bg-[linear-gradient(135deg,#f5e7ff_0%,#ffffff_40%,#d6e9ff_100%)] bg-clip-text text-6xl font-black leading-[0.95] tracking-tight text-transparent">
-                            Tu sitio web
+                            {project.nombre || "Tu proyecto"}
                         </h1>
                         <BrandDivider width="w-24" className="mt-6" />
                         <p className="mt-6 text-[13px] font-bold uppercase tracking-[0.26em] text-white/40">
-                            {project.nombre || "Proyecto a la medida"}
+                            Página web
                         </p>
                     </motion.div>
                     <button

@@ -21,7 +21,7 @@ import { RedesSection } from "../shared/sections/RedesSection";
 import { ColoresSection } from "../shared/sections/ColoresSection";
 import { LegalSection } from "../shared/sections/LegalSection";
 import { AvanzadoSection } from "../shared/sections/AvanzadoSection";
-import { MensajesSection } from "../shared/sections/MensajesSection";
+import { SupportFab } from "../shared/SupportFab";
 import { AjustesSection } from "../shared/sections/AjustesSection";
 
 type HubKey = SectionKey;
@@ -241,12 +241,17 @@ export function MobileOnboarding({
                 onUploadFavicon={handleUploadFavicon}
               />
             )}
-            {view === "chat" && (
-              <MensajesSection project={project} showToast={showToast} />
-            )}
           </MobileSection>
         )}
       </AnimatePresence>
+
+      {/* FAB de soporte — persistente en toda la navegación. */}
+      <SupportFab
+        project={project}
+        showToast={showToast}
+        device="mobile"
+        hasUnread={chatInfo.hasUnread}
+      />
     </main>
   );
 }

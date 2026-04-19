@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     X,
@@ -67,6 +68,14 @@ export function CatalogoItemEditor({
     const [precioOn, setPrecioOn] = useState<boolean>(!!item.precio);
     const [showNewCat, setShowNewCat] = useState(false);
     const [newCat, setNewCat] = useState("");
+    const [confirmingRemove, setConfirmingRemove] = useState(false);
+    const [previewMode, setPreviewMode] = useState<"card" | "detail">("card");
+    // El modal se monta con portal en document.body para escapar de ancestros
+    // con `transform` (framer-motion del DesktopSection) — sin eso, el `fixed`
+    // queda constrained al bounding box del padre y el backdrop no cubre la
+    // barra del CTA inferior.
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), []);
 
     // ESC cierra el modal.
     useEffect(() => {
@@ -121,7 +130,9 @@ export function CatalogoItemEditor({
     const groupLabel =
         "mb-3 block text-[9px] font-black uppercase tracking-[0.26em] text-white/35";
 
-    return (
+    if (!mounted) return null;
+
+    return createPortal(
         <AnimatePresence>
             <motion.div
                 key="catalogo-editor-backdrop"
@@ -405,16 +416,56 @@ export function CatalogoItemEditor({
                                 placeholder="Ej. Incluye consulta gratis"
                             />
                         </section>
+
+                        {/* Zona destructiva — al final y discreta para que no
+                            compita con la acción principal (guardar). */}
+                        <section className="border-t border-white/[0.04] pt-5">
+                            <button
+                                type="button"
+                                onClick={() => setConfirmingRemove(true)}
+                                className="flex items-center gap-2 text-[11px] font-bold text-red-400/70 transition-colors hover:text-red-400"
+                            >
+                                <Trash2 className="h-3.5 w-3.5" />
+                                Eliminar {cfg.singular.toLowerCase()}
+                            </button>
+                        </section>
                     </div>
 
-                    {/* Preview fiel al sitio */}
+                    {/* Preview fiel al sitio — toggle entre card de la lista
+                        y el modal de detalle que abre al hacer click en "Ver". */}
                     <div className="overflow-y-auto bg-[#060214] px-6 py-6">
-                        <p className={groupLabel}>Así se verá en tu sitio</p>
-                        <SitePreviewCard
-                            item={item}
-                            cfg={cfg}
-                            theme={theme}
-                        />
+                        <div className="mb-3 flex items-center justify-between">
+                            <p className={`${groupLabel} mb-0`}>
+                                Así se verá en tu sitio
+                            </p>
+                            <div className="flex gap-1 rounded-full border border-white/[0.06] bg-white/[0.02] p-0.5">
+                                <PreviewTab
+                                    active={previewMode === "card"}
+                                    onClick={() => setPreviewMode("card")}
+                                >
+                                    Card
+                                </PreviewTab>
+                                <PreviewTab
+                                    active={previewMode === "detail"}
+                                    onClick={() => setPreviewMode("detail")}
+                                >
+                                    Detalle
+                                </PreviewTab>
+                            </div>
+                        </div>
+                        {previewMode === "card" ? (
+                            <SitePreviewCard
+                                item={item}
+                                cfg={cfg}
+                                theme={theme}
+                            />
+                        ) : (
+                            <SitePreviewDetail
+                                item={item}
+                                cfg={cfg}
+                                theme={theme}
+                            />
+                        )}
                         <p className="mt-4 text-[10px] leading-relaxed text-white/25">
                             Preview aproximado con los colores y la tipografía
                             de tu sitio. El layout final puede variar según el
@@ -423,26 +474,93 @@ export function CatalogoItemEditor({
                     </div>
                 </div>
 
-                {/* Footer */}
-                <footer className="flex shrink-0 items-center justify-between gap-3 border-t border-white/[0.06] px-6 py-4">
-                    <button
-                        type="button"
-                        onClick={onRemove}
-                        className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/[0.04] px-4 py-2.5 text-[11px] font-black uppercase tracking-[0.2em] text-red-400 transition-colors hover:bg-red-500/10"
-                    >
-                        <Trash2 className="h-3.5 w-3.5" />
-                        Eliminar
-                    </button>
+                {/* Footer — solo acción primaria. Aunque el autoguardado ya
+                    persiste en cada cambio, el botón refuerza que la edición
+                    quedó confirmada y cierra el modal. */}
+                <footer className="flex shrink-0 items-center justify-end border-t border-white/[0.06] px-6 py-4">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="rounded-xl border border-white/[0.08] bg-white/[0.04] px-5 py-2.5 text-[11px] font-black uppercase tracking-[0.22em] text-white transition-colors hover:bg-white/[0.06]"
+                        className="flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] px-6 py-2.5 text-[11px] font-black uppercase tracking-[0.22em] text-white shadow-[0_4px_20px_-4px_rgba(168,85,247,0.6)] transition-transform hover:scale-[1.02]"
                     >
-                        Cerrar
+                        <Check className="h-3.5 w-3.5" strokeWidth={3} />
+                        Guardar
                     </button>
                 </footer>
+
+                {/* Confirmación de eliminación — overlay dentro del modal. */}
+                <AnimatePresence>
+                    {confirmingRemove && (
+                        <>
+                            <motion.div
+                                key="confirm-backdrop"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.12 }}
+                                className="absolute inset-0 z-[95] bg-black/70 backdrop-blur-sm"
+                                onClick={() => setConfirmingRemove(false)}
+                                aria-hidden
+                            />
+                            <motion.div
+                                key="confirm-dialog"
+                                initial={{ opacity: 0, scale: 0.95, y: 8 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.96 }}
+                                transition={{ duration: 0.18, ease: "easeOut" }}
+                                role="alertdialog"
+                                aria-modal="true"
+                                className="absolute left-1/2 top-1/2 z-[100] w-[min(420px,92%)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-red-500/20 bg-[#0d0820] p-6 shadow-[0_0_40px_-8px_rgba(239,68,68,0.4)]"
+                            >
+                                <div className="mb-4 flex items-start gap-3">
+                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-500/10 ring-1 ring-red-500/25">
+                                        <Trash2 className="h-4 w-4 text-red-400" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="text-[14px] font-black text-white">
+                                            Eliminar {cfg.singular.toLowerCase()}
+                                        </h3>
+                                        <p className="mt-1 text-[12px] leading-relaxed text-white/55">
+                                            Esta acción no se puede deshacer.
+                                            {item.titulo.trim() && (
+                                                <>
+                                                    {" "}Vas a eliminar{" "}
+                                                    <span className="font-bold text-white">
+                                                        {item.titulo.trim()}
+                                                    </span>
+                                                    .
+                                                </>
+                                            )}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-end gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setConfirmingRemove(false)}
+                                        className="rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-[11px] font-black uppercase tracking-[0.22em] text-white/80 transition-colors hover:bg-white/[0.06]"
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setConfirmingRemove(false);
+                                            onRemove();
+                                        }}
+                                        className="flex items-center gap-2 rounded-xl bg-red-500/90 px-4 py-2 text-[11px] font-black uppercase tracking-[0.22em] text-white transition-colors hover:bg-red-500"
+                                    >
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                        Sí, eliminar
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </>
+                    )}
+                </AnimatePresence>
             </motion.div>
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body,
     );
 }
 
@@ -598,6 +716,182 @@ function SitePreviewCard({
                         )}
                     </div>
                 )}
+            </div>
+        </div>
+    );
+}
+
+// Tab chico para alternar entre preview card y detail.
+function PreviewTab({
+    active,
+    onClick,
+    children,
+}: {
+    active: boolean;
+    onClick: () => void;
+    children: React.ReactNode;
+}) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] transition-colors ${
+                active
+                    ? "bg-[#a855f7]/20 text-white ring-1 ring-[#a855f7]/40"
+                    : "text-white/40 hover:text-white/70"
+            }`}
+        >
+            {children}
+        </button>
+    );
+}
+
+// Preview del modal de detalle (DesktopServiceModal de la plantilla):
+// imagen con overlay, categoría y precio como pills arriba, título abajo
+// sobre la imagen; panel inferior con descripción + "¿Qué incluye?" con
+// bullets alternando primary/accent. Compacto para caber en el panel lateral.
+function SitePreviewDetail({
+    item,
+    cfg,
+    theme,
+}: {
+    item: CatalogoItem;
+    cfg: TipoEditorConfig;
+    theme: PreviewTheme;
+}) {
+    const { primary, accent, bg, text, textMuted } = theme;
+    const Icon = cfg.icon;
+    const includes =
+        item.features && item.features.length > 0
+            ? item.features
+            : [
+                  "Atención personalizada",
+                  "Asesoría incluida",
+                  "Entrega a tiempo",
+              ];
+
+    return (
+        <div
+            className="overflow-hidden rounded-2xl border"
+            style={{ background: bg, borderColor: `${text}1a` }}
+        >
+            {/* Imagen con overlays (pills arriba + título abajo) */}
+            <div className="relative aspect-[16/10] overflow-hidden">
+                {item.imagen ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                        src={item.imagen}
+                        alt=""
+                        className="h-full w-full object-cover"
+                    />
+                ) : (
+                    <div
+                        className="flex h-full items-center justify-center"
+                        style={{ background: `${primary}18` }}
+                    >
+                        <Icon className="h-10 w-10" style={{ color: `${primary}99` }} />
+                    </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+                {/* Pills arriba-izq */}
+                <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
+                    {item.categoria && (
+                        <span className="rounded-full border border-white/20 bg-black/50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.22em] text-white backdrop-blur-sm">
+                            {item.categoria}
+                        </span>
+                    )}
+                    {item.precio && (
+                        <span className="rounded-full border border-white/20 bg-black/50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.22em] text-white backdrop-blur-sm">
+                            {item.precio}
+                        </span>
+                    )}
+                </div>
+
+                {/* Botón X simulado */}
+                <div className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white/80 backdrop-blur-sm">
+                    <X className="h-3.5 w-3.5" />
+                </div>
+
+                {/* Eyebrow + título abajo sobre imagen */}
+                <div className="absolute inset-x-0 bottom-0 p-4">
+                    <p className="text-[9px] font-semibold uppercase tracking-[0.28em] text-white/60">
+                        {cfg.singular}
+                    </p>
+                    <h3 className="mt-1 text-xl font-black leading-tight text-white">
+                        {item.titulo.trim() ||
+                            `Nuevo ${cfg.singular.toLowerCase()}`}
+                    </h3>
+                </div>
+            </div>
+
+            {/* Panel inferior con descripción + incluye */}
+            <div className="space-y-4 p-5">
+                <p
+                    className="whitespace-pre-line text-[12px] leading-relaxed"
+                    style={{ color: `${text}d9` }}
+                >
+                    {item.descripcion.trim() ||
+                        "Tu descripción aparecerá aquí. Contá en detalle qué ofrece este " +
+                            cfg.singular.toLowerCase() +
+                            "."}
+                </p>
+
+                <div
+                    className="rounded-xl border p-3"
+                    style={{
+                        borderColor: `${text}1a`,
+                        background: `${primary}06`,
+                    }}
+                >
+                    <p
+                        className="mb-2 text-[9px] font-bold uppercase tracking-[0.24em]"
+                        style={{ color: textMuted }}
+                    >
+                        ¿Qué incluye?
+                    </p>
+                    <div className="space-y-1.5">
+                        {includes.slice(0, 4).map((line, idx) => (
+                            <div key={idx} className="flex items-start gap-2">
+                                <span
+                                    className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
+                                    style={{
+                                        background:
+                                            idx % 2 === 0 ? primary : accent,
+                                    }}
+                                />
+                                <p
+                                    className="text-[12px] leading-snug"
+                                    style={{ color: `${text}c7` }}
+                                >
+                                    {line}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Botones simulados */}
+                <div className="space-y-2 pt-1">
+                    <div
+                        className="flex items-center justify-center gap-2 rounded-full py-2.5 text-[10px] font-semibold uppercase tracking-[0.24em] text-white"
+                        style={{
+                            background:
+                                "linear-gradient(90deg, #10b981, #059669)",
+                        }}
+                    >
+                        Escribir por WhatsApp
+                    </div>
+                    <div
+                        className="flex items-center justify-center rounded-full border py-2.5 text-[10px] font-semibold uppercase tracking-[0.24em]"
+                        style={{
+                            borderColor: `${primary}40`,
+                            color: text,
+                        }}
+                    >
+                        Cerrar
+                    </div>
+                </div>
             </div>
         </div>
     );

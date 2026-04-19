@@ -1,7 +1,12 @@
 const MAX_UPLOAD_SIZE = 4.5 * 1024 * 1024;
 const MAX_IMAGE_INPUT_SIZE = 15 * 1024 * 1024;
-const IMAGE_MAX_DIMENSION = 1600;
-const IMAGE_QUALITY_STEPS = [0.82, 0.72, 0.62, 0.52];
+// 2000px cubre modal full-screen en retina 2x (modal ~1000px → 2000 fuente).
+// Antes estaba en 1600, que se veía borroso en pantallas grandes.
+const IMAGE_MAX_DIMENSION = 2000;
+// Arranca con calidad alta (0.9) y baja progresivamente si el archivo sale
+// por encima de 4.5MB. Antes [0.82, 0.72, 0.62, 0.52] era conservador y la
+// primera pasada ya perdía nitidez visible en cards grandes.
+const IMAGE_QUALITY_STEPS = [0.9, 0.82, 0.72, 0.6];
 const OPTIMIZABLE_IMAGE_TYPES = new Set([
   "image/jpeg",
   "image/png",

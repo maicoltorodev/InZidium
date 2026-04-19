@@ -232,6 +232,18 @@ export async function updateProyectoLink(id: string, link: string) {
   return res;
 }
 
+export async function updateProyectoNombre(id: string, nombre: string) {
+  const clean = (nombre || "").trim();
+  if (!clean) return { success: false, error: "EL NOMBRE NO PUEDE ESTAR VACIO." };
+  const res = await proyectos.update(id, { nombre: clean });
+  if (res.success) {
+    revalidatePath("/admin");
+    revalidateClientProjects();
+    notifyPlantillaRevalidate(id);
+  }
+  return res;
+}
+
 /**
  * Modo mantenimiento: activo significa que la Plantilla le sirve al público el
  * banner "en mantenimiento" en vez del sitio. El `fase` sigue siendo `publicado`

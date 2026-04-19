@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { MessageSquare, Settings2, ChevronRight, CheckCircle2, ExternalLink, Sparkles } from "lucide-react";
+import { Settings2, ChevronRight, CheckCircle2, ExternalLink, Sparkles } from "lucide-react";
 import { getSectionCompletion } from "../types";
 import type { ProjectFase } from "@/lib/data/types";
 import { ProgressRing } from "../shared/primitives/ProgressRing";
@@ -145,11 +145,11 @@ export function MobileHub({
             Hola, {clientName.split(" ")[0] || "bienvenido"}
           </p>
           <h1 className="mt-3 bg-[linear-gradient(135deg,#f5e7ff_0%,#ffffff_40%,#d6e9ff_100%)] bg-clip-text text-[2.75rem] font-black leading-[0.95] tracking-tight text-transparent">
-            Tu sitio web
+            {projectName || "Tu proyecto"}
           </h1>
           <BrandDivider width="w-16" className="mt-4" />
           <p className="mt-4 text-[12px] font-bold uppercase tracking-[0.22em] text-white/40 truncate">
-            {projectName || "Proyecto en construcción"}
+            Página web
           </p>
         </motion.div>
 
@@ -228,44 +228,26 @@ export function MobileHub({
             );
           })}
 
-          <motion.div
-            variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
-            transition={MOTION.reveal}
-          >
-            <SectionCard
-              icon={MessageSquare}
-              title="Mensajes"
-              description={
-                isBuilding
-                  ? "Escríbenos si hay cambios durante la construcción"
-                  : "Habla con el equipo de desarrollo"
-              }
-              status={{ kind: "messages", unread: hasUnread, preview: lastAdminMessage }}
-              onPress={() => onSelect("chat")}
-            />
-          </motion.div>
-
-          <motion.button
-            type="button"
-            variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
-            transition={MOTION.reveal}
-            whileTap={sectionsLocked ? undefined : { scale: 0.98 }}
-            onClick={sectionsLocked ? undefined : () => onSelect("ajustes")}
-            disabled={sectionsLocked}
-            aria-disabled={sectionsLocked}
-            className={`mt-4 flex w-full items-center gap-3 rounded-2xl border border-white/[0.04] bg-white/[0.015] px-4 py-3 text-left text-white/50 transition-colors ${
-              sectionsLocked ? "cursor-not-allowed opacity-40" : "hover:bg-white/[0.03]"
-            }`}
-          >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/[0.03] text-white/35">
-              <Settings2 className="h-4 w-4" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[12px] font-bold text-white/55">Ajustes avanzados</p>
-              <p className="text-[10px] text-white/25">Tipo de negocio, legal, fuente y analíticas</p>
-            </div>
-            {!sectionsLocked && <ChevronRight className="h-4 w-4 text-white/20" />}
-          </motion.button>
+          {/* Ajustes avanzados — solo cuando el sitio está publicado. */}
+          {isLive && (
+            <motion.button
+              type="button"
+              variants={{ hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } }}
+              transition={MOTION.reveal}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => onSelect("ajustes")}
+              className="mt-4 flex w-full items-center gap-3 rounded-2xl border border-white/[0.04] bg-white/[0.015] px-4 py-3 text-left text-white/50 transition-colors hover:bg-white/[0.03]"
+            >
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/[0.03] text-white/35">
+                <Settings2 className="h-4 w-4" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] font-bold text-white/55">Ajustes avanzados</p>
+                <p className="text-[10px] text-white/25">Tipo de negocio, legal, fuente y analíticas</p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-white/20" />
+            </motion.button>
+          )}
         </motion.div>
 
         <FinalMessage fase={fase} />
