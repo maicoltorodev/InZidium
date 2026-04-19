@@ -131,11 +131,39 @@ export async function updateCliente(id: string, data: any) {
   return res;
 }
 
+// Vacía la carpeta `{estudioId}/{proyectoId}/` del bucket `archivos`.
+// El cascade DB solo borra filas — los objetos en Storage quedan huérfanos
+// si no los limpiamos explícitamente antes de borrar el proyecto/cliente.
+async function purgeProyectoStorage(proyectoId: string) {
+  try {
+    const prefix = `${estudioId}/${proyectoId}`;
+    const { data, error } = await supabaseAdmin.storage
+      .from("archivos")
+      .list(prefix, { limit: 1000 });
+    if (error) {
+      console.error("[Storage] list falló:", error.message);
+      return;
+    }
+    if (!data?.length) return;
+    const paths = data.map((f) => `${prefix}/${f.name}`);
+    const { error: rmErr } = await supabaseAdmin.storage
+      .from("archivos")
+      .remove(paths);
+    if (rmErr) console.error("[Storage] remove falló:", rmErr.message);
+  } catch (e) {
+    console.error("[Storage] purgeProyectoStorage:", (e as Error).message);
+  }
+}
+
 export async function deleteCliente(id: string) {
   // Noti FCM de "cliente.deleted" sale del trigger SQL `notify_event_clientes_deleted`
   // (ver memory notifications_fcm.md). Acá no replicamos para evitar doble push.
+  const projs = await proyectos.getByClienteId(id);
   const res = await clientes.delete(id);
-  if (res.success) revalidatePath("/admin");
+  if (res.success) {
+    await Promise.all(projs.map((p) => purgeProyectoStorage(p.id)));
+    revalidatePath("/admin");
+  }
   return res;
 }
 
@@ -460,7 +488,10 @@ export async function rejectComprobantePago(
 
 export async function deleteProyecto(id: string) {
   const res = await proyectos.delete(id);
-  if (res.success) revalidatePath("/admin");
+  if (res.success) {
+    await purgeProyectoStorage(id);
+    revalidatePath("/admin");
+  }
   return res;
 }
 
