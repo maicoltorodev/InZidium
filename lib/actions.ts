@@ -699,35 +699,52 @@ export async function loginCliente(cedula: string) {
   return result;
 }
 
-export async function resumeClienteSession() {
+/**
+ * Refetch de proyectos para un cliente YA autenticado (cookie + sessionId válidos).
+ * Sin rate limit: el rate limit de `getProyectoByCedula` es anti-enumeración para
+ * logins anónimos; un cliente logueado refrescando su propia data no debe caer ahí.
+ *
+ * Borra la cookie SOLO cuando la sesión es genuinamente inválida (no por errores
+ * transitorios). Devuelve shape compatible con getProyectoByCedula + `cedula` extra.
+ */
+export async function refetchClienteProyectos() {
   const cookieStore = await cookies();
   const raw = cookieStore.get(CLIENTE_COOKIE)?.value;
-  if (!raw) return null;
+  if (!raw) return { status: "not_authenticated" } as const;
 
+  let parsed: { clienteId: string; sessionId: string; cedula: string };
   try {
-    const { clienteId, sessionId, cedula } = JSON.parse(raw);
-
-    const cliente = await db.query.clientes.findFirst({
-      where: eq(clientesTable.id, clienteId),
-      columns: { activeSessionId: true },
-    });
-
-    if (!cliente || cliente.activeSessionId !== sessionId) {
-      cookieStore.delete(CLIENTE_COOKIE);
-      return null;
-    }
-
-    const result = await getProyectoByCedula(cedula);
-    if (result.status !== "ok") {
-      cookieStore.delete(CLIENTE_COOKIE);
-      return null;
-    }
-
-    return { ...result, cedula };
+    parsed = JSON.parse(raw);
   } catch {
     cookieStore.delete(CLIENTE_COOKIE);
-    return null;
+    return { status: "not_authenticated" } as const;
   }
+
+  const cliente = await db.query.clientes.findFirst({
+    where: eq(clientesTable.id, parsed.clienteId),
+  });
+  if (!cliente || cliente.activeSessionId !== parsed.sessionId) {
+    cookieStore.delete(CLIENTE_COOKIE);
+    return { status: "not_authenticated" } as const;
+  }
+
+  const projs = await proyectos.getByClienteId(cliente.id);
+  if (projs.length === 0) return { status: "no_projects" } as const;
+  const visibles = projs.filter((p: any) => p.visibilidad !== false);
+  if (visibles.length === 0) return { status: "all_hidden" } as const;
+
+  return {
+    status: "ok",
+    cliente,
+    proyectos: visibles,
+    cedula: parsed.cedula,
+  } as const;
+}
+
+export async function resumeClienteSession() {
+  const result = await refetchClienteProyectos();
+  if (result.status !== "ok") return null;
+  return result;
 }
 
 export async function logoutCliente() {

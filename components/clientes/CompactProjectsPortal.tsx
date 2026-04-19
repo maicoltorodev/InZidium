@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
-  getProyectoByCedula,
+  refetchClienteProyectos,
   updateProyectoOnboarding,
   loginCliente,
   resumeClienteSession,
@@ -96,9 +96,19 @@ export default function CompactProjectsPortal({
   );
 
   async function refreshPortalData() {
-    if (!cedula || !data) return;
-    const result = await getProyectoByCedula(cedula);
-    if (result.status !== "ok") { setData(null); setSelectedProject(null); return; }
+    if (!data) return;
+    const result = await refetchClienteProyectos();
+    // Sólo limpiamos el estado cuando la sesión está genuinamente cerrada
+    // (cookie inválida / evicted). Otros estados (no_projects, all_hidden) no
+    // deben suceder para un cliente que ya tenía data cargada — si pasan, el
+    // evicción-hook se encargará; aquí mantenemos el estado para no sacar al
+    // usuario por eventos transitorios.
+    if (result.status === "not_authenticated") {
+      setData(null);
+      setSelectedProject(null);
+      return;
+    }
+    if (result.status !== "ok") return;
     setData(result);
     if (selectedProject) {
       const updated = result.proyectos.find((p: any) => p.id === selectedProject.id);
