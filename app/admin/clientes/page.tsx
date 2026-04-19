@@ -2,6 +2,18 @@
 
 import React, { useState, useEffect } from "react";
 import { createCliente, getClientes, deleteCliente } from "@/lib/actions";
+import {
+  formatName,
+  validateName,
+  formatCedula,
+  validateCedula,
+  formatEmail,
+  validateEmail,
+  formatPhoneDigitsCO,
+  displayPhoneCO,
+  fullPhoneCO,
+  validatePhoneCO,
+} from "@/lib/input-formatters";
 import { useToast } from "@/app/providers/ToastProvider";
 import {
   Plus,
@@ -39,6 +51,9 @@ export default function ClientsAdmin() {
   const [docInput, setDocInput] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  const emptyClienteForm = { nombre: "", cedula: "", email: "", phoneDigits: "" };
+  const [formCliente, setFormCliente] = useState(emptyClienteForm);
 
   useEffect(() => {
     loadClients();
@@ -110,7 +125,11 @@ export default function ClientsAdmin() {
             />
           </div>
           <button
-            onClick={() => setIsAdding(true)}
+            onClick={() => {
+              setFormCliente(emptyClienteForm);
+              setErrors({});
+              setIsAdding(true);
+            }}
             className="relative group px-6 py-3 rounded-2xl font-bold text-sm transition-all hover:scale-105 active:scale-95 overflow-hidden shadow-[0_0_20px_rgba(168,85,247,0.12),_0_0_20px_rgba(34,211,238,0.08)]"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] animate-gradient bg-[length:200%_auto]" />
@@ -232,7 +251,11 @@ export default function ClientsAdmin() {
               Crea el primer cliente.
             </p>
             <button
-              onClick={() => setIsAdding(true)}
+              onClick={() => {
+              setFormCliente(emptyClienteForm);
+              setErrors({});
+              setIsAdding(true);
+            }}
               className="px-10 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 hover:bg-[#22d3ee] hover:text-black hover:border-transparent transition-all duration-500"
             >
               Crear cliente
@@ -297,26 +320,27 @@ export default function ClientsAdmin() {
                   // devolvía "ya registrado" (toast falso positivo).
                   if (isSaving) return;
 
-                  const formData = new FormData(e.currentTarget);
-                  const newErrors: any = {};
-
-                  if (!formData.get("nombre"))
-                    newErrors.nombre = "El nombre es obligatorio.";
-                  if (!formData.get("cedula"))
-                    newErrors.cedula = "La cédula es obligatoria.";
-                  if (!formData.get("email"))
-                    newErrors.email = "El correo es necesario.";
-                  if (!formData.get("telefono"))
-                    newErrors.telefono = "El teléfono es requerido.";
-
-                  if (Object.keys(newErrors).length > 0) {
+                  const newErrors: any = {
+                    nombre: validateName(formCliente.nombre),
+                    cedula: validateCedula(formCliente.cedula),
+                    email: validateEmail(formCliente.email),
+                    telefono: validatePhoneCO(formCliente.phoneDigits),
+                  };
+                  const hasErrors = Object.values(newErrors).some((v) => v);
+                  if (hasErrors) {
                     setErrors(newErrors);
                     return;
                   }
 
+                  const fd = new FormData();
+                  fd.append("nombre", formCliente.nombre.trim());
+                  fd.append("cedula", formCliente.cedula);
+                  fd.append("email", formCliente.email.trim());
+                  fd.append("telefono", fullPhoneCO(formCliente.phoneDigits));
+
                   setIsSaving(true);
                   try {
-                    const result = await createCliente(formData);
+                    const result = await createCliente(fd);
 
                     if (result?.error) {
                       setErrors({ cedula: result.error });
@@ -327,6 +351,7 @@ export default function ClientsAdmin() {
                     showToast("CLIENTE REGISTRADO CON ÉXITO", "success");
                     setIsAdding(false);
                     setErrors({});
+                    setFormCliente(emptyClienteForm);
                     loadClients();
                   } finally {
                     setIsSaving(false);
@@ -338,6 +363,13 @@ export default function ClientsAdmin() {
                   name="nombre"
                   placeholder="Nombre Completo"
                   icon={Users}
+                  value={formCliente.nombre}
+                  onChange={(e: any) =>
+                    setFormCliente({
+                      ...formCliente,
+                      nombre: formatName(e.target.value),
+                    })
+                  }
                   error={errors.nombre}
                   onFocus={() => setErrors({ ...errors, nombre: null })}
                 />
@@ -345,21 +377,38 @@ export default function ClientsAdmin() {
                   name="cedula"
                   placeholder="Documento / Cédula"
                   icon={CreditCard}
+                  inputMode="numeric"
+                  value={formCliente.cedula}
+                  onChange={(e: any) =>
+                    setFormCliente({
+                      ...formCliente,
+                      cedula: formatCedula(e.target.value),
+                    })
+                  }
                   error={errors.cedula}
                   onFocus={() => setErrors({ ...errors, cedula: null })}
                 />
                 <PremiumInput
                   name="email"
                   type="email"
-                  placeholder="Correo Electrónico"
+                  inputMode="email"
+                  placeholder="correo@ejemplo.com"
                   icon={Mail}
+                  value={formCliente.email}
+                  onChange={(e: any) =>
+                    setFormCliente({
+                      ...formCliente,
+                      email: formatEmail(e.target.value),
+                    })
+                  }
                   error={errors.email}
                   onFocus={() => setErrors({ ...errors, email: null })}
                 />
-                <PremiumInput
-                  name="telefono"
-                  placeholder="WhatsApp / Teléfono"
-                  icon={Phone}
+                <PhoneInputCO
+                  value={formCliente.phoneDigits}
+                  onChange={(digits) =>
+                    setFormCliente({ ...formCliente, phoneDigits: digits })
+                  }
                   error={errors.telefono}
                   onFocus={() => setErrors({ ...errors, telefono: null })}
                 />
@@ -534,6 +583,65 @@ function ClientInfo({
           {text}
         </span>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Input de teléfono Colombia con prefijo `+57` fijo. El estado externo guarda
+ * solo los 10 dígitos nacionales ("raw"); el componente los muestra formateados
+ * como "300 123 45 67". El user no puede tocar el +57 ni escribir nada que no
+ * sea dígito.
+ */
+function PhoneInputCO({
+  value,
+  onChange,
+  error,
+  onFocus,
+}: {
+  value: string;
+  onChange: (digits: string) => void;
+  error?: string | null;
+  onFocus?: () => void;
+}) {
+  return (
+    <div className="relative group">
+      <div
+        className={`absolute -inset-0.5 rounded-2xl transition-opacity blur-[2px] ${error ? "bg-red-500/40 opacity-100" : "bg-gradient-to-r from-[#a855f7]/20 to-[#22d3ee]/20 opacity-0 group-focus-within:opacity-100"}`}
+      />
+      <div className="relative flex items-center">
+        <Phone
+          className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${error ? "text-red-400" : "text-gray-500 group-focus-within:text-[#22d3ee]"}`}
+        />
+        <span
+          className={`absolute left-14 top-1/2 -translate-y-1/2 text-sm font-bold pointer-events-none select-none ${error ? "text-red-400" : "text-gray-400 group-focus-within:text-[#22d3ee]"}`}
+        >
+          +57
+        </span>
+        <input
+          type="tel"
+          inputMode="tel"
+          placeholder="300 123 45 67"
+          value={displayPhoneCO(value)}
+          onFocus={onFocus}
+          onChange={(e) => onChange(formatPhoneDigitsCO(e.target.value))}
+          className={`w-full bg-white/[0.04] backdrop-blur-md border rounded-2xl py-4 pl-24 pr-6 text-sm focus:outline-none transition-all placeholder:text-gray-600 font-medium ${error ? "border-red-500/50 focus:border-red-500" : "border-white/8 group-hover:border-white/15 focus:border-[#22d3ee]/50 focus:bg-white/[0.06]"}`}
+        />
+      </div>
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.9 }}
+            className="absolute -right-2 top-0 -translate-y-1/2 bg-red-500 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-xl z-20 flex items-center gap-2 pointer-events-none"
+          >
+            <AlertCircle className="w-3 h-3" />
+            {error}
+            <div className="absolute bottom-0 right-4 translate-y-full w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-red-500" />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

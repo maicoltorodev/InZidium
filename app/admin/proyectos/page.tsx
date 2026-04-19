@@ -11,7 +11,6 @@ import {
   Calendar,
   User,
   Layers,
-  Sparkles,
   Search,
   Zap,
   ChevronDown,
@@ -40,7 +39,6 @@ export default function ProjectsAdmin() {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [clientSearch, setClientSearch] = useState("");
-  const [deliveryDate, setDeliveryDate] = useState("");
   const [selectedPlanId, setSelectedPlanId] = useState(PLANS_ARRAY[0].id);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -101,9 +99,6 @@ export default function ProjectsAdmin() {
             onClick={() => {
               setIsAdding(true);
               setSelectedPlanId(PLANS_ARRAY[0].id);
-              const date = new Date();
-              date.setDate(date.getDate() + (PLANS_ARRAY[0].days ?? 0));
-              setDeliveryDate(date.toISOString().split("T")[0]);
             }}
             className="group relative px-6 py-3 rounded-2xl font-bold text-sm transition-all hover:scale-105 active:scale-95 overflow-hidden shadow-[0_0_20px_rgba(168,85,247,0.12),_0_0_20px_rgba(34,211,238,0.08)]"
           >
@@ -183,12 +178,14 @@ export default function ProjectsAdmin() {
                             <Calendar className="w-3 h-3" /> Fecha estimada
                           </div>
                           <p className="text-sm font-bold text-gray-100">
-                            {new Date(project.fechaEntrega)
-                              .toLocaleDateString("es-ES", {
-                                day: "2-digit",
-                                month: "short",
-                              })
-                              .toUpperCase()}
+                            {project.fechaEntrega
+                              ? new Date(project.fechaEntrega)
+                                  .toLocaleDateString("es-ES", {
+                                    day: "2-digit",
+                                    month: "short",
+                                  })
+                                  .toUpperCase()
+                              : "POR ASIGNAR"}
                           </p>
                         </div>
                       </div>
@@ -281,7 +278,6 @@ export default function ProjectsAdmin() {
                 onClick={() => {
                   setIsAdding(false);
                   setSelectedClient(null);
-                  setDeliveryDate("");
                   setIsSelectOpen(false);
                 }}
                 className="absolute top-4 right-4 sm:top-10 sm:right-10 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-gray-500 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all duration-300 group/close z-50"
@@ -310,8 +306,6 @@ export default function ProjectsAdmin() {
                     newErrors.nombre = "Nombre requerido.";
                   if (!formData.get("clienteId"))
                     newErrors.clienteId = "Selecciona un cliente.";
-                  if (!formData.get("fechaEntrega"))
-                    newErrors.fechaEntrega = "Fecha necesaria.";
 
                   if (Object.keys(newErrors).length > 0) {
                     setErrors(newErrors);
@@ -324,7 +318,6 @@ export default function ProjectsAdmin() {
                     showToast("PROYECTO INICIALIZADO EXITOSAMENTE", "success");
                     setIsAdding(false);
                     setSelectedClient(null);
-                    setDeliveryDate("");
                     setErrors({});
                     loadData();
                   } finally {
@@ -457,18 +450,7 @@ export default function ProjectsAdmin() {
                           <button
                             key={plan.id}
                             type="button"
-                            onClick={() => {
-                              setSelectedPlanId(plan.id);
-                              if (plan.days !== null) {
-                                const date = new Date();
-                                date.setDate(date.getDate() + plan.days);
-                                setDeliveryDate(
-                                  date.toISOString().split("T")[0],
-                                );
-                              } else {
-                                setDeliveryDate("");
-                              }
-                            }}
+                            onClick={() => setSelectedPlanId(plan.id)}
                             className={`flex items-center gap-4 p-5 rounded-2xl border transition-all text-left ${
                               isSelected
                                 ? `bg-gradient-to-r ${plan.color} border-transparent text-white`
@@ -492,58 +474,6 @@ export default function ProjectsAdmin() {
                     </div>
                   </div>
 
-                  {/* Fecha de entrega */}
-                  <div className="col-span-full">
-                    <div className="relative group">
-                      <div
-                        className={`absolute -inset-0.5 rounded-2xl transition-opacity blur-[2px] ${errors.fechaEntrega ? "bg-red-500/40 opacity-100" : "bg-[#22d3ee]/10 opacity-0 group-focus-within:opacity-100"}`}
-                      />
-                      <div className="relative bg-white/[0.04] border border-white/8 rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 group-hover:border-white/15 transition-all">
-                        <div className="flex items-center gap-4">
-                          <div
-                            className={`w-12 h-12 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center transition-colors ${deliveryDate ? "text-[#22d3ee]" : "text-gray-500"}`}
-                          >
-                            <Calendar className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 block mb-1">
-                              Fecha de entrega
-                            </span>
-                            <input
-                              type="date"
-                              name="fechaEntrega"
-                              value={deliveryDate}
-                              onChange={(e) => setDeliveryDate(e.target.value)}
-                              onFocus={() =>
-                                setErrors({ ...errors, fechaEntrega: null })
-                              }
-                              className="bg-transparent text-white font-black text-lg focus:outline-none focus:text-[#22d3ee] transition-colors cursor-pointer"
-                            />
-                          </div>
-                        </div>
-                        <motion.div
-                          initial={{ opacity: 0, x: 20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          className="flex flex-col items-start sm:items-end"
-                        >
-                          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#22d3ee]">
-                            <Sparkles className="w-3 h-3" /> Sugerencia
-                          </div>
-                          <span className="text-[10px] text-gray-600 font-bold uppercase mt-1">
-                            {(() => {
-                              const plan = PLANS_ARRAY.find(
-                                (p) => p.id === selectedPlanId,
-                              );
-                              return plan?.days !== null &&
-                                plan?.days !== undefined
-                                ? `Entrega en ${plan.days} días`
-                                : "Fecha a convenir";
-                            })()}
-                          </span>
-                        </motion.div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
 
                 <button

@@ -14,7 +14,7 @@ import { useSessionEviction } from "@/hooks/use-session-eviction";
 import { useToast } from "@/app/providers/ToastProvider";
 import { LoginScreen, ProjectSelector } from "./portal/LoginScreen";
 import { PortalPage } from "./portal/PortalPage";
-import { SupportFab } from "./portal/SupportFab";
+import { LoginSupportFab } from "./portal/LoginSupportFab";
 import { AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -211,7 +211,7 @@ export default function CompactProjectsPortal({
           navbarSlot={navbarSlot}
           footerSlot={footerSlot}
         />
-        <SupportFab cedula={cedula} />
+        <LoginSupportFab cedula={cedula} />
       </>
     );
   }
@@ -226,7 +226,6 @@ export default function CompactProjectsPortal({
           useDesktopLandingBackground={useDesktopLandingBackground}
           containerMaxWidth={containerMaxWidth}
         />
-        <SupportFab cedula={cedula} clienteNombre={data.cliente?.nombre} />
       </>
     );
   }
@@ -243,7 +242,6 @@ export default function CompactProjectsPortal({
           device={device}
           useDesktopLandingBackground={useDesktopLandingBackground}
         />
-        <SupportFab cedula={cedula} clienteNombre={data.cliente?.nombre} />
       </>
     );
   }

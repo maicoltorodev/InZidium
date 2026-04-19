@@ -2,6 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { getAdmins, createAdmin, deleteAdmin } from "@/lib/actions";
+import {
+  formatName,
+  validateName,
+  formatUsername,
+  validateUsername,
+  validatePassword,
+} from "@/lib/input-formatters";
 import { useToast } from "@/app/providers/ToastProvider";
 import {
   ShieldCheck,
@@ -32,6 +39,9 @@ export default function AdminsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [confirmUsername, setConfirmUsername] = useState("");
+
+  const emptyAdminForm = { nombre: "", username: "", password: "", confirmPassword: "" };
+  const [formAdmin, setFormAdmin] = useState(emptyAdminForm);
 
   useEffect(() => {
     if (!adminToDelete) setConfirmUsername("");
@@ -109,7 +119,11 @@ export default function AdminsPage() {
             />
           </div>
           <button
-            onClick={() => setIsAdding(true)}
+            onClick={() => {
+              setFormAdmin(emptyAdminForm);
+              setErrors({});
+              setIsAdding(true);
+            }}
             className="group relative px-6 py-3 rounded-2xl font-bold text-sm transition-all hover:scale-105 active:scale-95 overflow-hidden shadow-[0_0_30px_rgba(168,85,247,0.15),_0_0_30px_rgba(34,211,238,0.1)]"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] animate-gradient bg-[length:200%_auto]" />
@@ -202,7 +216,11 @@ export default function AdminsPage() {
               Crea una cuenta para compartir la gestión operativa.
             </p>
             <button
-              onClick={() => setIsAdding(true)}
+              onClick={() => {
+              setFormAdmin(emptyAdminForm);
+              setErrors({});
+              setIsAdding(true);
+            }}
               className="px-10 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 hover:bg-gradient-to-r hover:from-[#22d3ee] hover:to-[#a855f7] hover:text-white hover:border-transparent transition-all duration-500"
             >
               Crear administrador
@@ -254,29 +272,32 @@ export default function AdminsPage() {
                   e.preventDefault();
                   if (isSaving) return;
 
-                  const formData = new FormData(e.currentTarget);
-                  const newErrors: any = {};
-
-                  if (!formData.get("nombre"))
-                    newErrors.nombre = "Nombre requerido.";
-                  if (!formData.get("username"))
-                    newErrors.username = "Usuario necesario.";
-                  if (!formData.get("password"))
-                    newErrors.password = "Seguridad requerida.";
+                  const newErrors: any = {
+                    nombre: validateName(formAdmin.nombre),
+                    username: validateUsername(formAdmin.username),
+                    password: validatePassword(formAdmin.password),
+                  };
                   if (
-                    formData.get("password") !== formData.get("confirmPassword")
+                    !newErrors.password &&
+                    formAdmin.password !== formAdmin.confirmPassword
                   ) {
                     newErrors.confirmPassword = "Las contraseñas no coinciden.";
                   }
-
-                  if (Object.keys(newErrors).length > 0) {
+                  const hasErrors = Object.values(newErrors).some((v) => v);
+                  if (hasErrors) {
                     setErrors(newErrors);
                     return;
                   }
 
+                  const fd = new FormData();
+                  fd.append("nombre", formAdmin.nombre.trim());
+                  fd.append("username", formAdmin.username);
+                  fd.append("password", formAdmin.password);
+                  fd.append("confirmPassword", formAdmin.confirmPassword);
+
                   setIsSaving(true);
                   try {
-                    const result = await createAdmin(formData);
+                    const result = await createAdmin(fd);
 
                     if (result?.error) {
                       setErrors({ username: result.error });
@@ -287,6 +308,7 @@ export default function AdminsPage() {
                     showToast("ADMINISTRADOR CREADO CON ÉXITO", "success");
                     setIsAdding(false);
                     setErrors({});
+                    setFormAdmin(emptyAdminForm);
                     loadAdmins();
                   } finally {
                     setIsSaving(false);
@@ -298,13 +320,29 @@ export default function AdminsPage() {
                   name="nombre"
                   placeholder="Nombre Real"
                   icon={UserCircle}
+                  value={formAdmin.nombre}
+                  onChange={(e: any) =>
+                    setFormAdmin({
+                      ...formAdmin,
+                      nombre: formatName(e.target.value),
+                    })
+                  }
                   error={errors.nombre}
                   onFocus={() => setErrors({ ...errors, nombre: null })}
                 />
                 <PremiumInput
                   name="username"
-                  placeholder="Nombre de Usuario (Login)"
+                  placeholder="usuario_login"
                   icon={User}
+                  autoComplete="off"
+                  autoCapitalize="off"
+                  value={formAdmin.username}
+                  onChange={(e: any) =>
+                    setFormAdmin({
+                      ...formAdmin,
+                      username: formatUsername(e.target.value),
+                    })
+                  }
                   error={errors.username}
                   onFocus={() => setErrors({ ...errors, username: null })}
                 />
@@ -314,6 +352,10 @@ export default function AdminsPage() {
                     type="password"
                     placeholder="Contraseña de Seguridad"
                     icon={ShieldCheck}
+                    value={formAdmin.password}
+                    onChange={(e: any) =>
+                      setFormAdmin({ ...formAdmin, password: e.target.value })
+                    }
                     error={errors.password}
                     onFocus={() => setErrors({ ...errors, password: null })}
                   />
@@ -322,6 +364,13 @@ export default function AdminsPage() {
                     type="password"
                     placeholder="Confirmar Contraseña"
                     icon={ShieldCheck}
+                    value={formAdmin.confirmPassword}
+                    onChange={(e: any) =>
+                      setFormAdmin({
+                        ...formAdmin,
+                        confirmPassword: e.target.value,
+                      })
+                    }
                     error={errors.confirmPassword}
                     onFocus={() =>
                       setErrors({ ...errors, confirmPassword: null })

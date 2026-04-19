@@ -3,6 +3,18 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getClienteById, updateCliente, deleteCliente } from "@/lib/actions";
+import {
+  formatName,
+  validateName,
+  formatCedula,
+  validateCedula,
+  formatEmail,
+  validateEmail,
+  formatPhoneDigitsCO,
+  displayPhoneCO,
+  fullPhoneCO,
+  validatePhoneCO,
+} from "@/lib/input-formatters";
 import { useToast } from "@/app/providers/ToastProvider";
 import {
   ArrowLeft,
@@ -44,7 +56,12 @@ export default function ClienteDetalle() {
       const data = await getClienteById(params.id as string);
       if (data) {
         setCliente(data);
-        setFormData(data);
+        // Convertir teléfono guardado ("+57 300 123 45 67") a dígitos
+        // nacionales para poder editarlo con el formatter.
+        setFormData({
+          ...data,
+          phoneDigits: formatPhoneDigitsCO(data.telefono ?? ""),
+        });
       } else {
         showToast("Cliente no encontrado", "error");
         router.push("/admin/clientes");
@@ -60,22 +77,29 @@ export default function ClienteDetalle() {
   async function handleSave() {
     if (saving) return;
 
-    const newErrors: any = {};
-
-    if (!formData.nombre) newErrors.nombre = "El nombre es requerido";
-    if (!formData.email) newErrors.email = "El email es requerido";
-    if (!formData.telefono) newErrors.telefono = "El teléfono es requerido";
-    if (!formData.cedula) newErrors.cedula = "La cédula es requerida";
-
-    if (Object.keys(newErrors).length > 0) {
+    const newErrors: any = {
+      nombre: validateName(formData.nombre ?? ""),
+      cedula: validateCedula(formData.cedula ?? ""),
+      email: validateEmail(formData.email ?? ""),
+      telefono: validatePhoneCO(formData.phoneDigits ?? ""),
+    };
+    const hasErrors = Object.values(newErrors).some((v) => v);
+    if (hasErrors) {
       setErrors(newErrors);
       return;
     }
 
+    const payload = {
+      nombre: formData.nombre.trim(),
+      cedula: formData.cedula,
+      email: formData.email.trim(),
+      telefono: fullPhoneCO(formData.phoneDigits),
+    };
+
     setSaving(true);
     try {
-      await updateCliente(params.id as string, formData);
-      setCliente(formData);
+      await updateCliente(params.id as string, payload);
+      setCliente({ ...cliente, ...payload });
       setEditing(false);
       showToast("Cliente actualizado con éxito", "success");
     } catch (error) {
@@ -189,7 +213,7 @@ export default function ClienteDetalle() {
                 type="text"
                 value={formData.nombre || ""}
                 onChange={(e) =>
-                  setFormData({ ...formData, nombre: e.target.value })
+                  setFormData({ ...formData, nombre: formatName(e.target.value) })
                 }
                 className={`w-full bg-white/5 border rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#a855f7] ${errors.nombre ? "border-red-500" : "border-white/10"}`}
               />
@@ -214,9 +238,10 @@ export default function ClienteDetalle() {
             {editing ? (
               <input
                 type="email"
+                inputMode="email"
                 value={formData.email || ""}
                 onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
+                  setFormData({ ...formData, email: formatEmail(e.target.value) })
                 }
                 className={`w-full bg-white/5 border rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#a855f7] ${errors.email ? "border-red-500" : "border-white/10"}`}
               />
@@ -239,14 +264,24 @@ export default function ClienteDetalle() {
               Teléfono
             </label>
             {editing ? (
-              <input
-                type="tel"
-                value={formData.telefono || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, telefono: e.target.value })
-                }
-                className={`w-full bg-white/5 border rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#a855f7] ${errors.telefono ? "border-red-500" : "border-white/10"}`}
-              />
+              <div className="relative flex items-center">
+                <span className="absolute left-4 text-sm font-bold text-gray-400 pointer-events-none select-none">
+                  +57
+                </span>
+                <input
+                  type="tel"
+                  inputMode="tel"
+                  placeholder="300 123 45 67"
+                  value={displayPhoneCO(formData.phoneDigits || "")}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      phoneDigits: formatPhoneDigitsCO(e.target.value),
+                    })
+                  }
+                  className={`w-full bg-white/5 border rounded-xl py-3 pl-14 pr-4 text-white focus:outline-none focus:border-[#a855f7] ${errors.telefono ? "border-red-500" : "border-white/10"}`}
+                />
+              </div>
             ) : (
               <div className="flex items-center gap-3 text-white">
                 <Phone className="w-4 h-4 text-gray-500" />
@@ -268,9 +303,10 @@ export default function ClienteDetalle() {
             {editing ? (
               <input
                 type="text"
+                inputMode="numeric"
                 value={formData.cedula || ""}
                 onChange={(e) =>
-                  setFormData({ ...formData, cedula: e.target.value })
+                  setFormData({ ...formData, cedula: formatCedula(e.target.value) })
                 }
                 className={`w-full bg-white/5 border rounded-xl py-3 px-4 text-white focus:outline-none focus:border-[#a855f7] ${errors.cedula ? "border-red-500" : "border-white/10"}`}
               />

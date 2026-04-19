@@ -14,6 +14,7 @@ import {
   addChatMessage,
   updateProyectoPrecioCustom,
 } from "@/lib/actions";
+import { isValidDeliveryDate } from "@/lib/date-validation";
 import { useToast } from "@/app/providers/ToastProvider";
 import {
   Loader2,
@@ -267,18 +268,21 @@ export default function ProyectoDetalle() {
   async function handleUpdateFecha() {
     if (!tempDate) return;
     if (saving) return;
+    // Ajustar zona horaria añadiendo 'T12:00:00' para evitar desfases de día.
+    const parsed = new Date(tempDate + "T12:00:00");
+    const check = isValidDeliveryDate(parsed);
+    if (!check.ok) {
+      showToast(check.reason.toUpperCase(), "error");
+      return;
+    }
     setSaving(true);
-    // Ajustar zona horaria añadiendo 'T12:00:00' para evitar desfases de día
-    const result = await updateProyectoFecha(
-      params.id as string,
-      new Date(tempDate + "T12:00:00"),
-    );
+    const result = await updateProyectoFecha(params.id as string, parsed);
     if (result.success) {
       showToast("FECHA ACTUALIZADA", "success");
       setIsEditingDate(false);
       await loadProject();
     } else {
-      showToast("ERROR AL ACTUALIZAR", "error");
+      showToast(((result as any).error ?? "ERROR AL ACTUALIZAR").toUpperCase(), "error");
     }
     setSaving(false);
   }

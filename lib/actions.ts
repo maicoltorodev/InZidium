@@ -22,6 +22,16 @@ import type { ProjectFase } from "./data/types";
 import type { Pago, PagoTipo } from "./finance";
 import { supabaseUrl } from "@/lib/env";
 import { rateLimit, getClientIp } from "./rate-limit";
+import { isValidDeliveryDate } from "./date-validation";
+import {
+  validateName,
+  validateCedula,
+  validateEmail,
+  validatePhoneCO,
+  validateUsername,
+  validatePassword,
+  formatPhoneDigitsCO,
+} from "./input-formatters";
 import { notifyPlantillaRevalidate } from "./plantilla-deploy";
 
 /**
@@ -67,10 +77,20 @@ function revalidateClientProjects() {
 
 // 👥 CLIENTES
 export async function createCliente(formData: FormData) {
-  const nombre = formData.get("nombre") as string;
-  const cedula = formData.get("cedula") as string;
-  const email = formData.get("email") as string;
-  const telefono = formData.get("telefono") as string;
+  const nombre = (formData.get("nombre") as string ?? "").trim();
+  const cedula = (formData.get("cedula") as string ?? "").trim();
+  const email = (formData.get("email") as string ?? "").trim();
+  const telefono = (formData.get("telefono") as string ?? "").trim();
+
+  // Validación estructural — fallback si el cliente envía datos saltando la UI.
+  const nameErr = validateName(nombre);
+  if (nameErr) return { error: nameErr.toUpperCase() };
+  const cedulaErr = validateCedula(cedula);
+  if (cedulaErr) return { error: cedulaErr.toUpperCase() };
+  const emailErr = validateEmail(email);
+  if (emailErr) return { error: emailErr.toUpperCase() };
+  const phoneErr = validatePhoneCO(formatPhoneDigitsCO(telefono));
+  if (phoneErr) return { error: phoneErr.toUpperCase() };
 
   const existing = await clientes.getByCedula(cedula);
   if (existing)
@@ -90,6 +110,24 @@ export async function getClienteById(id: string) {
 }
 
 export async function updateCliente(id: string, data: any) {
+  // Validación estructural — mismo fallback que createCliente.
+  if (data.nombre !== undefined) {
+    const err = validateName(String(data.nombre).trim());
+    if (err) return { success: false, error: err.toUpperCase() };
+  }
+  if (data.cedula !== undefined) {
+    const err = validateCedula(String(data.cedula).trim());
+    if (err) return { success: false, error: err.toUpperCase() };
+  }
+  if (data.email !== undefined) {
+    const err = validateEmail(String(data.email).trim());
+    if (err) return { success: false, error: err.toUpperCase() };
+  }
+  if (data.telefono !== undefined) {
+    const err = validatePhoneCO(formatPhoneDigitsCO(String(data.telefono)));
+    if (err) return { success: false, error: err.toUpperCase() };
+  }
+
   const res = await clientes.update(id, data);
   if (res.success) revalidatePath("/admin");
   return res;
@@ -133,13 +171,22 @@ export async function createProyecto(formData: FormData) {
   const nombre = formData.get("nombre") as string;
   const plan = formData.get("plan") as string;
   const clienteId = formData.get("clienteId") as string;
-  const fechaEntregaStr = formData.get("fechaEntrega") as string;
+
+  // Fecha de entrega:
+  //  - Plan Estándar: auto → now + 48h (BUILD_DURATION_HOURS).
+  //  - Plan A la medida: null → el admin asigna después cuando tiene claro el scope.
+  //  - Otro plan desconocido: null (safe default).
+  const planLower = plan.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  let fechaEntrega: Date | null = null;
+  if (planLower.includes("estandar")) {
+    fechaEntrega = new Date(Date.now() + 48 * 3600 * 1000);
+  }
 
   const res = await proyectos.create({
     nombre,
     plan,
     clienteId,
-    fechaEntrega: fechaEntregaStr ? new Date(fechaEntregaStr) : null,
+    fechaEntrega,
   } as any);
 
   if (res.success) revalidatePath("/admin");
@@ -183,8 +230,14 @@ export async function updateProyectoPlan(id: string, plan: string) {
 }
 
 export async function updateProyectoFecha(id: string, fechaEntrega: Date) {
+  const check = isValidDeliveryDate(fechaEntrega);
+  if (!check.ok) return { success: false, error: check.reason };
+
   const res = await proyectos.update(id, { fechaEntrega });
-  if (res.success) revalidatePath("/admin");
+  if (res.success) {
+    revalidatePath("/admin");
+    notifyPlantillaRevalidate(id);
+  }
   return res;
 }
 
@@ -443,13 +496,21 @@ export async function getAdmins() {
 }
 
 export async function createAdmin(formData: FormData) {
-  const nombre = formData.get("nombre") as string;
-  const username = formData.get("username") as string;
-  const password = formData.get("password") as string;
+  const nombre = (formData.get("nombre") as string ?? "").trim();
+  const username = (formData.get("username") as string ?? "").trim();
+  const password = (formData.get("password") as string ?? "");
 
   if (!(await requireAuthenticatedAdmin())) {
     return { error: "NO AUTORIZADO." };
   }
+
+  // Validación estructural — fallback si el cliente envía datos saltando la UI.
+  const nameErr = validateName(nombre);
+  if (nameErr) return { error: nameErr.toUpperCase() };
+  const userErr = validateUsername(username);
+  if (userErr) return { error: userErr.toUpperCase() };
+  const pwErr = validatePassword(password);
+  if (pwErr) return { error: pwErr.toUpperCase() };
 
   const existing = await auth.getUserByUsername(username);
   if (existing) return { error: "EL USUARIO YA EXISTE." };

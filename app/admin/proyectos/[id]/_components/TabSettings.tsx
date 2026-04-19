@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PLANS_ARRAY } from "@/lib/constants";
+import { todayIsoDate, maxDeliveryIsoDate } from "@/lib/date-validation";
 import { ModalConfirm } from "./ModalConfirm";
 import { DeployPanel } from "./DeployPanel";
 
@@ -381,6 +382,8 @@ export function TabSettings({
             <input
               type="date"
               value={tempDate}
+              min={todayIsoDate()}
+              max={maxDeliveryIsoDate()}
               onChange={(e) => setTempDate(e.target.value)}
               className="w-full bg-white/5 border-white/10 rounded-xl p-4 text-white mb-6 block text-center color-white-scheme"
             />
