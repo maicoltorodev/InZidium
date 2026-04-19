@@ -9,6 +9,16 @@ import { FieldItem } from "../primitives/FieldItem";
 import { DayScheduleInput } from "../primitives/DayScheduleInput";
 import { MOTION } from "../primitives/motion";
 
+// Si el cliente pega el iframe completo de Google Maps, sacamos el src. Si
+// pega solo la URL también funciona. Evitamos pedirle al cliente que recorte
+// el HTML a mano.
+function extractMapUrl(raw: string): string {
+  const trimmed = (raw || "").trim();
+  if (!trimmed) return "";
+  const match = trimmed.match(/src\s*=\s*["']([^"']+)["']/i);
+  return match ? match[1].trim() : trimmed;
+}
+
 const DAYS: { key: string; label: string }[] = [
   { key: "monday",    label: "Lunes" },
   { key: "tuesday",   label: "Martes" },
@@ -119,9 +129,8 @@ export function UbicacionSection({
         <label className={labelCls}>Enlace de mapa <span className="normal-case tracking-normal font-normal text-white/25">— opcional</span></label>
         <AutoField
           value={d.embedUrl}
-          onSave={(v) => savePatch({ embedUrl: v })}
-          placeholder="https://www.google.com/maps/embed?pb=..."
-          type="url"
+          onSave={(v) => savePatch({ embedUrl: extractMapUrl(v) })}
+          placeholder="Pegá el iframe o la URL de Google Maps"
         />
         <button
           type="button"
@@ -144,7 +153,7 @@ export function UbicacionSection({
                 {[
                   <>Abre Google Maps y busca tu negocio.</>,
                   <>Toca el botón <span className="font-semibold text-white/85">Compartir</span>, luego <span className="font-semibold text-white/85">Insertar mapa</span>.</>,
-                  <>Copia la URL que aparece dentro de <code className="inline-block rounded bg-white/[0.08] px-1.5 py-0.5 text-[11px] text-white/80">src="..."</code> y pégala arriba.</>,
+                  <>Copia el código HTML completo (el que empieza con <code className="inline-block rounded bg-white/[0.08] px-1.5 py-0.5 text-[11px] text-white/80">&lt;iframe</code>) y pégalo arriba — nosotros extraemos lo necesario.</>,
                 ].map((node, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,rgba(232,121,249,0.15)_0%,rgba(168,85,247,0.15)_50%,rgba(96,165,250,0.15)_100%)] text-[10px] font-black">
