@@ -607,11 +607,6 @@ function PhoneInputCO({
         className={`absolute -inset-0.5 rounded-2xl transition-opacity blur-[2px] ${error ? "bg-red-500/40 opacity-100" : "bg-gradient-to-r from-[#a855f7]/20 to-[#22d3ee]/20 opacity-0 group-focus-within:opacity-100"}`}
       />
       <div className="relative flex items-center">
-        <span
-          className={`absolute left-5 top-1/2 -translate-y-1/2 text-sm font-bold pointer-events-none select-none tracking-wide ${error ? "text-red-400" : "text-gray-200 group-focus-within:text-[#22d3ee]"}`}
-        >
-          +57
-        </span>
         <input
           type="tel"
           inputMode="tel"
@@ -621,6 +616,11 @@ function PhoneInputCO({
           onChange={(e) => onChange(formatPhoneDigitsCO(e.target.value))}
           className={`w-full bg-white/[0.04] backdrop-blur-md border rounded-2xl py-4 pl-16 pr-6 text-sm focus:outline-none transition-all placeholder:text-gray-600 font-medium ${error ? "border-red-500/50 focus:border-red-500" : "border-white/8 group-hover:border-white/15 focus:border-[#22d3ee]/50 focus:bg-white/[0.06]"}`}
         />
+        <span
+          className={`absolute left-5 top-1/2 -translate-y-1/2 z-10 text-sm font-bold pointer-events-none select-none tracking-wide ${error ? "text-red-400" : "text-gray-200 group-focus-within:text-[#22d3ee]"}`}
+        >
+          +57
+        </span>
       </div>
       <AnimatePresence>
         {error && (

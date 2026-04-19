@@ -265,9 +265,6 @@ export default function ClienteDetalle() {
             </label>
             {editing ? (
               <div className="relative flex items-center">
-                <span className="absolute left-4 text-sm font-bold text-gray-400 pointer-events-none select-none">
-                  +57
-                </span>
                 <input
                   type="tel"
                   inputMode="tel"
@@ -281,6 +278,9 @@ export default function ClienteDetalle() {
                   }
                   className={`w-full bg-white/5 border rounded-xl py-3 pl-14 pr-4 text-white focus:outline-none focus:border-[#a855f7] ${errors.telefono ? "border-red-500" : "border-white/10"}`}
                 />
+                <span className="absolute left-4 z-10 text-sm font-bold text-gray-200 pointer-events-none select-none">
+                  +57
+                </span>
               </div>
             ) : (
               <div className="flex items-center gap-3 text-white">
