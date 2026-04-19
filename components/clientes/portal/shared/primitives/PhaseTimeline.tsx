@@ -48,28 +48,48 @@ export function PhaseTimeline({
             transition={MOTION.reveal}
             className="mb-10 w-full"
         >
-            {/* Fila con íconos y segmentos de línea alternados. El line-segment
-                está alineado verticalmente al centro del ícono (h-10 icon →
-                top/bottom margin 20px). */}
-            <div className="flex items-center px-2">
+            {/* Cada fase es una columna con ícono + label alineados. Entre
+                columnas van los segmentos de línea. Así el label cae siempre
+                directo debajo del ícono, sin desajustes. */}
+            <div className="flex items-start">
                 {PHASES.map((phase, idx) => {
                     const done = idx < currentIdx;
                     const active = idx === currentIdx;
+                    const upcoming = idx > currentIdx;
                     const isLast = idx === PHASES.length - 1;
-                    // Segmento DESPUÉS de este ícono → completado si la fase
-                    // actual ya está más adelante (línea consolidada entre
-                    // hitos superados).
                     const segmentDone = idx < currentIdx;
                     return (
                         <Fragment key={phase.key}>
-                            <PhaseNode
-                                idx={idx}
-                                done={done}
-                                active={active}
-                                reduced={reduced}
-                            />
+                            <div className="flex shrink-0 flex-col items-center gap-3">
+                                <PhaseNode
+                                    idx={idx}
+                                    done={done}
+                                    active={active}
+                                    reduced={reduced}
+                                />
+                                <div className="text-center">
+                                    <p
+                                        className={`text-[10px] font-black uppercase tracking-[0.22em] ${
+                                            done
+                                                ? "text-emerald-400/80"
+                                                : active
+                                                  ? "bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] bg-clip-text text-transparent"
+                                                  : upcoming
+                                                    ? "text-white/20"
+                                                    : "text-white/60"
+                                        }`}
+                                    >
+                                        {phase.label}
+                                    </p>
+                                    {active && activeSubtitle && (
+                                        <p className="mt-1 text-[10px] text-white/40">
+                                            {activeSubtitle}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
                             {!isLast && (
-                                <div className="relative mx-1 h-px flex-1 bg-white/[0.06]">
+                                <div className="relative mx-2 mt-5 h-px flex-1 bg-white/[0.06]">
                                     <motion.div
                                         aria-hidden
                                         initial={{ scaleX: 0 }}
@@ -81,39 +101,6 @@ export function PhaseTimeline({
                                 </div>
                             )}
                         </Fragment>
-                    );
-                })}
-            </div>
-
-            {/* Labels debajo de cada ícono. Grid 3-col para alinear con las
-                posiciones naturales de los íconos (que están en los extremos
-                y centro de la fila flex). */}
-            <div className="mt-3 grid grid-cols-3 gap-2">
-                {PHASES.map((phase, idx) => {
-                    const done = idx < currentIdx;
-                    const active = idx === currentIdx;
-                    const upcoming = idx > currentIdx;
-                    return (
-                        <div key={phase.key} className="text-center">
-                            <p
-                                className={`text-[10px] font-black uppercase tracking-[0.22em] ${
-                                    done
-                                        ? "text-emerald-400/80"
-                                        : active
-                                          ? "bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] bg-clip-text text-transparent"
-                                          : upcoming
-                                            ? "text-white/20"
-                                            : "text-white/60"
-                                }`}
-                            >
-                                {phase.label}
-                            </p>
-                            {active && activeSubtitle && (
-                                <p className="mt-1 text-[10px] text-white/40">
-                                    {activeSubtitle}
-                                </p>
-                            )}
-                        </div>
                     );
                 })}
             </div>
