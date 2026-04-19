@@ -99,8 +99,8 @@ export default function CompactProjectsPortal({
     if (!data) return;
     const result = await refetchClienteProyectos();
     // Sólo limpiamos el estado cuando la sesión está genuinamente cerrada
-    // (cookie inválida / evicted). Otros estados (no_projects, all_hidden) no
-    // deben suceder para un cliente que ya tenía data cargada — si pasan, el
+    // (cookie inválida / evicted). Otros estados (no_projects) no deben
+    // suceder para un cliente que ya tenía data cargada — si pasan, el
     // evicción-hook se encargará; aquí mantenemos el estado para no sacar al
     // usuario por eventos transitorios.
     if (result.status === "not_authenticated") {
@@ -138,7 +138,6 @@ export default function CompactProjectsPortal({
       }
       if (result.status === "not_found") { setError("No existe ese cliente."); return; }
       if (result.status === "no_projects") { setError("Aún no tienes proyectos."); return; }
-      if (result.status === "all_hidden") { setError("Tus proyectos están ocultos."); return; }
       setData(result);
       if (result.proyectos.length === 1) setSelectedProject(result.proyectos[0]);
     } catch {

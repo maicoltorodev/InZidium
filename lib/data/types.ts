@@ -4,8 +4,6 @@
  * permitiendo que la UI sea independiente de la base de datos.
  */
 
-export type ProjectStatus = 'pendiente' | 'diseño' | 'desarrollo' | 'completado';
-
 /** Fase cliente-facing del ciclo de vida del proyecto. */
 export type ProjectFase = 'onboarding' | 'construccion' | 'publicado';
 
@@ -24,11 +22,8 @@ export interface Proyecto {
     clienteId: string;
     nombre: string;
     plan: string;
-    estado: ProjectStatus;
-    progreso: number;
     fase: ProjectFase;
     buildStartedAt?: Date | null;
-    visibilidad: boolean;
     link?: string | null;
     fechaInicio: Date;
     fechaEntrega?: Date | null;

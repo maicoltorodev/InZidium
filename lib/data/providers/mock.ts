@@ -21,11 +21,8 @@ const MOCK_PROYECTOS: Proyecto[] = [
         clienteId: 'c1',
         nombre: 'Web Corporativa Alkubo',
         plan: 'Premium',
-        estado: 'desarrollo',
-        progreso: 65,
         fase: 'onboarding',
         buildStartedAt: null,
-        visibilidad: true,
         link: 'www.alkubo.com',
         fechaInicio: new Date(),
         onboardingStep: 3,
@@ -69,7 +66,7 @@ export const MockProvider: IDataProvider = {
         getById: async (id) => MOCK_PROYECTOS.find(p => p.id === id) || null,
         getByClienteId: async (clienteId) => MOCK_PROYECTOS.filter(p => p.clienteId === clienteId),
         create: async (data: any) => {
-            const nuevo = { ...data, id: `p${MOCK_PROYECTOS.length + 1}`, createdAt: new Date(), onboardingStep: 0, onboardingData: {}, progreso: 0, estado: 'pendiente', visibilidad: true };
+            const nuevo = { ...data, id: `p${MOCK_PROYECTOS.length + 1}`, createdAt: new Date(), onboardingStep: 0, onboardingData: {} };
             MOCK_PROYECTOS.push(nuevo);
             return { success: true };
         },

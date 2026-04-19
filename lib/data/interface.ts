@@ -22,7 +22,7 @@ export interface IDataProvider {
         getAll(): Promise<Proyecto[]>;
         getById(id: string): Promise<Proyecto | null>;
         getByClienteId(clienteId: string): Promise<Proyecto[]>;
-        create(data: Omit<Proyecto, 'id' | 'createdAt' | 'fechaInicio' | 'onboardingStep' | 'onboardingData' | 'progreso' | 'estado' | 'visibilidad'>): Promise<{ success: boolean; error?: string }>;
+        create(data: Omit<Proyecto, 'id' | 'createdAt' | 'fechaInicio' | 'onboardingStep' | 'onboardingData'>): Promise<{ success: boolean; error?: string }>;
         update(id: string, data: Partial<Proyecto>): Promise<{ success: boolean; error?: string }>;
         delete(id: string): Promise<{ success: boolean; error?: string }>;
     };

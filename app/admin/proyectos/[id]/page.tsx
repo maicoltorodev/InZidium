@@ -4,21 +4,16 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   getProyectos,
-  updateProyectoProgreso,
-  updateProyectoVisibilidad,
   deleteArchivo,
   updateProyectoPlan,
-  updateProyectoFecha,
   updateProyectoLink,
   deleteProyecto,
   addChatMessage,
   updateProyectoPrecioCustom,
 } from "@/lib/actions";
-import { isValidDeliveryDate } from "@/lib/date-validation";
 import { useToast } from "@/app/providers/ToastProvider";
 import {
   Loader2,
-  Save,
   ChevronLeft,
   User,
   Grid,
@@ -31,11 +26,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import {
-  PLANS_ARRAY,
-  getStatusFromProgress,
-  getProgressFromStatus,
-} from "@/lib/constants";
+import { PLANS_ARRAY } from "@/lib/constants";
 import { uploadProjectFile } from "@/lib/client/upload-archivo";
 import { useRealtimeRefresh } from "@/hooks/use-realtime-refresh";
 import { AdminLoading } from "@/lib/ui/AdminLoading";
@@ -63,14 +54,10 @@ export default function ProyectoDetalle() {
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [progreso, setProgreso] = useState(0);
-  const [estado, setEstado] = useState("");
-  const [visibilidad, setVisibilidad] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>("overview");
 
   // Estados de UI y Modales
   const [uploading, setUploading] = useState(false);
-  const [togglingVisibilidad, setTogglingVisibilidad] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [archivoToDelete, setArchivoToDelete] = useState<any>(null);
   const [deleteArchivoStep, setDeleteArchivoStep] = useState<1 | 2>(1);
@@ -81,11 +68,6 @@ export default function ProyectoDetalle() {
   const [showConfirmPlan, setShowConfirmPlan] = useState(false);
   const [showVerifyName, setShowVerifyName] = useState(false);
   const [verifyInput, setVerifyInput] = useState("");
-  const [hasPendingChanges, setHasPendingChanges] = useState(false);
-  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
-  const [isEditingDate, setIsEditingDate] = useState(false);
-  const [tempDate, setTempDate] = useState("");
   const [isEditingLink, setIsEditingLink] = useState(false);
   const [tempLink, setTempLink] = useState("");
   const [showConfirmDeleteProject, setShowConfirmDeleteProject] = useState(false);
@@ -127,18 +109,6 @@ export default function ProyectoDetalle() {
     }
   }, [project?.archivos]);
 
-  // --- EFFECT: Protección de Navegación ---
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (hasPendingChanges) {
-        e.preventDefault();
-        e.returnValue = "";
-      }
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [hasPendingChanges]);
-
   // --- LOGIC: Carga de Datos ---
   async function loadProject(silent = false) {
     if (!silent) setLoading(true);
@@ -147,52 +117,12 @@ export default function ProyectoDetalle() {
       const p = projects.find((p: any) => p.id === params.id);
       if (p) {
         setProject(p);
-        if (!hasPendingChanges) {
-          setProgreso(p.progreso);
-          setEstado(p.estado);
-          setVisibilidad(p.visibilidad ?? true);
-        }
       }
     } catch (error) {
       console.error("Polling error", error);
     } finally {
       if (!silent) setLoading(false);
     }
-  }
-
-  // --- LOGIC: Updates & Sync ---
-  const updateProgresoAndEstado = (val: number) => {
-    setProgreso(val);
-    setEstado(getStatusFromProgress(val));
-    setHasPendingChanges(true);
-  };
-
-  const updateEstadoAndProgreso = (nuevoEstado: string) => {
-    setEstado(nuevoEstado);
-    setProgreso(getProgressFromStatus(nuevoEstado));
-    setHasPendingChanges(true);
-  };
-
-  async function handleSyncChanges() {
-    if (saving) return;
-    setSaving(true);
-    const result = await updateProyectoProgreso(
-      params.id as string,
-      progreso,
-      estado,
-    );
-    if (result.success) {
-      showToast("CAMBIOS SINCRONIZADOS", "success");
-      setHasPendingChanges(false);
-      await loadProject();
-      if (pendingNavigation) {
-        router.push(pendingNavigation);
-        setPendingNavigation(null);
-      }
-    } else {
-      showToast("ERROR DE SINCRONIZACIÓN", "error");
-    }
-    setSaving(false);
   }
 
   const handleConfirmLinkChange = async () => {
@@ -264,37 +194,6 @@ export default function ProyectoDetalle() {
       setSendingReply(false);
     }
   };
-
-  async function handleUpdateFecha() {
-    if (!tempDate) return;
-    if (saving) return;
-    // Ajustar zona horaria añadiendo 'T12:00:00' para evitar desfases de día.
-    const parsed = new Date(tempDate + "T12:00:00");
-    const check = isValidDeliveryDate(parsed);
-    if (!check.ok) {
-      showToast(check.reason.toUpperCase(), "error");
-      return;
-    }
-    setSaving(true);
-    const result = await updateProyectoFecha(params.id as string, parsed);
-    if (result.success) {
-      showToast("FECHA ACTUALIZADA", "success");
-      setIsEditingDate(false);
-      await loadProject();
-    } else {
-      showToast(((result as any).error ?? "ERROR AL ACTUALIZAR").toUpperCase(), "error");
-    }
-    setSaving(false);
-  }
-
-  async function handleToggleVisibilidad() {
-    if (togglingVisibilidad) return;
-    setTogglingVisibilidad(true);
-    const nuevaVisibilidad = !visibilidad;
-    await updateProyectoVisibilidad(params.id as string, nuevaVisibilidad);
-    setVisibilidad(nuevaVisibilidad);
-    setTogglingVisibilidad(false);
-  }
 
   // --- LOGIC: Files ---
   async function processFile(file: File) {
@@ -406,25 +305,6 @@ export default function ProyectoDetalle() {
     setShowVerifyName(true);
   };
 
-  // --- HELPER: Navegación ---
-  const handleNavigation = (path: string) => {
-    if (hasPendingChanges) {
-      setPendingNavigation(path);
-      setShowUnsavedModal(true);
-    } else {
-      router.push(path);
-    }
-  };
-
-  const handleDiscardChanges = () => {
-    setHasPendingChanges(false);
-    setShowUnsavedModal(false);
-    if (pendingNavigation) {
-      router.push(pendingNavigation);
-      setPendingNavigation(null);
-    }
-  };
-
   if (loading) return <AdminLoading />;
 
   if (!project)
@@ -444,7 +324,7 @@ export default function ProyectoDetalle() {
       <header className="border-b border-white/5 bg-[#060214]/80 backdrop-blur-xl flex flex-col lg:flex-row lg:items-center lg:justify-between lg:h-20 px-4 sm:px-6 lg:px-8 py-3 lg:py-0 gap-3 lg:gap-4 shrink-0 z-50">
         <div className="flex items-center gap-4 lg:gap-6 min-w-0">
           <button
-            onClick={() => handleNavigation("/admin/proyectos")}
+            onClick={() => router.push("/admin/proyectos")}
             className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors shrink-0"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -464,59 +344,6 @@ export default function ProyectoDetalle() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4 flex-wrap lg:flex-nowrap">
-          <AnimatePresence>
-            {hasPendingChanges && (
-              <motion.button
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                onClick={handleSyncChanges}
-                disabled={saving}
-                className={`px-4 sm:px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 shadow-lg hover:shadow-cyan-500/20 transition-all ${saving ? "bg-gray-800" : "bg-gradient-to-r from-cyan-500 to-blue-500"}`}
-              >
-                {saving ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Save className="w-4 h-4" />
-                )}
-                <span className="hidden sm:inline">Guardar cambios</span>
-                <span className="sm:hidden">Guardar</span>
-              </motion.button>
-            )}
-          </AnimatePresence>
-
-          <div className="hidden lg:block h-8 w-[1px] bg-white/10 mx-2" />
-
-          <div className="flex items-center gap-3 px-3 sm:px-4 py-2 rounded-full border border-white/10 bg-white/5">
-            <div
-              className={`w-2 h-2 rounded-full bg-gradient-to-r ${projectPlan.color} animate-pulse`}
-            />
-            <span className="text-[10px] font-black uppercase tracking-widest text-white truncate">
-              {estado}
-            </span>
-          </div>
-
-          <button
-            onClick={handleToggleVisibilidad}
-            disabled={togglingVisibilidad}
-            className={`lg:hidden flex items-center gap-2 px-3 py-2 rounded-full border transition-all ${
-              visibilidad
-                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
-                : "bg-red-500/10 border-red-500/20 text-red-400"
-            }`}
-            aria-label="Cambiar visibilidad"
-          >
-            {togglingVisibilidad ? (
-              <Loader2 className="w-3 h-3 animate-spin" />
-            ) : (
-              <div className={`w-2 h-2 rounded-full ${visibilidad ? "bg-emerald-500" : "bg-red-500"}`} />
-            )}
-            <span className="text-[10px] font-black uppercase tracking-widest">
-              {visibilidad ? "Online" : "Offline"}
-            </span>
-          </button>
-        </div>
       </header>
 
       {/* MAIN WORKSPACE LAYOUT */}
@@ -577,33 +404,6 @@ export default function ProyectoDetalle() {
             />
           </nav>
 
-          <div className="p-4 border-t border-white/5">
-            <div className="bg-white/5 rounded-xl p-4">
-              <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest block mb-3">
-                Visibilidad Cliente
-              </span>
-              <button
-                onClick={handleToggleVisibilidad}
-                disabled={togglingVisibilidad}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg border transition-all ${
-                  visibilidad
-                    ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20"
-                    : "bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20"
-                }`}
-              >
-                <span className="text-[10px] font-black uppercase tracking-widest">
-                  {visibilidad ? "ONLINE" : "OFFLINE"}
-                </span>
-                {togglingVisibilidad ? (
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                ) : (
-                  <div
-                    className={`w-2 h-2 rounded-full ${visibilidad ? "bg-emerald-500 shadow-[0_0_8px_#10b981]" : "bg-red-500 shadow-[0_0_8px_#ef4444]"}`}
-                  />
-                )}
-              </button>
-            </div>
-          </div>
         </aside>
 
         {/* CONTENT AREA */}
@@ -644,11 +444,7 @@ export default function ProyectoDetalle() {
                 <TabOverview
                   key="overview"
                   project={project}
-                  progreso={progreso}
-                  estado={estado}
                   projectPlan={projectPlan}
-                  updateProgresoAndEstado={updateProgresoAndEstado}
-                  updateEstadoAndProgreso={updateEstadoAndProgreso}
                   setActiveTab={setActiveTab}
                 />
               )}
@@ -698,9 +494,6 @@ export default function ProyectoDetalle() {
                   key="settings"
                   project={project}
                   projectPlan={projectPlan}
-                  visibilidad={visibilidad}
-                  togglingVisibilidad={togglingVisibilidad}
-                  handleToggleVisibilidad={handleToggleVisibilidad}
                   isEditingPlan={isEditingPlan}
                   setIsEditingPlan={setIsEditingPlan}
                   pendingPlan={pendingPlan}
@@ -713,11 +506,6 @@ export default function ProyectoDetalle() {
                   setVerifyInput={setVerifyInput}
                   handleConfirmPlanChange={handleConfirmPlanChange}
                   handleUpdatePlan={handleUpdatePlan}
-                  isEditingDate={isEditingDate}
-                  setIsEditingDate={setIsEditingDate}
-                  tempDate={tempDate}
-                  setTempDate={setTempDate}
-                  handleUpdateFecha={handleUpdateFecha}
                   isEditingLink={isEditingLink}
                   setIsEditingLink={setIsEditingLink}
                   tempLink={tempLink}
@@ -810,20 +598,6 @@ export default function ProyectoDetalle() {
         />
       )}
 
-      {/* Modal UNSAVED */}
-      {showUnsavedModal && (
-        <ModalConfirm
-          title="Cambios sin guardar"
-          message="Tienes cambios pendientes. ¿Quieres guardarlos antes de salir?"
-          onCancel={handleDiscardChanges}
-          onConfirm={async () => {
-            setShowUnsavedModal(false);
-            await handleSyncChanges();
-          }}
-          confirmText="Guardar y salir"
-          cancelText="Cancelar"
-        />
-      )}
     </div>
   );
 }

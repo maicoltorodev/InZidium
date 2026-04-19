@@ -134,8 +134,9 @@ export function TabletOnboarding({
           projectName={project.nombre ?? ""}
           data={d}
           fase={(project.fase ?? "onboarding") as ProjectFase}
-          progreso={typeof project.progreso === "number" ? project.progreso : 0}
           buildStartedAt={project.buildStartedAt ?? null}
+          fechaEntrega={project.fechaEntrega ?? null}
+          chat={project.chat ?? []}
           onSelect={(key) => {
             const fase = project.fase ?? "onboarding";
             if (fase === "construccion" && key !== "chat") return;

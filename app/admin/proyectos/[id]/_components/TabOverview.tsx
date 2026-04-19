@@ -8,31 +8,28 @@ import {
   ChevronRight as ChevronRightIcon,
   Sparkles,
   Hammer,
-  Rocket as RocketIcon,
-  RotateCcw,
+  CheckCircle2,
+  Wrench,
+  AlertTriangle,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { setProyectoFase, resetBuildTimer } from "@/lib/actions";
-import { BUILD_DURATION_HOURS } from "@/lib/constants";
-import type { ProjectFase } from "@/lib/data/types";
+import {
+  iniciarConstruccion,
+  publicarProyecto,
+  toggleProyectoFreezeMode,
+} from "@/lib/actions";
+import { PLANS } from "@/lib/constants";
+import { useToast } from "@/app/providers/ToastProvider";
 
 interface TabOverviewProps {
   project: any;
-  progreso: number;
-  estado: string;
   projectPlan: any;
-  updateProgresoAndEstado: (val: number) => void;
-  updateEstadoAndProgreso: (estado: string) => void;
   setActiveTab: (tab: any) => void;
 }
 
 export function TabOverview({
   project,
-  progreso,
-  estado,
   projectPlan,
-  updateProgresoAndEstado,
-  updateEstadoAndProgreso,
   setActiveTab,
 }: TabOverviewProps) {
   return (
@@ -43,122 +40,8 @@ export function TabOverview({
       exit={{ opacity: 0, y: -10 }}
       className="space-y-8"
     >
-      {/* FASE DEL PROYECTO */}
-      <FasePanel project={project} />
+      <StatePanel project={project} />
 
-      {/* SECCIÓN PROGRESS ENGINE */}
-      <section className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 sm:p-8 lg:p-10 relative overflow-hidden">
-        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8 xl:gap-12">
-          {/* Circular Progress & Value */}
-          <div className="flex items-center gap-6 sm:gap-8">
-            <div className="relative w-40 h-40 flex items-center justify-center shrink-0">
-              <svg className="w-full h-full -rotate-90">
-                <circle
-                  cx="80"
-                  cy="80"
-                  r="70"
-                  stroke="currentColor"
-                  strokeWidth="8"
-                  fill="transparent"
-                  className="text-white/5"
-                />
-                <motion.circle
-                  cx="80"
-                  cy="80"
-                  r="70"
-                  stroke="url(#gradient-progress)"
-                  strokeWidth="8"
-                  fill="transparent"
-                  strokeLinecap="round"
-                  strokeDasharray={440}
-                  animate={{
-                    strokeDashoffset: 440 - (440 * progreso) / 100,
-                  }}
-                  transition={{ duration: 1.5, ease: "easeOut" }}
-                />
-                <defs>
-                  <linearGradient
-                    id="gradient-progress"
-                    x1="0%"
-                    y1="0%"
-                    x2="100%"
-                    y2="0%"
-                  >
-                    <stop offset="0%" stopColor="#22d3ee" />
-                    <stop offset="100%" stopColor="#3b82f6" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-4xl font-black text-white">
-                  {progreso}%
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <h2 className="text-2xl font-black uppercase tracking-tighter">
-                Progreso del proyecto
-              </h2>
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-widest max-w-[200px]">
-                Ajusta el progreso y el estado del proyecto.
-              </p>
-            </div>
-          </div>
-
-          {/* Controls */}
-          <div className="flex-1 w-full xl:max-w-xl space-y-6 sm:space-y-8">
-            <div className="bg-white/5 rounded-2xl p-6 border border-white/5">
-              <input
-                type="range"
-                min="0"
-                max="100"
-                step="5"
-                value={progreso}
-                onChange={(e) =>
-                  updateProgresoAndEstado(parseInt(e.target.value))
-                }
-                className="w-full h-2 bg-black/50 rounded-full appearance-none cursor-pointer accent-cyan-400"
-              />
-              <div className="flex justify-between mt-3 px-1">
-                <span className="text-[10px] font-black text-gray-600">
-                  0%
-                </span>
-                <span className="text-[10px] font-black text-gray-600">
-                  50%
-                </span>
-                <span className="text-[10px] font-black text-gray-600">
-                  100%
-                </span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {["Pendiente", "Diseño", "Desarrollo", "Finalizado"].map(
-                (label) => {
-                  let value = label.toLowerCase();
-                  if (label === "Finalizado") value = "completado";
-                  const isActive = estado === value;
-                  return (
-                    <button
-                      key={label}
-                      onClick={() => updateEstadoAndProgreso(value)}
-                      className={`py-3 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all border ${
-                        isActive
-                          ? `bg-white/10 text-cyan-400 border-cyan-400/30 shadow-[0_0_20px_rgba(34,211,238,0.1)]`
-                          : "bg-transparent border-white/5 text-gray-600 hover:border-white/20 hover:text-gray-400"
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  );
-                },
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* QUICK STATS & ACTIONS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <div className="p-6 sm:p-8 rounded-3xl bg-white/[0.04] backdrop-blur-xl border border-white/8 flex flex-col justify-between h-64 group hover:border-white/15 transition-all">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 flex items-center justify-center text-purple-400 mb-4">
@@ -231,102 +114,329 @@ export function TabOverview({
   );
 }
 
-// ─── Fase panel ──────────────────────────────────────────────────────────────
+// ─── State panel ─────────────────────────────────────────────────────────────
 
-const FASES: { value: ProjectFase; label: string; description: string; icon: React.ElementType }[] = [
-  { value: "onboarding",  label: "Onboarding",   description: "Cliente llenando información.",        icon: Sparkles },
-  { value: "construccion", label: "Construcción", description: "48h en curso. Cliente bloqueado.",    icon: Hammer },
-  { value: "publicado",   label: "Publicado",    description: "Sitio en vivo. Cliente puede editar.", icon: RocketIcon },
-];
+/**
+ * Único control de estado del proyecto. Se adapta a la fase + plan:
+ *  - onboarding (Estándar) → info-only, auto-transiciona al 100%.
+ *  - onboarding (A la medida) → botón manual "Iniciar construcción" con duración.
+ *  - construccion → countdown grande + botón "Publicar".
+ *  - publicado (!freeze) → badge "Publicado" + botón "Activar mantenimiento".
+ *  - publicado (freeze)  → badge "En mantenimiento" + botón "Publicar".
+ */
+function StatePanel({ project }: { project: any }) {
+  const fase = (project.fase ?? "onboarding") as
+    | "onboarding"
+    | "construccion"
+    | "publicado";
+  const freezeMode = !!project.freezeMode;
+  const isALaMedida = project.plan === PLANS.ala_medida.title;
 
-function FasePanel({ project }: { project: any }) {
-  const fase: ProjectFase = (project.fase ?? "onboarding") as ProjectFase;
-  const buildStartedAt: Date | string | null = project.buildStartedAt ?? null;
+  if (fase === "onboarding") {
+    return isALaMedida ? (
+      <OnboardingALaMedidaState project={project} />
+    ) : (
+      <OnboardingEstandarState />
+    );
+  }
+  if (fase === "construccion")
+    return (
+      <ConstruccionState
+        project={project}
+        buildStartedAt={project.buildStartedAt ?? null}
+        fechaEntrega={project.fechaEntrega ?? null}
+      />
+    );
+  return <PublicadoState project={project} freezeMode={freezeMode} />;
+}
 
+function OnboardingEstandarState() {
+  return (
+    <section className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+      <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+        <Sparkles className="w-5 h-5" />
+      </div>
+      <div className="min-w-0">
+        <h2 className="text-xl font-black uppercase tracking-tighter">
+          Onboarding en curso
+        </h2>
+        <p className="mt-1 text-xs font-bold text-gray-500 uppercase tracking-widest">
+          El cliente está llenando la información. Al completarla, el proyecto
+          pasará a construcción automáticamente (48h).
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function OnboardingALaMedidaState({ project }: { project: any }) {
+  const { showToast } = useToast();
   const [saving, setSaving] = useState(false);
+  const [days, setDays] = useState(7);
 
-  const selectFase = async (next: ProjectFase) => {
-    if (next === fase || saving) return;
-    setSaving(true);
-    try {
-      await setProyectoFase(project.id, next);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleReset = async () => {
+  const onIniciar = async () => {
     if (saving) return;
+    if (days < 1 || days > 365) {
+      showToast("DURACIÓN FUERA DE RANGO (1–365 DÍAS)", "error");
+      return;
+    }
     setSaving(true);
     try {
-      await resetBuildTimer(project.id);
+      const res = await iniciarConstruccion(project.id, days);
+      if (res.success) showToast("CONSTRUCCIÓN INICIADA", "success");
+      else
+        showToast(
+          ((res as any).error ?? "ERROR AL INICIAR").toUpperCase(),
+          "error",
+        );
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <section className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 sm:p-8">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-6 mb-6">
-        <div>
-          <h2 className="text-xl font-black uppercase tracking-tighter">Fase del proyecto</h2>
+    <section className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 sm:p-8 space-y-6">
+      <header className="flex items-start gap-4">
+        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+          <Sparkles className="w-5 h-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h2 className="text-xl font-black uppercase tracking-tighter">
+            Onboarding en curso
+          </h2>
           <p className="mt-1 text-xs font-bold text-gray-500 uppercase tracking-widest">
-            Cambia la vista del cliente. Realtime — se propaga automáticamente.
+            Plan a la medida — cuando el brief esté listo, inicia construcción
+            con la duración que definas.
           </p>
         </div>
-        {fase === "construccion" && (
-          <BuildCountdown buildStartedAt={buildStartedAt} onReset={handleReset} saving={saving} />
-        )}
-      </div>
+      </header>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {FASES.map((f) => {
-          const active = fase === f.value;
-          const Icon = f.icon;
-          return (
-            <button
-              key={f.value}
-              type="button"
-              onClick={() => selectFase(f.value)}
-              disabled={saving}
-              className={`rounded-2xl border px-4 py-4 text-left transition-all disabled:opacity-50 ${
-                active
-                  ? "border-cyan-400/40 bg-cyan-400/[0.05] shadow-[0_0_20px_rgba(34,211,238,0.08)]"
-                  : "border-white/5 bg-white/[0.02] hover:border-white/15"
-              }`}
-            >
-              <Icon className={`h-5 w-5 mb-2 ${active ? "text-cyan-400" : "text-white/40"}`} />
-              <p className={`text-sm font-black ${active ? "text-cyan-400" : "text-white"}`}>
-                {f.label}
-              </p>
-              <p className="mt-0.5 text-[11px] text-gray-500 leading-snug">
-                {f.description}
-              </p>
-            </button>
-          );
-        })}
+      <div className="flex flex-col sm:flex-row items-stretch gap-3 rounded-2xl border border-white/10 bg-black/20 p-4 sm:p-5">
+        <label className="flex-1 flex items-center gap-3">
+          <span className="text-[10px] font-black uppercase tracking-widest text-white/60 whitespace-nowrap">
+            Duración
+          </span>
+          <input
+            type="number"
+            min={1}
+            max={365}
+            value={days}
+            onChange={(e) => setDays(parseInt(e.target.value) || 1)}
+            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-sm tabular-nums outline-none focus:border-cyan-400/50"
+          />
+          <span className="text-[10px] font-black uppercase tracking-widest text-white/60">
+            días
+          </span>
+        </label>
+        <button
+          type="button"
+          onClick={onIniciar}
+          disabled={saving}
+          className="rounded-xl border border-emerald-500/30 bg-emerald-500/[0.08] px-6 py-3 font-black text-emerald-400 text-[11px] uppercase tracking-widest transition-all hover:bg-emerald-500/[0.14] disabled:opacity-50 flex items-center justify-center gap-2"
+        >
+          <CheckCircle2 className="w-4 h-4" />
+          Iniciar construcción
+        </button>
       </div>
     </section>
   );
 }
 
-// ─── Build countdown display (admin view) ────────────────────────────────────
+function ConstruccionState({
+  project,
+  buildStartedAt,
+  fechaEntrega,
+}: {
+  project: any;
+  buildStartedAt: Date | string | null;
+  fechaEntrega: Date | string | null;
+}) {
+  const { showToast } = useToast();
+  const [saving, setSaving] = useState(false);
+
+  const onPublicar = async () => {
+    if (saving) return;
+    setSaving(true);
+    try {
+      const res = await publicarProyecto(project.id);
+      if (res.success) showToast("PROYECTO PUBLICADO", "success");
+      else showToast("ERROR AL PUBLICAR", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <section className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 sm:p-8 space-y-6 relative overflow-hidden">
+      <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full bg-[#a855f7] opacity-[0.06] blur-[120px] pointer-events-none" />
+
+      <header className="flex items-start gap-4 relative">
+        <div className="w-12 h-12 rounded-2xl bg-[linear-gradient(135deg,rgba(232,121,249,0.14)_0%,rgba(168,85,247,0.14)_50%,rgba(96,165,250,0.14)_100%)] ring-1 ring-[#a855f7]/25 flex items-center justify-center shrink-0">
+          <Hammer className="w-5 h-5 text-[#a855f7]" />
+        </div>
+        <div className="min-w-0">
+          <h2 className="text-xl font-black uppercase tracking-tighter">
+            En construcción
+          </h2>
+          <p className="mt-1 text-xs font-bold text-gray-500 uppercase tracking-widest">
+            Cliente bloqueado del wizard hasta publicar.
+          </p>
+        </div>
+      </header>
+
+      <BuildCountdown
+        buildStartedAt={buildStartedAt}
+        fechaEntrega={fechaEntrega}
+      />
+
+      <div className="flex flex-col sm:flex-row gap-3 pt-2">
+        <button
+          type="button"
+          onClick={onPublicar}
+          disabled={saving}
+          className="group flex-1 relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.08] px-6 py-4 text-left transition-all hover:bg-emerald-500/[0.14] disabled:opacity-50"
+        >
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+            <div>
+              <p className="text-sm font-black text-emerald-400">Publicar</p>
+              <p className="text-[10px] text-gray-500">
+                Cierra el countdown y pone el sitio en vivo.
+              </p>
+            </div>
+          </div>
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function PublicadoState({
+  project,
+  freezeMode,
+}: {
+  project: any;
+  freezeMode: boolean;
+}) {
+  const { showToast } = useToast();
+  const [saving, setSaving] = useState(false);
+
+  const onActivarMantenimiento = async () => {
+    if (saving) return;
+    setSaving(true);
+    try {
+      const res = await toggleProyectoFreezeMode(project.id, true);
+      if (res.success) showToast("MANTENIMIENTO ACTIVADO", "success");
+      else showToast("ERROR AL CAMBIAR ESTADO", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const onPublicar = async () => {
+    if (saving) return;
+    setSaving(true);
+    try {
+      const res = await publicarProyecto(project.id);
+      if (res.success) showToast("SITIO PUBLICADO", "success");
+      else showToast("ERROR AL PUBLICAR", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const Icon = freezeMode ? Wrench : Rocket;
+  const accent = freezeMode ? "amber" : "emerald";
+  const title = freezeMode ? "En mantenimiento" : "Publicado";
+  const subtitle = freezeMode
+    ? "El público ve un aviso de mantenimiento. El sitio no se indexa."
+    : "El sitio está en vivo. El cliente puede editar cualquier info.";
+
+  return (
+    <section className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 sm:p-8 space-y-6 relative overflow-hidden">
+      <div
+        className={`absolute -top-32 -right-32 w-80 h-80 rounded-full ${
+          freezeMode ? "bg-amber-400" : "bg-emerald-400"
+        } opacity-[0.06] blur-[120px] pointer-events-none`}
+      />
+
+      <header className="flex items-start gap-4 relative">
+        <div
+          className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
+            accent === "amber"
+              ? "bg-amber-500/10 ring-1 ring-amber-500/25 text-amber-400"
+              : "bg-emerald-500/10 ring-1 ring-emerald-500/25 text-emerald-400"
+          }`}
+        >
+          <Icon className="w-5 h-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h2 className="text-xl font-black uppercase tracking-tighter">
+            {title}
+          </h2>
+          <p className="mt-1 text-xs font-bold text-gray-500 uppercase tracking-widest">
+            {subtitle}
+          </p>
+        </div>
+      </header>
+
+      <div className="flex flex-col sm:flex-row gap-3">
+        {freezeMode ? (
+          <button
+            type="button"
+            onClick={onPublicar}
+            disabled={saving}
+            className="flex-1 rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.08] px-6 py-4 text-left transition-all hover:bg-emerald-500/[0.14] disabled:opacity-50"
+          >
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+              <div>
+                <p className="text-sm font-black text-emerald-400">
+                  Sacar de mantenimiento
+                </p>
+                <p className="text-[10px] text-gray-500">
+                  Vuelve a mostrar el sitio al público.
+                </p>
+              </div>
+            </div>
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onActivarMantenimiento}
+            disabled={saving}
+            className="flex-1 rounded-2xl border border-amber-500/30 bg-amber-500/[0.08] px-6 py-4 text-left transition-all hover:bg-amber-500/[0.14] disabled:opacity-50"
+          >
+            <div className="flex items-center gap-3">
+              <Wrench className="w-5 h-5 text-amber-400" />
+              <div>
+                <p className="text-sm font-black text-amber-400">
+                  Activar mantenimiento
+                </p>
+                <p className="text-[10px] text-gray-500">
+                  El público ve el aviso mientras tú trabajas.
+                </p>
+              </div>
+            </div>
+          </button>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// ─── Build countdown (admin, grande) ────────────────────────────────────────
 
 function BuildCountdown({
   buildStartedAt,
-  onReset,
-  saving,
+  fechaEntrega,
 }: {
   buildStartedAt: Date | string | null;
-  onReset: () => void;
-  saving: boolean;
+  fechaEntrega: Date | string | null;
 }) {
-  const startMs = buildStartedAt
-    ? (typeof buildStartedAt === "string"
-        ? new Date(buildStartedAt).getTime()
-        : buildStartedAt.getTime())
-    : null;
-  const endMs = startMs != null ? startMs + BUILD_DURATION_HOURS * 3600 * 1000 : null;
+  const startMs = toMs(buildStartedAt);
+  const endMs = toMs(fechaEntrega);
+  const totalMs = startMs != null && endMs != null ? Math.max(1, endMs - startMs) : 0;
 
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -341,26 +451,111 @@ function BuildCountdown({
   const mm = Math.floor((totalSec % 3600) / 60).toString().padStart(2, "0");
   const ss = Math.floor(totalSec % 60).toString().padStart(2, "0");
 
+  const elapsed = startMs != null ? Math.max(0, now - startMs) : 0;
+  const pct = totalMs > 0
+    ? Math.max(0, Math.min(100, Math.round((elapsed / totalMs) * 100)))
+    : 0;
+
   return (
-    <div className="flex items-center gap-3">
-      <div className="rounded-xl border border-cyan-400/20 bg-cyan-400/[0.04] px-4 py-2.5">
-        <p className="text-[9px] font-black uppercase tracking-[0.24em] text-cyan-400/60 mb-0.5">
+    <div className="relative rounded-3xl border border-white/5 bg-black/20 p-6 sm:p-8 space-y-5">
+      <div className="flex items-center justify-between gap-3">
+        <p
+          className={`text-[9px] font-black uppercase tracking-[0.3em] ${
+            done ? "text-red-400 animate-pulse" : "text-white/40"
+          }`}
+        >
           {done ? "Plazo vencido" : "Tiempo restante"}
         </p>
-        <p className="text-xl font-black text-white font-mono tabular-nums">
-          {done ? "Toques finales" : `${hh}:${mm}:${ss}`}
-        </p>
+        {done && (
+          <span className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-red-400">
+            <AlertTriangle className="w-3 h-3" />
+            Publica ya
+          </span>
+        )}
       </div>
-      <button
-        type="button"
-        onClick={onReset}
-        disabled={saving}
-        title="Reiniciar contador a 48:00:00"
-        className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-[10px] font-black uppercase tracking-widest text-white/60 transition-colors hover:bg-white/[0.06] hover:text-white disabled:opacity-40"
-      >
-        <RotateCcw className="h-3.5 w-3.5" />
-        Reiniciar
-      </button>
+
+      {/* Timer */}
+      <div className="flex items-baseline justify-center gap-1 sm:gap-2 font-mono tracking-tight">
+        <BigTimeUnit value={hh} unit="h" done={done} />
+        <BigColon done={done} />
+        <BigTimeUnit value={mm} unit="m" done={done} />
+        <BigColon done={done} />
+        <BigTimeUnit value={ss} unit="s" done={done} />
+      </div>
+
+      {/* Progress bar derivada */}
+      <div>
+        <div className="mb-1.5 flex items-center justify-between">
+          <p className="text-[9px] font-black uppercase tracking-[0.24em] text-white/35">
+            Progreso estimado
+          </p>
+          <p className="text-[13px] font-black tabular-nums text-white/80">
+            {pct}%
+          </p>
+        </div>
+        <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
+          <motion.div
+            initial={false}
+            animate={{ width: `${pct}%` }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className={`absolute inset-y-0 left-0 rounded-full ${
+              done
+                ? "bg-[linear-gradient(90deg,#ef4444_0%,#f87171_100%)]"
+                : "bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)]"
+            }`}
+          />
+        </div>
+      </div>
     </div>
   );
+}
+
+function BigTimeUnit({
+  value,
+  unit,
+  done,
+}: {
+  value: string;
+  unit: string;
+  done: boolean;
+}) {
+  return (
+    <span className="inline-flex items-baseline gap-1">
+      <span
+        className={`bg-clip-text text-5xl sm:text-6xl font-black leading-none text-transparent tabular-nums ${
+          done
+            ? "bg-[linear-gradient(135deg,#ef4444_0%,#f87171_100%)] animate-pulse"
+            : "bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)]"
+        }`}
+      >
+        {value}
+      </span>
+      <span
+        className={`text-sm font-bold ${
+          done ? "text-red-400/60" : "text-white/35"
+        }`}
+      >
+        {unit}
+      </span>
+    </span>
+  );
+}
+
+function BigColon({ done }: { done: boolean }) {
+  return (
+    <span
+      className={`text-4xl sm:text-5xl font-black leading-none animate-pulse ${
+        done ? "text-red-400/70" : "text-white/25"
+      }`}
+    >
+      :
+    </span>
+  );
+}
+
+function toMs(value: Date | string | null | undefined): number | null {
+  if (value == null) return null;
+  if (value instanceof Date) return value.getTime();
+  const parsed = new Date(value).getTime();
+  return Number.isFinite(parsed) ? parsed : null;
 }

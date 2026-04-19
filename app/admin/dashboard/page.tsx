@@ -58,7 +58,9 @@ export default function AdminDashboard() {
     setStats({
       clients: clients.length,
       projects: projects.length,
-      developing: projects.filter((p: any) => p.estado !== "completado").length,
+      developing: projects.filter(
+        (p: any) => p.fase !== "publicado" || p.freezeMode,
+      ).length,
     });
 
     setRecentProjects(projects.slice(0, 5));
@@ -211,28 +213,11 @@ export default function AdminDashboard() {
                             Cliente: {proj.cliente?.nombre}
                           </span>
                         </div>
-                        <div className="flex flex-col gap-3 md:flex-1 md:min-w-[200px]">
-                          <div className="flex justify-between gap-3 text-[10px] sm:text-[11px] font-black font-[family-name:var(--font-orbitron)] tracking-widest uppercase">
-                            <span
-                              className={`bg-gradient-to-r ${projectPlan.color} bg-clip-text text-transparent`}
-                            >
-                              Progreso: {proj.progreso}%
-                            </span>
-                            <span className="text-gray-400 opacity-60 group-hover/row:opacity-100 transition-opacity truncate">
-                              Sistema: {proj.estado}
-                            </span>
-                          </div>
-                          <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden p-[2px] border border-white/5">
-                            <motion.div
-                              initial={{ width: 0 }}
-                              whileInView={{ width: `${proj.progreso}%` }}
-                              viewport={{ once: true }}
-                              transition={{ duration: 1.5, ease: "circOut" }}
-                              className={`h-full bg-gradient-to-r ${projectPlan.color} rounded-full relative overflow-hidden`}
-                            >
-                              <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.15)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.15)_50%,rgba(255,255,255,0.15)_75%,transparent_75%,transparent)] bg-[size:1rem_1rem] opacity-30 animate-[move-bg_3s_linear_infinite]" />
-                            </motion.div>
-                          </div>
+                        <div className="flex flex-col gap-2 md:flex-1 md:min-w-[200px] md:items-end">
+                          <DashboardFaseBadge
+                            fase={proj.fase}
+                            freezeMode={!!proj.freezeMode}
+                          />
                         </div>
                         <div className="hidden md:flex md:justify-end">
                           <Link
@@ -272,6 +257,49 @@ export default function AdminDashboard() {
       </motion.section>
     </div>
   );
+}
+
+function DashboardFaseBadge({
+  fase,
+  freezeMode,
+}: {
+  fase: "onboarding" | "construccion" | "publicado" | undefined;
+  freezeMode: boolean;
+}) {
+  const { label, tone } = dashboardFaseLabel(fase, freezeMode);
+  const styles =
+    tone === "emerald"
+      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+      : tone === "purple"
+        ? "bg-[#a855f7]/10 border-[#a855f7]/30 text-[#c084fc]"
+        : "bg-amber-500/10 border-amber-500/30 text-amber-400";
+  const dot =
+    tone === "emerald"
+      ? "bg-emerald-500"
+      : tone === "purple"
+        ? "bg-[#a855f7]"
+        : "bg-amber-400";
+  return (
+    <div
+      className={`px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-2 ${styles}`}
+    >
+      <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${dot}`} />
+      {label}
+    </div>
+  );
+}
+
+function dashboardFaseLabel(
+  fase: "onboarding" | "construccion" | "publicado" | undefined,
+  freezeMode: boolean,
+): { label: string; tone: "emerald" | "purple" | "amber" } {
+  if (fase === "publicado" && !freezeMode)
+    return { label: "Publicado", tone: "emerald" };
+  if (fase === "publicado" && freezeMode)
+    return { label: "Mantenimiento", tone: "amber" };
+  if (fase === "construccion")
+    return { label: "En construcción", tone: "purple" };
+  return { label: "Onboarding", tone: "amber" };
 }
 
 function HealthStat({ icon: Icon, label, value }: any) {

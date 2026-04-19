@@ -11,16 +11,12 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PLANS_ARRAY } from "@/lib/constants";
-import { todayIsoDate, maxDeliveryIsoDate } from "@/lib/date-validation";
 import { ModalConfirm } from "./ModalConfirm";
 import { DeployPanel } from "./DeployPanel";
 
 interface TabSettingsProps {
   project: any;
   projectPlan: any;
-  visibilidad: boolean;
-  togglingVisibilidad: boolean;
-  handleToggleVisibilidad: () => void;
 
   // Plan editing
   isEditingPlan: boolean;
@@ -35,13 +31,6 @@ interface TabSettingsProps {
   setVerifyInput: (val: string) => void;
   handleConfirmPlanChange: () => void;
   handleUpdatePlan: () => void;
-
-  // Date editing
-  isEditingDate: boolean;
-  setIsEditingDate: (val: boolean) => void;
-  tempDate: string;
-  setTempDate: (val: string) => void;
-  handleUpdateFecha: () => void;
 
   // Link editing
   isEditingLink: boolean;
@@ -64,9 +53,6 @@ interface TabSettingsProps {
 export function TabSettings({
   project,
   projectPlan,
-  visibilidad,
-  togglingVisibilidad,
-  handleToggleVisibilidad,
   isEditingPlan,
   setIsEditingPlan,
   pendingPlan,
@@ -79,11 +65,6 @@ export function TabSettings({
   setVerifyInput,
   handleConfirmPlanChange,
   handleUpdatePlan,
-  isEditingDate,
-  setIsEditingDate,
-  tempDate,
-  setTempDate,
-  handleUpdateFecha,
   isEditingLink,
   setIsEditingLink,
   tempLink,
@@ -119,29 +100,6 @@ export function TabSettings({
           </div>
 
           <div className="space-y-6">
-            {/* Date Editor */}
-            <div className="flex items-center justify-between gap-4 p-4 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
-              <div>
-                <h3 className="text-xs font-black uppercase tracking-widest text-white mb-1">
-                  Fecha de inicio
-                </h3>
-                <p className="text-[10px] text-gray-500 font-bold uppercase">
-                  {new Date(project.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  setIsEditingDate(true);
-                  setTempDate(
-                    new Date(project.createdAt).toISOString().split("T")[0],
-                  );
-                }}
-                className="p-2 text-gray-500 hover:text-white transition-colors"
-              >
-                <Edit2 className="w-4 h-4" />
-              </button>
-            </div>
-
             {/* Link Editor */}
             <div className="flex items-center justify-between gap-4 p-4 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
               <div>
@@ -191,40 +149,6 @@ export function TabSettings({
               </button>
             </div>
 
-            {/* Visibility Toggle Detailed */}
-            <div className="flex items-center justify-between gap-4 p-4 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-xs font-black uppercase tracking-widest text-white">
-                    Estado de acceso
-                  </h3>
-                  <span
-                    className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wide ${visibilidad ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"}`}
-                  >
-                    {visibilidad ? "Visible" : "Oculto"}
-                  </span>
-                </div>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wide max-w-[280px]">
-                  {visibilidad
-                    ? "El cliente puede acceder a su panel de portal."
-                    : "El acceso del cliente está restringido temporalmente."}
-                </p>
-              </div>
-              <button
-                onClick={handleToggleVisibilidad}
-                disabled={togglingVisibilidad}
-                className={`relative w-14 h-8 rounded-full border transition-all ${
-                  visibilidad
-                    ? "bg-emerald-500/10 border-emerald-500/20"
-                    : "bg-white/5 border-white/10"
-                }`}
-              >
-                <motion.div
-                  animate={{ x: visibilidad ? 26 : 4 }}
-                  className={`w-5 h-5 rounded-full shadow-lg mt-1 ${visibilidad ? "bg-emerald-400" : "bg-gray-500"}`}
-                />
-              </button>
-            </div>
           </div>
         </div>
 
@@ -371,39 +295,6 @@ export function TabSettings({
           </div>
         )}
       </AnimatePresence>
-
-      {/* Modal DATE EDIT */}
-      {isEditingDate && (
-        <div className="fixed inset-0 z-[130] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-          <div className="bg-[#060214]/95 border border-white/10 p-6 sm:p-8 rounded-3xl w-full max-w-sm">
-            <h3 className="text-white font-black uppercase mb-4 text-center">
-              Editar fecha
-            </h3>
-            <input
-              type="date"
-              value={tempDate}
-              min={todayIsoDate()}
-              max={maxDeliveryIsoDate()}
-              onChange={(e) => setTempDate(e.target.value)}
-              className="w-full bg-white/5 border-white/10 rounded-xl p-4 text-white mb-6 block text-center color-white-scheme"
-            />
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                onClick={() => setIsEditingDate(false)}
-                className="py-3 text-xs font-bold text-gray-500 border border-white/10 rounded-xl"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleUpdateFecha}
-                className="py-3 text-xs font-black text-black bg-white rounded-xl"
-              >
-                Guardar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Modal LINK EDIT */}
       {isEditingLink && (

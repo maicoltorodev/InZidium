@@ -18,11 +18,9 @@ import { db } from "./db";
 import { clientes as clientesTable } from "./db/schema";
 import { eq } from "drizzle-orm";
 import { isOnboardingComplete } from "./completion";
-import type { ProjectFase } from "./data/types";
 import type { Pago, PagoTipo } from "./finance";
 import { supabaseUrl } from "@/lib/env";
 import { rateLimit, getClientIp } from "./rate-limit";
-import { isValidDeliveryDate } from "./date-validation";
 import {
   validateName,
   validateCedula,
@@ -134,6 +132,8 @@ export async function updateCliente(id: string, data: any) {
 }
 
 export async function deleteCliente(id: string) {
+  // Noti FCM de "cliente.deleted" sale del trigger SQL `notify_event_clientes_deleted`
+  // (ver memory notifications_fcm.md). Acá no replicamos para evitar doble push.
   const res = await clientes.delete(id);
   if (res.success) revalidatePath("/admin");
   return res;
@@ -161,10 +161,7 @@ export async function getProyectoByCedula(cedula: string) {
   const projs = await proyectos.getByClienteId(cliente.id);
   if (projs.length === 0) return { status: "no_projects" } as const;
 
-  const visibles = projs.filter((p: any) => p.visibilidad !== false);
-  if (visibles.length === 0) return { status: "all_hidden" } as const;
-
-  return { status: "ok", cliente, proyectos: visibles } as const;
+  return { status: "ok", cliente, proyectos: projs } as const;
 }
 
 export async function createProyecto(formData: FormData) {
@@ -172,50 +169,18 @@ export async function createProyecto(formData: FormData) {
   const plan = formData.get("plan") as string;
   const clienteId = formData.get("clienteId") as string;
 
-  // Fecha de entrega:
-  //  - Plan Estándar: auto → now + 48h (BUILD_DURATION_HOURS).
-  //  - Plan A la medida: null → el admin asigna después cuando tiene claro el scope.
-  //  - Otro plan desconocido: null (safe default).
-  const planLower = plan.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  let fechaEntrega: Date | null = null;
-  if (planLower.includes("estandar")) {
-    fechaEntrega = new Date(Date.now() + 48 * 3600 * 1000);
-  }
-
+  // fechaEntrega se setea cuando el proyecto pasa a construcción (auto para
+  // Estándar vía `updateProyectoOnboarding`, manual para A la medida vía
+  // `iniciarConstruccion`). Durante onboarding siempre null — evita
+  // redundancia con el countdown visual.
   const res = await proyectos.create({
     nombre,
     plan,
     clienteId,
-    fechaEntrega,
+    fechaEntrega: null,
   } as any);
 
   if (res.success) revalidatePath("/admin");
-  return res;
-}
-
-export async function updateProyectoProgreso(
-  id: string,
-  progreso: number,
-  estado: any,
-) {
-  const res = await proyectos.update(id, { progreso, estado });
-  if (res.success) {
-    revalidatePath("/admin");
-    revalidateClientProjects();
-  }
-  return res;
-}
-
-export async function updateProyectoVisibilidad(
-  id: string,
-  visibilidad: boolean,
-) {
-  const res = await proyectos.update(id, { visibilidad });
-  if (res.success) {
-    revalidatePath("/admin");
-    revalidateClientProjects();
-    notifyPlantillaRevalidate(id);
-  }
   return res;
 }
 
@@ -224,18 +189,6 @@ export async function updateProyectoPlan(id: string, plan: string) {
   if (res.success) {
     revalidatePath("/admin");
     revalidateClientProjects();
-    notifyPlantillaRevalidate(id);
-  }
-  return res;
-}
-
-export async function updateProyectoFecha(id: string, fechaEntrega: Date) {
-  const check = isValidDeliveryDate(fechaEntrega);
-  if (!check.ok) return { success: false, error: check.reason };
-
-  const res = await proyectos.update(id, { fechaEntrega });
-  if (res.success) {
-    revalidatePath("/admin");
     notifyPlantillaRevalidate(id);
   }
   return res;
@@ -252,15 +205,67 @@ export async function updateProyectoLink(id: string, link: string) {
 }
 
 /**
- * Toggle del "modo revisión" del proyecto: cuando está activo, los cambios
- * del cliente se siguen guardando en DB pero la plantilla le sirve el
- * último estado aprobado (no los cambios pending de aprobación).
+ * Modo mantenimiento: activo significa que la Plantilla le sirve al público el
+ * banner "en mantenimiento" en vez del sitio. El `fase` sigue siendo `publicado`
+ * (para conservar historial), pero la Plantilla respeta `freezeMode` primero.
  */
 export async function toggleProyectoFreezeMode(id: string, freezeMode: boolean) {
   const res = await proyectos.update(id, { freezeMode } as any);
   if (res.success) {
     revalidatePath("/admin");
+    revalidateClientProjects();
     notifyPlantillaRevalidate(id);
+  }
+  return res;
+}
+
+/**
+ * Publica el proyecto: fase → publicado + freezeMode → false. Único camino
+ * autorizado para salir de construcción o de mantenimiento.
+ */
+export async function publicarProyecto(id: string) {
+  const res = await proyectos.update(id, {
+    fase: "publicado",
+    freezeMode: false,
+  } as any);
+  if (res.success) {
+    revalidatePath("/admin");
+    revalidateClientProjects();
+    notifyPlantillaRevalidate(id);
+  }
+  return res;
+}
+
+/**
+ * Inicia la fase de construcción manualmente, con una duración personalizada.
+ * Usado principalmente para plan "A la medida" donde no hay auto-transición.
+ * `durationDays` define el countdown visible al cliente — acota fechaEntrega
+ * para mantener una sola fuente de verdad (countdown = fechaEntrega - now).
+ */
+export async function iniciarConstruccion(id: string, durationDays: number) {
+  if (!Number.isFinite(durationDays) || durationDays < 1 || durationDays > 365) {
+    return { success: false, error: "Duración fuera de rango (1–365 días)" };
+  }
+  const now = new Date();
+  const fechaEntrega = new Date(now.getTime() + durationDays * 24 * 3600 * 1000);
+
+  const all = await proyectos.getAll();
+  const prev = (all as any[]).find((p: any) => p.id === id);
+  if (!prev) return { success: false, error: "Proyecto no encontrado" };
+  if (prev.fase !== "onboarding") {
+    return { success: false, error: "Solo se puede iniciar desde onboarding" };
+  }
+
+  const res = await proyectos.update(id, {
+    fase: "construccion",
+    buildStartedAt: now,
+    fechaEntrega,
+  } as any);
+  if (res.success) {
+    revalidatePath("/admin");
+    revalidateClientProjects();
+    notifyPlantillaRevalidate(id);
+    notifyEvent("onboarding.completed", prev);
   }
   return res;
 }
@@ -291,12 +296,16 @@ export async function updateProyectoOnboarding(
   }
 
   // Auto-transición: si el cliente completó el 100% y sigue en 'onboarding',
-  // pasamos a 'construccion' y arrancamos el countdown de 48h.
+  // pasamos a 'construccion'. Countdown de 48h fijo para plan Estándar —
+  // fechaEntrega sirve como fuente única de verdad del deadline.
   try {
     if (prev && prev.fase === "onboarding" && isOnboardingComplete(data)) {
+      const now = new Date();
+      const fechaEntrega = new Date(now.getTime() + 48 * 3600 * 1000);
       await proyectos.update(id, {
         fase: "construccion",
-        buildStartedAt: new Date(),
+        buildStartedAt: now,
+        fechaEntrega,
       } as any);
       notifyEvent("onboarding.completed", prev);
     }
@@ -307,32 +316,6 @@ export async function updateProyectoOnboarding(
   revalidatePath("/admin");
   revalidateClientProjects();
   notifyPlantillaRevalidate(id);
-  return res;
-}
-
-// ─── Fases del proyecto ──────────────────────────────────────────────────────
-
-export async function setProyectoFase(id: string, fase: ProjectFase) {
-  const patch: Record<string, any> = { fase };
-  const all = await proyectos.getAll();
-  const project = (all as any[]).find((p: any) => p.id === id);
-  if (fase === "construccion") {
-    if (!project?.buildStartedAt) patch.buildStartedAt = new Date();
-  } else if (fase === "onboarding") {
-    patch.buildStartedAt = null;
-  }
-  // fase === 'publicado' → mantener buildStartedAt como histórico.
-
-  const res = await proyectos.update(id, patch as any);
-  if (res.success) {
-    // Noti: paso manual de onboarding → construccion (inicio del countdown).
-    if (project && project.fase === "onboarding" && fase === "construccion") {
-      notifyEvent("onboarding.completed", project);
-    }
-    revalidatePath("/admin");
-    revalidateClientProjects();
-    notifyPlantillaRevalidate(id);
-  }
   return res;
 }
 
@@ -359,15 +342,6 @@ export async function getProyectoUrls(projectId: string) {
     preview: `https://${slug}.${wildcardDomain}`,
     custom: project.link ? `https://${project.link.replace(/^https?:\/\//, "")}` : null,
   };
-}
-
-export async function resetBuildTimer(id: string) {
-  const res = await proyectos.update(id, { buildStartedAt: new Date() } as any);
-  if (res.success) {
-    revalidatePath("/admin");
-    revalidateClientProjects();
-  }
-  return res;
 }
 
 async function mergeProyectoOnboardingData(id: string, patch: object) {
@@ -730,13 +704,11 @@ export async function refetchClienteProyectos() {
 
   const projs = await proyectos.getByClienteId(cliente.id);
   if (projs.length === 0) return { status: "no_projects" } as const;
-  const visibles = projs.filter((p: any) => p.visibilidad !== false);
-  if (visibles.length === 0) return { status: "all_hidden" } as const;
 
   return {
     status: "ok",
     cliente,
-    proyectos: visibles,
+    proyectos: projs,
     cedula: parsed.cedula,
   } as const;
 }

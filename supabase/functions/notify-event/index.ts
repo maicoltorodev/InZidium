@@ -56,6 +56,29 @@ type Message = {
     data: Record<string, string>;
 };
 
+// ─── Mapeo event → kind (alineado con InAppNotificationKind de la app) ──────
+
+function kindOf(event: EventType): string {
+    switch (event) {
+        case "cliente.created":
+            return "CLIENTE";
+        case "cliente.deleted":
+            return "CLIENTE_DELETED";
+        case "proyecto.created":
+            return "PROYECTO";
+        case "proyecto.deleted":
+            return "PROYECTO_DELETED";
+        case "chat.message":
+            return "CHAT";
+        case "onboarding.started":
+            return "ONBOARDING_STARTED";
+        case "onboarding.completed":
+            return "ONBOARDING_COMPLETED";
+        case "pago.comprobante_subido":
+            return "PAGO_COMPROBANTE";
+    }
+}
+
 // ─── Mapeo webhook → event ───────────────────────────────────────────────────
 
 function inferEvent(p: Payload): EventType | null {
@@ -82,10 +105,19 @@ function inferEvent(p: Payload): EventType | null {
 function compose(event: EventType, p: Payload): Message {
     const r = (p.record ?? p.old_record ?? {}) as Record<string, any>;
     const extra = (p.extra ?? {}) as Record<string, any>;
+    const kind = kindOf(event);
 
-    const base = (id?: string) => ({
+    // Shape canónico que espera la app Android (InZidiumMessagingService.parseNotification):
+    //  kind (uppercase), title, body, estudio_id?, proyecto_id?, extras…
+    //
+    // Todo va en `data` (FCM "data-only") para que onMessageReceived siempre dispare
+    // en foreground + background — la app arma su propia system notification desde ahí.
+    const baseData = (proyectoId?: string | null): Record<string, string> => ({
+        kind,
         type: event,
-        ...(id ? { id: String(id) } : {}),
+        estudio_id: String(r.estudio_id ?? ""),
+        ...(proyectoId ? { proyecto_id: String(proyectoId) } : {}),
+        ...(r.id ? { id: String(r.id) } : {}),
     });
 
     switch (event) {
@@ -93,25 +125,25 @@ function compose(event: EventType, p: Payload): Message {
             return {
                 title: "Nuevo cliente",
                 body: r.nombre ?? "Cliente sin nombre",
-                data: { ...base(r.id), estudio: r.estudio_id ?? "" },
+                data: baseData(),
             };
         case "cliente.deleted":
             return {
                 title: "Cliente eliminado",
                 body: r.nombre ?? "Cliente",
-                data: { ...base(r.id), estudio: r.estudio_id ?? "" },
+                data: baseData(),
             };
         case "proyecto.created":
             return {
                 title: "Nuevo proyecto",
                 body: `${r.nombre ?? "Proyecto"} · ${r.plan ?? ""}`.trim(),
-                data: { ...base(r.id), estudio: r.estudio_id ?? "" },
+                data: baseData(r.id),
             };
         case "proyecto.deleted":
             return {
                 title: "Proyecto eliminado",
                 body: r.nombre ?? "Proyecto",
-                data: { ...base(r.id), estudio: r.estudio_id ?? "" },
+                data: baseData(r.id),
             };
         case "chat.message": {
             const autor = r.autor === "admin" ? "Admin" : "Cliente";
@@ -119,27 +151,30 @@ function compose(event: EventType, p: Payload): Message {
             return {
                 title: `Mensaje · ${autor}`,
                 body: snippet || "(sin contenido)",
-                data: { ...base(r.proyecto_id) },
+                data: baseData(r.proyecto_id),
             };
         }
         case "onboarding.started":
             return {
                 title: "Onboarding iniciado",
                 body: `${r.nombre ?? "Un proyecto"} empezó a llenar el onboarding`,
-                data: { ...base(r.id) },
+                data: baseData(r.id),
             };
         case "onboarding.completed":
             return {
                 title: "Onboarding completado · Countdown iniciado",
-                body: `${r.nombre ?? "Proyecto"} terminó el onboarding — 48h hasta publicar`,
-                data: { ...base(r.id) },
+                body: `${r.nombre ?? "Proyecto"} terminó el onboarding — countdown en marcha`,
+                data: baseData(r.id),
             };
         case "pago.comprobante_subido": {
             const tipo = extra.tipo === "entrega" ? "Pago de entrega" : "Pago de arranque";
             return {
                 title: "Comprobante subido",
                 body: `${r.nombre ?? "Proyecto"} · ${tipo}`,
-                data: { ...base(r.id), tipo: String(extra.tipo ?? "arranque") },
+                data: {
+                    ...baseData(r.id),
+                    tipo: String(extra.tipo ?? "arranque"),
+                },
             };
         }
     }
@@ -270,8 +305,18 @@ Deno.serve(async (req) => {
                         body: JSON.stringify({
                             message: {
                                 token,
-                                notification: { title: msg.title, body: msg.body },
-                                data: msg.data,
+                                // Data-only push (sin `notification`): garantiza que la
+                                // app controle el banner tanto en foreground como en
+                                // background. Title/body van dentro de data para que
+                                // el parser de InZidiumMessagingService los lea.
+                                data: {
+                                    ...msg.data,
+                                    title: msg.title,
+                                    body: msg.body,
+                                },
+                                android: {
+                                    priority: "HIGH",
+                                },
                             },
                         }),
                     },

@@ -27,8 +27,9 @@ export function MobileHub({
   projectName,
   data,
   fase,
-  progreso,
   buildStartedAt,
+  fechaEntrega,
+  chat,
   onSelect,
   onReset,
   onDomainChange,
@@ -40,8 +41,9 @@ export function MobileHub({
   projectName: string;
   data: any;
   fase: ProjectFase;
-  progreso: number;
   buildStartedAt: Date | string | null;
+  fechaEntrega: Date | string | null;
+  chat?: any[];
   onSelect: (key: HubKey) => void;
   onReset: () => void;
   onDomainChange?: (v: string) => void;
@@ -122,7 +124,11 @@ export function MobileHub({
         </motion.div>
 
         {isBuilding ? (
-          <CountdownCard buildStartedAt={buildStartedAt} progreso={progreso} />
+          <CountdownCard
+            buildStartedAt={buildStartedAt}
+            fechaEntrega={fechaEntrega}
+            chat={chat}
+          />
         ) : isLive ? (
           <LivePublishedCard />
         ) : (

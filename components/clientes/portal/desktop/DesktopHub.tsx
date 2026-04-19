@@ -27,8 +27,9 @@ export function DesktopHub({
   projectName,
   data,
   fase,
-  progreso,
   buildStartedAt,
+  fechaEntrega,
+  chat,
   onSelect,
   onReset,
   onDomainChange,
@@ -40,8 +41,9 @@ export function DesktopHub({
   projectName: string;
   data: any;
   fase: ProjectFase;
-  progreso: number;
   buildStartedAt: Date | string | null;
+  fechaEntrega: Date | string | null;
+  chat?: any[];
   onSelect: (key: HubKey) => void;
   onReset: () => void;
   onDomainChange?: (v: string) => void;
@@ -141,7 +143,11 @@ export function DesktopHub({
         {/* Fila superior: progress/countdown/live card + DomainCard */}
         <div className="mb-6 grid grid-cols-2 gap-5">
           {isBuilding ? (
-            <CountdownCard buildStartedAt={buildStartedAt} progreso={progreso} />
+            <CountdownCard
+              buildStartedAt={buildStartedAt}
+              fechaEntrega={fechaEntrega}
+              chat={chat}
+            />
           ) : isLive ? (
             <LivePublishedCard />
           ) : (

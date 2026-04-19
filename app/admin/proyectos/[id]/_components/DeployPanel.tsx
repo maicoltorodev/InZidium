@@ -5,31 +5,23 @@ import {
     Globe,
     ExternalLink,
     Loader2,
-    Snowflake,
-    Check,
     Copy,
     Rocket,
 } from "lucide-react";
-import { toggleProyectoFreezeMode, getProyectoUrls } from "@/lib/actions";
+import { getProyectoUrls } from "@/lib/actions";
 import { useToast } from "@/app/providers/ToastProvider";
 
 type Urls = { preview: string; custom: string | null } | null;
 
 /**
- * Panel de administración del sitio publicado en la Plantilla Web.
- * Muestra las URLs disponibles (preview + custom si hay) y permite activar
- * el "modo revisión" para pausar cambios visibles al público.
+ * Panel informativo del sitio en Plantilla Web: muestra las URLs disponibles
+ * (preview + custom si hay). El control de estado (publicar/mantenimiento)
+ * vive en TabOverview.
  */
 export function DeployPanel({ project }: { project: any }) {
     const { showToast } = useToast();
     const [urls, setUrls] = useState<Urls>(null);
     const [loading, setLoading] = useState(true);
-    const [freezeMode, setFreezeMode] = useState<boolean>(!!project.freezeMode);
-    const [toggling, setToggling] = useState(false);
-
-    useEffect(() => {
-        setFreezeMode(!!project.freezeMode);
-    }, [project.freezeMode]);
 
     useEffect(() => {
         let cancelled = false;
@@ -44,24 +36,6 @@ export function DeployPanel({ project }: { project: any }) {
         };
     }, [project.id]);
 
-    const onToggleFreeze = async () => {
-        setToggling(true);
-        const next = !freezeMode;
-        const res = await toggleProyectoFreezeMode(project.id, next);
-        if (res.success) {
-            setFreezeMode(next);
-            showToast(
-                next
-                    ? "MODO REVISIÓN ACTIVADO — CAMBIOS PAUSADOS"
-                    : "MODO REVISIÓN DESACTIVADO — CAMBIOS EN VIVO",
-                "success",
-            );
-        } else {
-            showToast("ERROR AL CAMBIAR MODO REVISIÓN", "error");
-        }
-        setToggling(false);
-    };
-
     const copyUrl = async (url: string) => {
         try {
             await navigator.clipboard.writeText(url);
@@ -72,18 +46,23 @@ export function DeployPanel({ project }: { project: any }) {
     };
 
     const fase = project.fase as "onboarding" | "construccion" | "publicado";
+    const freezeMode = !!project.freezeMode;
     const faseLabel =
-        fase === "onboarding"
-            ? "En construcción (oculto al público)"
-            : fase === "construccion"
-                ? "Vista previa (no indexado)"
-                : "Publicado (indexable)";
+        fase === "publicado" && !freezeMode
+            ? "Publicado (indexable)"
+            : fase === "publicado" && freezeMode
+                ? "En mantenimiento (oculto al público)"
+                : fase === "construccion"
+                    ? "En construcción (no indexado)"
+                    : "Onboarding (oculto al público)";
     const faseColor =
-        fase === "publicado"
+        fase === "publicado" && !freezeMode
             ? "text-emerald-400"
-            : fase === "construccion"
+            : fase === "publicado" && freezeMode
                 ? "text-amber-400"
-                : "text-gray-500";
+                : fase === "construccion"
+                    ? "text-[#c084fc]"
+                    : "text-gray-500";
 
     return (
         <div className="p-6 sm:p-8 rounded-3xl bg-white/[0.04] backdrop-blur-xl border border-white/8 space-y-6">
@@ -136,44 +115,6 @@ export function DeployPanel({ project }: { project: any }) {
                 )}
             </div>
 
-            {/* Freeze mode toggle */}
-            <div className="rounded-2xl bg-white/[0.02] border border-white/5 p-5">
-                <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3">
-                        <div
-                            className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center border ${freezeMode
-                                    ? "bg-amber-500/10 border-amber-500/20 text-amber-400"
-                                    : "bg-white/5 border-white/10 text-gray-500"
-                                }`}
-                        >
-                            <Snowflake className="w-4 h-4" />
-                        </div>
-                        <div className="min-w-0">
-                            <h3 className="text-xs font-black uppercase tracking-widest text-white mb-1">
-                                Modo revisión
-                            </h3>
-                            <p className="text-[10px] text-gray-500 leading-relaxed">
-                                {freezeMode
-                                    ? "Los cambios del cliente no se propagan al sitio. Activá solo cuando quieras revisar antes de publicar."
-                                    : "Los cambios del cliente se ven en vivo al instante."}
-                            </p>
-                        </div>
-                    </div>
-                    <button
-                        onClick={onToggleFreeze}
-                        disabled={toggling}
-                        className={`shrink-0 relative w-14 h-8 rounded-full border transition-all ${freezeMode
-                                ? "bg-amber-500/10 border-amber-500/20"
-                                : "bg-white/5 border-white/10"
-                            } disabled:opacity-50`}
-                    >
-                        <div
-                            className={`absolute top-1 w-5 h-5 rounded-full shadow-lg transition-all ${freezeMode ? "bg-amber-400 right-1" : "bg-gray-500 left-1"
-                                }`}
-                        />
-                    </button>
-                </div>
-            </div>
         </div>
     );
 }

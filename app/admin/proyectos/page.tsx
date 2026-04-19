@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { PLANS, PLANS_ARRAY, BUILD_DURATION_HOURS } from "@/lib/constants";
+import { PLANS, PLANS_ARRAY } from "@/lib/constants";
 import { AdminLoading } from "@/lib/ui/AdminLoading";
 import { useRealtimeRefresh } from "@/hooks/use-realtime-refresh";
 
@@ -157,9 +157,12 @@ export default function ProjectsAdmin() {
                           </div>
                         </div>
                         <div className="self-start sm:self-auto flex flex-col gap-2 items-end">
-                          <StatusBadge status={project.estado} />
-                          {project.fase === "construccion" && project.buildStartedAt && (
-                            <CountdownBadge buildStartedAt={project.buildStartedAt} />
+                          <FaseBadge
+                            fase={project.fase}
+                            freezeMode={!!project.freezeMode}
+                          />
+                          {project.fase === "construccion" && project.fechaEntrega && (
+                            <CountdownBadge fechaEntrega={project.fechaEntrega} />
                           )}
                         </div>
                       </div>
@@ -190,35 +193,7 @@ export default function ProjectsAdmin() {
                         </div>
                       </div>
 
-                      <div className="mt-auto space-y-5">
-                        <div className="flex justify-between items-end">
-                          <div className="flex flex-col gap-1">
-                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500">
-                              Estado del proyecto
-                            </span>
-                            <span className="text-xs font-bold text-gray-400 italic">
-                              Sincronizado
-                            </span>
-                          </div>
-                          <div className="text-right">
-                            <span
-                              className={`text-2xl font-black font-[family-name:var(--font-orbitron)] bg-gradient-to-r ${projectPlan.color} bg-clip-text text-transparent`}
-                            >
-                              {project.progreso}%
-                            </span>
-                          </div>
-                        </div>
-                        <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden p-1 shadow-inner relative">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            whileInView={{ width: `${project.progreso}%` }}
-                            transition={{ duration: 1.5, ease: "easeOut" }}
-                            className={`h-full bg-gradient-to-r ${projectPlan.color} rounded-full relative`}
-                          >
-                            <div className="absolute inset-0 bg-[linear-gradient(45deg,rgba(255,255,255,0.2)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.2)_50%,rgba(255,255,255,0.2)_75%,transparent_75%,transparent)] bg-[size:1rem_1rem] opacity-20 animate-[move-bg_2s_linear_infinite]" />
-                          </motion.div>
-                        </div>
-                      </div>
+                      <div className="mt-auto" />
 
                       <Link
                         href={`/admin/proyectos/${project.id}`}
@@ -496,22 +471,47 @@ export default function ProjectsAdmin() {
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const isDeveloping = status.toLowerCase() !== "finalizado";
+function FaseBadge({
+  fase,
+  freezeMode,
+}: {
+  fase: "onboarding" | "construccion" | "publicado" | undefined;
+  freezeMode: boolean;
+}) {
+  const { label, tone } = faseLabel(fase, freezeMode);
+  const styles =
+    tone === "emerald"
+      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+      : tone === "purple"
+        ? "bg-[#a855f7]/10 border-[#a855f7]/30 text-[#c084fc]"
+        : "bg-amber-500/10 border-amber-500/30 text-amber-400";
+  const dot =
+    tone === "emerald"
+      ? "bg-emerald-500"
+      : tone === "purple"
+        ? "bg-[#a855f7]"
+        : "bg-amber-400";
   return (
     <div
-      className={`px-4 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-2 ${
-        isDeveloping
-          ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-          : "bg-[#22d3ee]/10 border-[#22d3ee]/30 text-[#22d3ee]"
-      }`}
+      className={`px-4 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-[0.2em] flex items-center gap-2 ${styles}`}
     >
-      <span
-        className={`w-1.5 h-1.5 rounded-full ${isDeveloping ? "bg-emerald-500 animate-pulse" : "bg-[#22d3ee]"}`}
-      />
-      {status}
+      <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${dot}`} />
+      {label}
     </div>
   );
+}
+
+function faseLabel(
+  fase: "onboarding" | "construccion" | "publicado" | undefined,
+  freezeMode: boolean,
+): { label: string; tone: "emerald" | "purple" | "amber" } {
+  if (fase === "publicado" && !freezeMode)
+    return { label: "Publicado", tone: "emerald" };
+  if (fase === "publicado" && freezeMode)
+    return { label: "Mantenimiento", tone: "amber" };
+  if (fase === "construccion")
+    return { label: "En construcción", tone: "purple" };
+  return { label: "Onboarding", tone: "amber" };
 }
 
 function LayerIcon(props: any) {
@@ -582,17 +582,23 @@ function PremiumInput({
   );
 }
 
-function CountdownBadge({ buildStartedAt }: { buildStartedAt: Date | string }) {
-  const startMs =
-    typeof buildStartedAt === "string"
-      ? new Date(buildStartedAt).getTime()
-      : buildStartedAt.getTime();
-  const endMs = startMs + BUILD_DURATION_HOURS * 3600 * 1000;
+function CountdownBadge({
+  fechaEntrega,
+}: {
+  fechaEntrega: Date | string | null;
+}) {
+  const endMs =
+    fechaEntrega == null
+      ? null
+      : typeof fechaEntrega === "string"
+        ? new Date(fechaEntrega).getTime()
+        : fechaEntrega.getTime();
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 60_000);
     return () => clearInterval(id);
   }, []);
+  if (endMs == null || !Number.isFinite(endMs)) return null;
 
   const remaining = endMs - now;
   const done = remaining <= 0;
