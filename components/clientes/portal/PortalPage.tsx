@@ -32,6 +32,7 @@ export function PortalPage({
   useDesktopLandingBackground?: boolean;
 }) {
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingFavicon, setUploadingFavicon] = useState(false);
   const [uploadingNosotros, setUploadingNosotros] = useState(false);
 
   const uploadImage = async (
@@ -63,6 +64,8 @@ export function PortalPage({
     uploadImage,
     uploadingLogo,
     setUploadingLogo,
+    uploadingFavicon,
+    setUploadingFavicon,
     uploadingNosotros,
     setUploadingNosotros,
   };

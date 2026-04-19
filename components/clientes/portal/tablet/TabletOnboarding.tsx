@@ -35,6 +35,8 @@ export function TabletOnboarding({
   uploadImage,
   uploadingLogo,
   setUploadingLogo,
+  uploadingFavicon,
+  setUploadingFavicon,
   uploadingNosotros,
   setUploadingNosotros,
 }: {
@@ -51,6 +53,8 @@ export function TabletOnboarding({
   ) => Promise<void>;
   uploadingLogo: boolean;
   setUploadingLogo: (v: boolean) => void;
+  uploadingFavicon: boolean;
+  setUploadingFavicon: (v: boolean) => void;
   uploadingNosotros: boolean;
   setUploadingNosotros: (v: boolean) => void;
 }) {
@@ -107,6 +111,12 @@ export function TabletOnboarding({
       uploadImage(file, (url) => savePatch({ logo: url }), setUploadingLogo, d.logo);
     },
     [uploadImage, savePatch, setUploadingLogo, d.logo]
+  );
+  const handleUploadFavicon = useCallback(
+    (file: File) => {
+      uploadImage(file, (url) => savePatch({ favicon: url }), setUploadingFavicon, d.favicon);
+    },
+    [uploadImage, savePatch, setUploadingFavicon, d.favicon]
   );
   const handleUploadNosotros = useCallback(
     (file: File) => {
@@ -188,7 +198,14 @@ export function TabletOnboarding({
             {view === "colores" && <ColoresSection d={d} savePatch={savePatch} />}
             {view === "ajustes" && <AjustesSection d={d} onSelect={(key) => changeView(key)} />}
             {view === "legal" && <LegalSection d={d} savePatch={savePatch} />}
-            {view === "avanzado" && <AvanzadoSection d={d} savePatch={savePatch} />}
+            {view === "avanzado" && (
+              <AvanzadoSection
+                d={d}
+                savePatch={savePatch}
+                uploadingFavicon={uploadingFavicon}
+                onUploadFavicon={handleUploadFavicon}
+              />
+            )}
             {view === "chat" && <MensajesSection project={project} showToast={showToast} variant="tablet" />}
           </TabletSection>
         )}

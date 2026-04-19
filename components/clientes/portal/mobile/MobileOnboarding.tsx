@@ -37,6 +37,8 @@ export function MobileOnboarding({
   uploadImage,
   uploadingLogo,
   setUploadingLogo,
+  uploadingFavicon,
+  setUploadingFavicon,
   uploadingNosotros,
   setUploadingNosotros,
 }: {
@@ -53,6 +55,8 @@ export function MobileOnboarding({
   ) => Promise<void>;
   uploadingLogo: boolean;
   setUploadingLogo: (v: boolean) => void;
+  uploadingFavicon: boolean;
+  setUploadingFavicon: (v: boolean) => void;
   uploadingNosotros: boolean;
   setUploadingNosotros: (v: boolean) => void;
 }) {
@@ -119,6 +123,12 @@ export function MobileOnboarding({
       uploadImage(file, (url) => savePatch({ logo: url }), setUploadingLogo, d.logo);
     },
     [uploadImage, savePatch, setUploadingLogo, d.logo]
+  );
+  const handleUploadFavicon = useCallback(
+    (file: File) => {
+      uploadImage(file, (url) => savePatch({ favicon: url }), setUploadingFavicon, d.favicon);
+    },
+    [uploadImage, savePatch, setUploadingFavicon, d.favicon]
   );
   const handleUploadNosotros = useCallback(
     (file: File) => {
@@ -222,7 +232,14 @@ export function MobileOnboarding({
               />
             )}
             {view === "legal" && <LegalSection d={d} savePatch={savePatch} />}
-            {view === "avanzado" && <AvanzadoSection d={d} savePatch={savePatch} />}
+            {view === "avanzado" && (
+              <AvanzadoSection
+                d={d}
+                savePatch={savePatch}
+                uploadingFavicon={uploadingFavicon}
+                onUploadFavicon={handleUploadFavicon}
+              />
+            )}
             {view === "chat" && (
               <MensajesSection project={project} showToast={showToast} />
             )}

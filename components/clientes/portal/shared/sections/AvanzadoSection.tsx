@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Check } from "lucide-react";
-import { AutoField } from "../../fields";
+import { AutoField, ImageField } from "../../fields";
 import { labelCls } from "../../styles";
 import { FieldItem } from "../primitives/FieldItem";
 import { ChipSelector } from "../primitives/ChipSelector";
@@ -49,9 +49,13 @@ function useGoogleFont(fontName: string) {
 export function AvanzadoSection({
   d,
   savePatch,
+  uploadingFavicon,
+  onUploadFavicon,
 }: {
   d: any;
   savePatch: (patch: any) => void;
+  uploadingFavicon: boolean;
+  onUploadFavicon: (file: File) => void;
 }) {
   const [fontInput, setFontInput] = useState<string>(d.fontPreset ?? "");
   useEffect(() => setFontInput(d.fontPreset ?? ""), [d.fontPreset]);
@@ -99,6 +103,25 @@ export function AvanzadoSection({
           >
             El quick brown fox jumps over the lazy dog.
           </p>
+        </div>
+      </FieldItem>
+
+      <FieldItem>
+        <label className={labelCls}>Favicon</label>
+        <p className="mb-3 text-[11px] text-white/25">
+          Opcional. Imagen cuadrada PNG (recomendado 512×512) para el icono de
+          la pestaña del browser. Si lo dejas vacío, se usa un icono
+          autogenerado con las iniciales sobre el color de tu marca.
+        </p>
+        <div className="flex justify-center">
+          <div className="aspect-square w-40">
+            <ImageField
+              value={d.favicon}
+              uploading={uploadingFavicon}
+              square
+              onUpload={onUploadFavicon}
+            />
+          </div>
         </div>
       </FieldItem>
 
