@@ -115,23 +115,20 @@ export function MobileHub({
       transition={MOTION.page}
       className="relative min-h-dvh overflow-hidden bg-[#060214] px-4 pb-16 pt-10 text-white"
     >
-      <motion.div
+      {/* Glows estáticos (sin animación) — en mobile los `motion.div` con
+          blur grande repintaban cada frame y pegaban GPU. Quietos se pintan
+          una sola vez y el efecto visual prácticamente no cambia. */}
+      <div
         aria-hidden
         className="pointer-events-none absolute -top-40 -left-32 h-[420px] w-[420px] rounded-full bg-[#e879f9] opacity-[0.12] blur-[120px]"
-        animate={reduced ? undefined : { x: [0, 28] }}
-        transition={{ duration: 20, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }}
       />
-      <motion.div
+      <div
         aria-hidden
         className="pointer-events-none absolute top-[40%] -right-40 h-[480px] w-[480px] rounded-full bg-[#22d3ee] opacity-[0.1] blur-[130px]"
-        animate={reduced ? undefined : { y: [0, 24] }}
-        transition={{ duration: 26, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }}
       />
-      <motion.div
+      <div
         aria-hidden
         className="pointer-events-none absolute -bottom-32 left-[20%] h-[360px] w-[360px] rounded-full bg-[#a855f7] opacity-[0.09] blur-[120px]"
-        animate={reduced ? undefined : { x: [0, -22] }}
-        transition={{ duration: 23, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }}
       />
 
       <div className="relative mx-auto w-full max-w-[560px]">

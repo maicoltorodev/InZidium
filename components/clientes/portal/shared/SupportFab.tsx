@@ -139,13 +139,21 @@ export function SupportFab({
             <AnimatePresence>
                 {open && (
                     <>
+                        {/* Backdrop: en mobile evitamos `backdrop-blur` (es
+                            caro en GPU y repintaba durante el exit, daba lag
+                            de ~2s al cerrar el chat). Compensamos con un bg
+                            más opaco. Desktop puede permitirse el blur. */}
                         <motion.div
                             key="fab-backdrop"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.18 }}
-                            className="fixed inset-0 z-[75] bg-black/55 backdrop-blur-sm"
+                            className={
+                                isDesktop
+                                    ? "fixed inset-0 z-[75] bg-black/55 backdrop-blur-sm"
+                                    : "fixed inset-0 z-[75] bg-black/80"
+                            }
                             onClick={() => setOpen(false)}
                             aria-hidden
                         />

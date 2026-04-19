@@ -40,8 +40,8 @@ export function TabletSection({
 
   const ctaStyle =
     completion === "complete"
-      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-      : "border-white/[0.08] bg-white/[0.04] text-white/70 hover:bg-white/[0.06]";
+      ? "bg-[linear-gradient(135deg,#10b981_0%,#059669_100%)] text-white shadow-[0_6px_24px_-6px_rgba(16,185,129,0.55)]"
+      : "bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] text-white shadow-[0_6px_24px_-6px_rgba(168,85,247,0.6)]";
 
   return (
     <motion.div
@@ -60,14 +60,15 @@ export function TabletSection({
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center gap-1.5">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           {headerContent ?? (
-            <>
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/40">
-                Guardado
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-1 text-[9px] font-black uppercase tracking-[0.26em] text-emerald-400">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400 opacity-70" />
+                <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-400" />
               </span>
-            </>
+              Guardado
+            </span>
           )}
         </div>
       </header>
@@ -121,7 +122,7 @@ export function TabletSection({
             <button
               type="button"
               onClick={onBack}
-              className={`flex h-13 w-full items-center justify-center gap-2 rounded-2xl border py-3.5 text-[12px] font-black uppercase tracking-[0.24em] transition-colors ${ctaStyle}`}
+              className={`flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-[12px] font-black uppercase tracking-[0.24em] transition-transform active:scale-[0.99] ${ctaStyle}`}
             >
               {completion === "complete" && <Check className="h-4 w-4" strokeWidth={3} />}
               {completion === "complete" ? "¡Listo! Volver al inicio" : "Volver al inicio"}

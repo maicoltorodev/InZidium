@@ -40,10 +40,12 @@ export function MobileSection({
       ? "bg-[linear-gradient(135deg,rgba(232,121,249,0.14)_0%,rgba(168,85,247,0.14)_50%,rgba(34,211,238,0.14)_100%)] ring-1 ring-[#a855f7]/30 shadow-[0_0_40px_-12px_rgba(168,85,247,0.55)]"
       : "bg-[linear-gradient(135deg,rgba(232,121,249,0.06)_0%,rgba(168,85,247,0.06)_50%,rgba(34,211,238,0.06)_100%)] ring-1 ring-white/[0.08]";
 
+  // CTA gradient — brand por default, verde cuando la sección ya está
+  // completa. Consistente con DesktopSection.
   const ctaStyle =
     completion === "complete"
-      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-      : "border-white/[0.08] bg-white/[0.04] text-white/70 hover:bg-white/[0.06]";
+      ? "bg-[linear-gradient(135deg,#10b981_0%,#059669_100%)] text-white shadow-[0_6px_20px_-6px_rgba(16,185,129,0.55)]"
+      : "bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] text-white shadow-[0_6px_20px_-6px_rgba(168,85,247,0.6)]";
 
   return (
     <motion.div
@@ -62,14 +64,15 @@ export function MobileSection({
         >
           <ArrowLeft className="h-4 w-4" />
         </button>
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center gap-1.5">
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
           {headerContent ?? (
-            <>
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-white/40">
-                Guardado
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.22em] text-emerald-400">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400 opacity-70" />
+                <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-400" />
               </span>
-            </>
+              Guardado
+            </span>
           )}
         </div>
       </header>
@@ -122,7 +125,7 @@ export function MobileSection({
           <button
             type="button"
             onClick={onBack}
-            className={`flex h-12 w-full items-center justify-center gap-2 rounded-2xl border text-[12px] font-black uppercase tracking-[0.22em] transition-colors ${ctaStyle}`}
+            className={`flex h-12 w-full items-center justify-center gap-2 rounded-2xl text-[12px] font-black uppercase tracking-[0.22em] transition-transform active:scale-[0.99] ${ctaStyle}`}
           >
             {completion === "complete" && <Check className="h-4 w-4" strokeWidth={3} />}
             {completion === "complete" ? "¡Listo! Volver al inicio" : "Volver al inicio"}

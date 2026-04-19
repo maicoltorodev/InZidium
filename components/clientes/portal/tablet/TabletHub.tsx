@@ -115,24 +115,19 @@ export function TabletHub({
       transition={MOTION.page}
       className="relative min-h-dvh overflow-hidden bg-[#060214] px-6 pb-20 pt-14 text-white"
     >
-      {/* Ambient glows - más grandes para tablet */}
-      <motion.div
+      {/* Glows estáticos — sin `motion` para evitar repaints continuos del
+          blur grande. El efecto visual no se pierde y se gana GPU. */}
+      <div
         aria-hidden
         className="pointer-events-none absolute -top-48 -left-40 h-[560px] w-[560px] rounded-full bg-[#e879f9] opacity-[0.13] blur-[150px]"
-        animate={reduced ? undefined : { x: [0, 38] }}
-        transition={{ duration: 20, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }}
       />
-      <motion.div
+      <div
         aria-hidden
         className="pointer-events-none absolute top-[35%] -right-48 h-[620px] w-[620px] rounded-full bg-[#22d3ee] opacity-[0.11] blur-[160px]"
-        animate={reduced ? undefined : { y: [0, 32] }}
-        transition={{ duration: 26, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }}
       />
-      <motion.div
+      <div
         aria-hidden
         className="pointer-events-none absolute -bottom-40 left-[15%] h-[480px] w-[480px] rounded-full bg-[#a855f7] opacity-[0.1] blur-[150px]"
-        animate={reduced ? undefined : { x: [0, -28] }}
-        transition={{ duration: 23, repeat: Infinity, repeatType: "mirror", ease: "easeInOut" }}
       />
 
       <div className="relative mx-auto w-full max-w-[720px]">

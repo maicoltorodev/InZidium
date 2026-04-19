@@ -69,7 +69,7 @@ export function PhaseTimeline({
                                 />
                                 <div className="text-center">
                                     <p
-                                        className={`text-[10px] font-black uppercase tracking-[0.22em] ${
+                                        className={`text-[9px] font-black uppercase tracking-[0.16em] sm:text-[10px] sm:tracking-[0.22em] ${
                                             done
                                                 ? "text-emerald-400/80"
                                                 : active
@@ -82,7 +82,7 @@ export function PhaseTimeline({
                                         {phase.label}
                                     </p>
                                     {active && activeSubtitle && (
-                                        <p className="mt-1 text-[10px] text-white/40">
+                                        <p className="mt-1 text-[9px] text-white/40 sm:text-[10px]">
                                             {activeSubtitle}
                                         </p>
                                     )}
