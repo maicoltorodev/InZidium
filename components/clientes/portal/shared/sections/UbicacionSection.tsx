@@ -130,7 +130,7 @@ export function UbicacionSection({
         <AutoField
           value={d.embedUrl}
           onSave={(v) => savePatch({ embedUrl: extractMapUrl(v) })}
-          placeholder="Pegá el iframe o la URL de Google Maps"
+          placeholder="Pega el iframe o la URL de Google Maps"
         />
         <button
           type="button"

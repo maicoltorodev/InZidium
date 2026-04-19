@@ -77,7 +77,7 @@ export function AvanzadoSection({
     const ok = window.confirm(
       "Cambiar el tipo de negocio actualizará el nombre de tu catálogo " +
       "(servicios / productos / platillos) y regenerará tus páginas legales. " +
-      "¿Querés continuar?"
+      "¿Quieres continuar?"
     );
     if (!ok) return;
     savePatch(buildTipoNegocioPatch(tipo, d.legalLastUpdated));

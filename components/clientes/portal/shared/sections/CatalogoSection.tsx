@@ -236,8 +236,8 @@ export function CatalogoSection({
           Categorías <span className="normal-case tracking-normal font-normal text-white/20">— opcional</span>
         </label>
         <p className="-mt-1 mb-2.5 text-[11px] text-white/25">
-          Usalas para agrupar {cfg.plural.toLowerCase()} en el sitio. Si no las
-          creás, todo aparece junto.
+          Úsalas para agrupar {cfg.plural.toLowerCase()} en el sitio. Si no las
+          creas, todo aparece junto.
         </p>
         {categorias.length > 0 ? (
           <div className="mb-2.5 flex flex-wrap gap-2">

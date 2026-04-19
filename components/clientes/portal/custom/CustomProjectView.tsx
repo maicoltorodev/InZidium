@@ -97,7 +97,7 @@ export function CustomProjectView({
               {project.nombre}
             </h1>
             <p className="text-xs text-gray-500 mt-1">
-              Hola {clientName} — usá este espacio para contarnos tu proyecto y
+              Hola {clientName} — usa este espacio para contarnos tu proyecto y
               compartir lo que necesitemos ver.
             </p>
           </div>
@@ -139,13 +139,13 @@ export function CustomProjectView({
             value={brief}
             onChange={(e) => setBrief(e.target.value)}
             placeholder={
-              "¿Qué querés lograr?\n¿Qué tenés hoy (sitio, marca, referencias)?\n¿Tenés deadline o ideas concretas?\nCualquier info útil va acá — podés ir editando cuando quieras."
+              "¿Qué quieres lograr?\n¿Qué tienes hoy (sitio, marca, referencias)?\n¿Tienes deadline o ideas concretas?\nCualquier info útil va aquí — puedes ir editando cuando quieras."
             }
             rows={10}
             className="w-full resize-y rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-white placeholder:text-gray-600 focus:border-[#22d3ee]/50 focus:outline-none transition-colors leading-relaxed"
           />
           <p className="mt-3 text-[10px] text-gray-600 leading-relaxed">
-            Para adjuntar imágenes, PDFs o referencias, usá el chat de abajo.
+            Para adjuntar imágenes, PDFs o referencias, usa el chat de abajo.
           </p>
         </motion.section>
 

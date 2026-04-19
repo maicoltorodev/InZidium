@@ -91,7 +91,7 @@ export function DesktopHub({
         ? "Empecemos eligiendo tu dominio."
         : nextSection
           ? `Tu siguiente paso: completar ${nextSection.label}.`
-          : "Seguí completando la información."
+          : "Sigue completando la información."
     : isBuilding
       ? "Estamos construyendo tu sitio."
       : "Tu sitio está en vivo.";
@@ -99,8 +99,8 @@ export function DesktopHub({
   const heroSub = isOnboarding
     ? "Apenas completes la info tendremos la web lista en 48 horas."
     : isBuilding
-      ? "Si necesitás cambiar algo en este tiempo, escribinos por Mensajes."
-      : "Podés editar cualquier información y se actualiza en tu sitio.";
+      ? "Si necesitas cambiar algo en este tiempo, escríbenos por Mensajes."
+      : "Puedes editar cualquier información y se actualiza en tu sitio.";
 
   const liveUrl = buildLiveUrl(data);
   const timelineSubtitle = isOnboarding
@@ -265,7 +265,7 @@ export function DesktopHub({
               title="Mensajes"
               description={
                 isBuilding
-                  ? "Escribinos si hay cambios durante la construcción"
+                  ? "Escríbenos si hay cambios durante la construcción"
                   : "Habla con el equipo de desarrollo"
               }
               status={{ kind: "messages", unread: hasUnread, preview: lastAdminMessage }}
@@ -328,7 +328,7 @@ function LivePublishedCard({ liveUrl }: { liveUrl: string | null }) {
           </p>
           <p className="mt-1 text-[20px] font-black leading-tight text-white">Tu sitio está en vivo</p>
           <p className="mt-1.5 text-[12px] leading-snug text-white/45">
-            Podés seguir editando — los cambios se actualizan automáticamente.
+            Puedes seguir editando — los cambios se actualizan automáticamente.
           </p>
           {liveUrl && (
             <a
@@ -353,7 +353,7 @@ function FinalMessage({ fase }: { fase: ProjectFase }) {
       <div className="mt-12 rounded-2xl border border-white/[0.05] bg-[linear-gradient(135deg,rgba(232,121,249,0.03)_0%,rgba(168,85,247,0.03)_50%,rgba(96,165,250,0.03)_100%)] px-8 py-6 text-center">
         <p className="text-[13px] leading-relaxed text-white/55">
           Estamos construyendo tu sitio. Cuando esté listo, podrás editar cualquier información sin problemas.{" "}
-          <span className="text-white/35">Si hay cambios urgentes, escribinos por Mensajes.</span>
+          <span className="text-white/35">Si hay cambios urgentes, escríbenos por Mensajes.</span>
         </p>
       </div>
     );

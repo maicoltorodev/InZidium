@@ -89,7 +89,7 @@ export function MobileHub({
         ? "Empecemos eligiendo tu dominio."
         : nextSection
           ? `Tu siguiente paso: ${nextSection.label}.`
-          : "Seguí completando la info."
+          : "Sigue completando la info."
     : isBuilding
       ? "Estamos construyendo tu sitio."
       : "Tu sitio está en vivo.";
@@ -97,8 +97,8 @@ export function MobileHub({
   const heroSub = isOnboarding
     ? "Apenas completes la info tendremos la web lista en 48 horas."
     : isBuilding
-      ? "Si hay cambios, escribinos por Mensajes."
-      : "Podés editar cualquier información.";
+      ? "Si hay cambios, escríbenos por Mensajes."
+      : "Puedes editar cualquier información.";
 
   const liveUrl = buildLiveUrl(data);
   const timelineSubtitle = isOnboarding
@@ -237,7 +237,7 @@ export function MobileHub({
               title="Mensajes"
               description={
                 isBuilding
-                  ? "Escribinos si hay cambios durante la construcción"
+                  ? "Escríbenos si hay cambios durante la construcción"
                   : "Habla con el equipo de desarrollo"
               }
               status={{ kind: "messages", unread: hasUnread, preview: lastAdminMessage }}
@@ -299,7 +299,7 @@ function LivePublishedCard({ liveUrl }: { liveUrl: string | null }) {
           </p>
           <p className="mt-1 text-[18px] font-black leading-tight text-white">Tu sitio está en vivo</p>
           <p className="mt-1 text-[11px] leading-snug text-white/45">
-            Podés seguir editando — los cambios se actualizan solos.
+            Puedes seguir editando — los cambios se actualizan solos.
           </p>
         </div>
       </div>
@@ -325,7 +325,7 @@ function FinalMessage({ fase }: { fase: ProjectFase }) {
         <p className="text-[12px] leading-relaxed text-white/55">
           Estamos construyendo tu sitio. Cuando esté listo podrás editar sin problemas.
           <br />
-          <span className="text-white/35">Si hay cambios urgentes, escribinos por Mensajes.</span>
+          <span className="text-white/35">Si hay cambios urgentes, escríbenos por Mensajes.</span>
         </p>
       </div>
     );

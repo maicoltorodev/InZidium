@@ -40,7 +40,11 @@ export function DesktopSection({
 }) {
   const reduced = usePrefersReducedMotion();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const [activeId, setActiveId] = useState<string | null>(subnav?.[0]?.id ?? null);
+  // Si el contenido cabe entero en el viewport no tiene sentido mostrar el
+  // subnav — queda como un indicador estático. Solo se muestra si hay scroll.
+  const [canScroll, setCanScroll] = useState(false);
 
   const heroUsesGradient = completion !== "complete";
   const iconRing =
@@ -55,9 +59,34 @@ export function DesktopSection({
       ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
       : "border-white/[0.08] bg-white/[0.04] text-white/70 hover:bg-white/[0.06]";
 
-  // IntersectionObserver: marca activo el anchor más cercano al top (40% viewport).
+  // Detectar si el contenido tiene scroll real. Si todo entra en pantalla,
+  // el subnav no aporta nada y lo escondemos. Usamos ResizeObserver para
+  // cubrir cambios dinámicos de altura (ej. expandir un colapsable).
   useEffect(() => {
-    if (!subnav || subnav.length === 0 || hideBody) return;
+    if (hideBody) return;
+    const root = scrollRef.current;
+    const body = bodyRef.current;
+    if (!root || !body) return;
+    const check = () => {
+      setCanScroll(root.scrollHeight > root.clientHeight + 4);
+    };
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(root);
+    ro.observe(body);
+    window.addEventListener("resize", check);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", check);
+    };
+  }, [hideBody, subnav]);
+
+  // IntersectionObserver: marca activo el anchor más cercano al top (40% viewport).
+  // Cuando el scroll llega al fondo, forzamos el último item como activo — el
+  // active-band del IO (10-40% del viewport) puede no alcanzar los últimos
+  // items si el contenido es corto.
+  useEffect(() => {
+    if (!subnav || subnav.length === 0 || hideBody || !canScroll) return;
     const root = scrollRef.current;
     if (!root) return;
 
@@ -81,8 +110,20 @@ export function DesktopSection({
       }
     );
     for (const el of observed) observer.observe(el);
-    return () => observer.disconnect();
-  }, [subnav, hideBody]);
+
+    // Fallback: al llegar al fondo del scroll, activar el último item.
+    const onScroll = () => {
+      const nearBottom = root.scrollTop + root.clientHeight >= root.scrollHeight - 24;
+      if (nearBottom) setActiveId(subnav[subnav.length - 1].id);
+    };
+    root.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+
+    return () => {
+      observer.disconnect();
+      root.removeEventListener("scroll", onScroll);
+    };
+  }, [subnav, hideBody, canScroll]);
 
   const highlightAnchor = (id: string) => {
     const root = scrollRef.current;
@@ -109,7 +150,9 @@ export function DesktopSection({
     setActiveId(id);
   };
 
-  const hasSubnav = !hideBody && subnav && subnav.length > 0;
+  // Solo renderizamos el subnav si hay scroll. Sin scroll, todo el contenido
+  // ya está a la vista y el indicador es ruido visual.
+  const hasSubnav = !hideBody && subnav && subnav.length > 0 && canScroll;
 
   return (
     <motion.div
@@ -146,7 +189,7 @@ export function DesktopSection({
         {hideBody ? (
           children
         ) : (
-          <div className={`mx-auto w-full max-w-[1080px] px-10 pt-12 pb-32 ${hasSubnav ? "grid grid-cols-[1fr_240px] gap-10" : ""}`}>
+          <div ref={bodyRef} className={`mx-auto w-full max-w-[1080px] px-10 pt-12 pb-32 ${hasSubnav ? "grid grid-cols-[1fr_240px] gap-10" : ""}`}>
             {/* Columna principal */}
             <div className={hasSubnav ? "min-w-0" : ""}>
               <motion.div

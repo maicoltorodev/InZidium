@@ -31,17 +31,17 @@ const AUTOSAVE_DEBOUNCE = 900;
 const BRIEF_PROMPTS = [
     {
         icon: Target,
-        label: "¿Qué querés lograr?",
+        label: "¿Qué quieres lograr?",
         hint: "Objetivos del proyecto, para quién es.",
     },
     {
         icon: Camera,
-        label: "¿Qué tenés hoy?",
+        label: "¿Qué tienes hoy?",
         hint: "Marca, sitio previo, redes, referencias.",
     },
     {
         icon: Calendar,
-        label: "¿Tenés deadline?",
+        label: "¿Tienes deadline?",
         hint: "Fechas clave o prioridades.",
     },
     {
@@ -126,7 +126,7 @@ export function DesktopCustomProjectView({
     );
 
     const timelineSubtitle = isOnboarding
-        ? "Contanos tu visión"
+        ? "Cuéntanos tu visión"
         : isBuilding
           ? "Construyendo"
           : "En vivo";
@@ -304,15 +304,15 @@ export function DesktopCustomProjectView({
                                 onChange={(e) => setBrief(e.target.value)}
                                 disabled={briefReadOnly}
                                 placeholder={
-                                    "Contanos tu proyecto en tus palabras.\n\n" +
-                                    "Mirá las preguntas guía de arriba — no tenés que responderlas todas, " +
-                                    "solo sirven para arrancar. Podés ir editando cuando quieras."
+                                    "Cuéntanos tu proyecto en tus palabras.\n\n" +
+                                    "Mira las preguntas guía de arriba — no tienes que responderlas todas, " +
+                                    "solo sirven para arrancar. Puedes ir editando cuando quieras."
                                 }
                                 rows={14}
                                 className="w-full resize-y rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-white placeholder:text-white/25 focus:border-[#a855f7]/50 focus:outline-none transition-colors leading-relaxed disabled:cursor-not-allowed disabled:opacity-70"
                             />
                             <p className="mt-3 text-[11px] leading-relaxed text-white/35">
-                                Para imágenes, PDFs o referencias, usá el chat de la derecha →
+                                Para imágenes, PDFs o referencias, usa el chat de la derecha →
                             </p>
                         </motion.section>
                     </div>
@@ -337,9 +337,9 @@ export function DesktopCustomProjectView({
 
                 <p className="mt-10 text-center text-[12px] leading-relaxed text-white/35">
                     {isOnboarding
-                        ? "Tu info se guarda automáticamente. Escribinos por el chat cuando quieras."
+                        ? "Tu info se guarda automáticamente. Escríbenos por el chat cuando quieras."
                         : isBuilding
-                          ? "Estamos construyendo tu sitio. Si hay cambios, escribinos por el chat."
+                          ? "Estamos construyendo tu sitio. Si hay cambios, escríbenos por el chat."
                           : "Tu sitio ya está en vivo. Cualquier ajuste lo coordinamos por el chat."}
                 </p>
             </div>

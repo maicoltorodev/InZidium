@@ -46,12 +46,12 @@ export function InicioSection({
         <div className="mb-3 space-y-1">
           <p className="text-[11px] text-white/25">
             <span className="font-bold text-[#a855f7]">Importante:</span>{" "}
-            subí tu logo con <span className="font-bold text-white/70">fondo transparente</span>{" "}
+            sube tu logo con <span className="font-bold text-white/70">fondo transparente</span>{" "}
             (PNG o SVG). Si tiene fondo blanco o de color, se verá feo sobre
             fondos oscuros de tu sitio.
           </p>
           <p className="text-[11px] text-white/25">
-            Si tu logo original tiene fondo, podés sacarlo gratis en{" "}
+            Si tu logo original tiene fondo, puedes sacarlo gratis en{" "}
             <a
               href="https://www.remove.bg/"
               target="_blank"
