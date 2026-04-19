@@ -362,7 +362,6 @@ export default function ClientsAdmin() {
                 <PremiumInput
                   name="nombre"
                   placeholder="Nombre Completo"
-                  icon={Users}
                   value={formCliente.nombre}
                   onChange={(e: any) =>
                     setFormCliente({
@@ -376,7 +375,6 @@ export default function ClientsAdmin() {
                 <PremiumInput
                   name="cedula"
                   placeholder="Documento / Cédula"
-                  icon={CreditCard}
                   inputMode="numeric"
                   value={formCliente.cedula}
                   onChange={(e: any) =>
@@ -393,7 +391,6 @@ export default function ClientsAdmin() {
                   type="email"
                   inputMode="email"
                   placeholder="correo@ejemplo.com"
-                  icon={Mail}
                   value={formCliente.email}
                   onChange={(e: any) =>
                     setFormCliente({
@@ -610,11 +607,8 @@ function PhoneInputCO({
         className={`absolute -inset-0.5 rounded-2xl transition-opacity blur-[2px] ${error ? "bg-red-500/40 opacity-100" : "bg-gradient-to-r from-[#a855f7]/20 to-[#22d3ee]/20 opacity-0 group-focus-within:opacity-100"}`}
       />
       <div className="relative flex items-center">
-        <Phone
-          className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${error ? "text-red-400" : "text-gray-500 group-focus-within:text-[#22d3ee]"}`}
-        />
         <span
-          className={`absolute left-14 top-1/2 -translate-y-1/2 text-sm font-bold pointer-events-none select-none ${error ? "text-red-400" : "text-gray-400 group-focus-within:text-[#22d3ee]"}`}
+          className={`absolute left-5 top-1/2 -translate-y-1/2 text-sm font-bold pointer-events-none select-none tracking-wide ${error ? "text-red-400" : "text-gray-200 group-focus-within:text-[#22d3ee]"}`}
         >
           +57
         </span>
@@ -625,7 +619,7 @@ function PhoneInputCO({
           value={displayPhoneCO(value)}
           onFocus={onFocus}
           onChange={(e) => onChange(formatPhoneDigitsCO(e.target.value))}
-          className={`w-full bg-white/[0.04] backdrop-blur-md border rounded-2xl py-4 pl-24 pr-6 text-sm focus:outline-none transition-all placeholder:text-gray-600 font-medium ${error ? "border-red-500/50 focus:border-red-500" : "border-white/8 group-hover:border-white/15 focus:border-[#22d3ee]/50 focus:bg-white/[0.06]"}`}
+          className={`w-full bg-white/[0.04] backdrop-blur-md border rounded-2xl py-4 pl-16 pr-6 text-sm focus:outline-none transition-all placeholder:text-gray-600 font-medium ${error ? "border-red-500/50 focus:border-red-500" : "border-white/8 group-hover:border-white/15 focus:border-[#22d3ee]/50 focus:bg-white/[0.06]"}`}
         />
       </div>
       <AnimatePresence>
@@ -653,20 +647,23 @@ function PremiumInput({
   onFocus,
   ...props
 }: any) {
+  const hasIcon = Boolean(Icon);
   return (
     <div className="relative group">
       <div
         className={`absolute -inset-0.5 rounded-2xl transition-opacity blur-[2px] ${error ? "bg-red-500/40 opacity-100" : "bg-gradient-to-r from-[#a855f7]/20 to-[#22d3ee]/20 opacity-0 group-focus-within:opacity-100"}`}
       />
       <div className="relative">
-        <Icon
-          className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${error ? "text-red-400" : "text-gray-500 group-focus-within:text-[#22d3ee]"}`}
-        />
+        {hasIcon && (
+          <Icon
+            className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${error ? "text-red-400" : "text-gray-300 group-focus-within:text-[#22d3ee]"}`}
+          />
+        )}
         <input
           {...props}
           placeholder={placeholder}
           onFocus={onFocus}
-          className={`w-full bg-white/[0.04] backdrop-blur-md border rounded-2xl py-4 pl-14 pr-6 text-sm focus:outline-none transition-all placeholder:text-gray-600 font-medium ${error ? "border-red-500/50 focus:border-red-500" : "border-white/8 group-hover:border-white/15 focus:border-[#22d3ee]/50 focus:bg-white/[0.06]"}`}
+          className={`w-full bg-white/[0.04] backdrop-blur-md border rounded-2xl py-4 ${hasIcon ? "pl-14" : "pl-6"} pr-6 text-sm focus:outline-none transition-all placeholder:text-gray-600 font-medium ${error ? "border-red-500/50 focus:border-red-500" : "border-white/8 group-hover:border-white/15 focus:border-[#22d3ee]/50 focus:bg-white/[0.06]"}`}
         />
       </div>
 

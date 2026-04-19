@@ -319,7 +319,6 @@ export default function AdminsPage() {
                 <PremiumInput
                   name="nombre"
                   placeholder="Nombre Real"
-                  icon={UserCircle}
                   value={formAdmin.nombre}
                   onChange={(e: any) =>
                     setFormAdmin({
@@ -333,7 +332,6 @@ export default function AdminsPage() {
                 <PremiumInput
                   name="username"
                   placeholder="usuario_login"
-                  icon={User}
                   autoComplete="off"
                   autoCapitalize="off"
                   value={formAdmin.username}
@@ -351,7 +349,6 @@ export default function AdminsPage() {
                     name="password"
                     type="password"
                     placeholder="Contraseña de Seguridad"
-                    icon={ShieldCheck}
                     value={formAdmin.password}
                     onChange={(e: any) =>
                       setFormAdmin({ ...formAdmin, password: e.target.value })
@@ -363,7 +360,6 @@ export default function AdminsPage() {
                     name="confirmPassword"
                     type="password"
                     placeholder="Confirmar Contraseña"
-                    icon={ShieldCheck}
                     value={formAdmin.confirmPassword}
                     onChange={(e: any) =>
                       setFormAdmin({
@@ -491,20 +487,23 @@ function PremiumInput({
   onFocus,
   ...props
 }: any) {
+  const hasIcon = Boolean(Icon);
   return (
     <div className="relative group">
       <div
         className={`absolute -inset-0.5 rounded-2xl transition-opacity blur-[2px] ${error ? "bg-red-500/40 opacity-100" : "bg-gradient-to-r from-[#22d3ee]/10 to-[#a855f7]/10 opacity-0 group-focus-within:opacity-100"}`}
       />
       <div className="relative">
-        <Icon
-          className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${error ? "text-red-400" : "text-gray-500 group-focus-within:text-[#22d3ee]"}`}
-        />
+        {hasIcon && (
+          <Icon
+            className={`absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${error ? "text-red-400" : "text-gray-300 group-focus-within:text-[#22d3ee]"}`}
+          />
+        )}
         <input
           {...props}
           placeholder={placeholder}
           onFocus={onFocus}
-          className={`w-full bg-white/[0.04] border rounded-2xl py-4 pl-12 pr-6 text-sm focus:outline-none transition-all placeholder:text-gray-600 ${error ? "border-red-500/50 focus:border-red-500" : "border-white/8 group-hover:border-white/15 focus:border-[#22d3ee]/50 focus:bg-white/[0.08]"}`}
+          className={`w-full bg-white/[0.04] border rounded-2xl py-4 ${hasIcon ? "pl-12" : "pl-6"} pr-6 text-sm focus:outline-none transition-all placeholder:text-gray-600 ${error ? "border-red-500/50 focus:border-red-500" : "border-white/8 group-hover:border-white/15 focus:border-[#22d3ee]/50 focus:bg-white/[0.08]"}`}
         />
       </div>
       <AnimatePresence>
