@@ -17,14 +17,18 @@ export function ContactoSection({
   d: any;
   savePatch: (patch: any) => void;
 }) {
-  // El FAB se considera activo si hay datos guardados. El cliente puede
-  // forzar apertura (sin datos aun) o forzar cierre (limpia datos).
+  // `fabEnabled` es un flag explícito — se puede apagar sin perder los datos
+  // del número y el mensaje, así el cliente puede deshabilitarlo temporal
+  // sin tener que volver a escribir todo al prenderlo.
+  // Backfill: proyectos viejos sin el flag se consideran activos si tienen
+  // número guardado.
   const hasFabData = !!(d.fabPhone || d.fabMessage);
-  const [fabOpen, setFabOpen] = useState(hasFabData);
+  const fabEnabled = d.fabEnabled ?? hasFabData;
+  const [fabOpen, setFabOpen] = useState<boolean>(fabEnabled);
 
   const toggleFab = (next: boolean) => {
     setFabOpen(next);
-    if (!next && hasFabData) savePatch({ fabPhone: "", fabMessage: "" });
+    savePatch({ fabEnabled: next });
   };
 
   const iconFieldCls =

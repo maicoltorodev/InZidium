@@ -6,6 +6,12 @@ import { AutoField, ImageField } from "../../fields";
 import { labelCls } from "../../styles";
 import { FieldItem } from "../primitives/FieldItem";
 import { ChipSelector } from "../primitives/ChipSelector";
+import {
+  TIPO_NEGOCIO_MAP,
+  buildTipoNegocioPatch,
+  type TipoNegocio,
+} from "../primitives/TipoNegocioModal";
+import { BRAND_ICON_STYLE } from "../primitives/BrandDefs";
 
 const PRESETS = [
   { value: "modern",  label: "Modern" },
@@ -66,8 +72,66 @@ export function AvanzadoSection({
 
   const gaValid = !d.analyticsGAId || GA_RE.test(d.analyticsGAId);
 
+  const handleChangeTipo = (tipo: TipoNegocio) => {
+    if (tipo === d.tipoNegocio) return;
+    const ok = window.confirm(
+      "Cambiar el tipo de negocio actualizará el nombre de tu catálogo " +
+      "(servicios / productos / platillos) y regenerará tus páginas legales. " +
+      "¿Querés continuar?"
+    );
+    if (!ok) return;
+    savePatch(buildTipoNegocioPatch(tipo, d.legalLastUpdated));
+  };
+
   return (
     <>
+      <FieldItem>
+        <label className={labelCls}>Tipo de negocio</label>
+        <p className="mb-3 text-[11px] text-white/25">
+          Define el nombre de tu catálogo y la plantilla legal que usamos.
+        </p>
+        <div className="space-y-2">
+          {(Object.keys(TIPO_NEGOCIO_MAP) as TipoNegocio[]).map((key) => {
+            const cfg = TIPO_NEGOCIO_MAP[key];
+            const Icon = cfg.icon;
+            const active = d.tipoNegocio === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => handleChangeTipo(key)}
+                className={`group relative flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-all ${
+                  active
+                    ? "border-[#a855f7]/50 bg-[linear-gradient(135deg,rgba(232,121,249,0.08)_0%,rgba(168,85,247,0.08)_50%,rgba(96,165,250,0.08)_100%)]"
+                    : "border-white/[0.07] bg-white/[0.02] hover:border-white/20"
+                }`}
+              >
+                <div
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ring-1 ${
+                    active
+                      ? "bg-[linear-gradient(135deg,rgba(232,121,249,0.18)_0%,rgba(168,85,247,0.18)_50%,rgba(96,165,250,0.18)_100%)] ring-[#a855f7]/40"
+                      : "bg-[linear-gradient(135deg,rgba(232,121,249,0.08)_0%,rgba(168,85,247,0.08)_50%,rgba(96,165,250,0.08)_100%)] ring-[#a855f7]/15"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" style={BRAND_ICON_STYLE} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-[13px] font-bold text-white">{cfg.label}</h3>
+                  <p className="mt-0.5 text-[11px] leading-snug text-white/45 truncate">
+                    {cfg.description}
+                  </p>
+                </div>
+                {active && (
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] text-white">
+                    <Check className="h-3 w-3" strokeWidth={3} />
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </FieldItem>
+
       <FieldItem>
         <label className={labelCls}>Fuente tipográfica</label>
         <p className="mb-3 text-[11px] text-white/25">
