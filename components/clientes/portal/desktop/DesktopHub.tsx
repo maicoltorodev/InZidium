@@ -299,7 +299,7 @@ function FinalMessage({ fase }: { fase: ProjectFase }) {
       <div className="mt-12 rounded-2xl border border-white/[0.05] bg-[linear-gradient(135deg,rgba(232,121,249,0.03)_0%,rgba(168,85,247,0.03)_50%,rgba(96,165,250,0.03)_100%)] px-8 py-6 text-center">
         <p className="text-[13px] leading-relaxed text-white/55">
           Cuando terminemos de construir tu página, podrás editar cualquier información sin ningún problema.{" "}
-          <span className="text-white/35">Entendemos que las cosas pueden cambiar.</span>
+          <span className="text-white/35">Entendemos que las cosas pueden ir cambiando.</span>
         </p>
       </div>
     );

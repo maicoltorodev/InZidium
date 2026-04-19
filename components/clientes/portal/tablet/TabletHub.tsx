@@ -284,7 +284,7 @@ function FinalMessage({ fase }: { fase: ProjectFase }) {
         <p className="text-[13px] leading-relaxed text-white/55">
           Cuando terminemos de construir tu página, podrás editar cualquier información sin ningún problema.
           <br />
-          <span className="text-white/35">Entendemos que las cosas pueden cambiar.</span>
+          <span className="text-white/35">Entendemos que las cosas pueden ir cambiando.</span>
         </p>
       </div>
     );
