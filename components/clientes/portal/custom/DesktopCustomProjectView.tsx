@@ -169,7 +169,7 @@ export function DesktopCustomProjectView({
             />
             <motion.div
                 aria-hidden
-                className="pointer-events-none absolute top-[30%] -right-60 h-[820px] w-[820px] rounded-full bg-[#60a5fa] blur-[200px]"
+                className="pointer-events-none absolute top-[30%] -right-60 h-[820px] w-[820px] rounded-full bg-[#22d3ee] blur-[200px]"
                 initial={{ x: 0, y: 0, opacity: 0.12 }}
                 animate={
                     reduced
@@ -227,7 +227,7 @@ export function DesktopCustomProjectView({
                         transition={MOTION.reveal}
                         className="flex-1 text-center"
                     >
-                        <p className="bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] bg-clip-text text-[11px] font-black uppercase tracking-[0.36em] text-transparent">
+                        <p className="inline-block bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-[11px] font-black uppercase tracking-[0.36em] text-transparent">
                             Hola, {clientName.split(" ")[0] || "bienvenido"} · Proyecto a la medida
                         </p>
                         <h1 className="mt-5 bg-[linear-gradient(135deg,#f5e7ff_0%,#ffffff_40%,#d6e9ff_100%)] bg-clip-text text-6xl font-black leading-[0.95] tracking-tight text-transparent">
@@ -276,11 +276,11 @@ export function DesktopCustomProjectView({
                             initial={reduced ? { opacity: 0 } : { opacity: 0, y: 12 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ ...MOTION.reveal, delay: reduced ? 0 : 0.08 }}
-                            className="relative rounded-[2rem] border border-white/[0.08] bg-[linear-gradient(135deg,rgba(232,121,249,0.04)_0%,rgba(168,85,247,0.03)_50%,rgba(96,165,250,0.04)_100%)] p-7"
+                            className="relative rounded-[2rem] border border-white/[0.08] bg-[linear-gradient(135deg,rgba(232,121,249,0.04)_0%,rgba(168,85,247,0.03)_50%,rgba(34,211,238,0.04)_100%)] p-7"
                         >
                             <div className="mb-5 flex items-center justify-between gap-3">
                                 <div className="flex items-center gap-3">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[linear-gradient(135deg,rgba(232,121,249,0.12)_0%,rgba(168,85,247,0.12)_50%,rgba(96,165,250,0.12)_100%)] ring-1 ring-[#a855f7]/25">
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[linear-gradient(135deg,rgba(232,121,249,0.12)_0%,rgba(168,85,247,0.12)_50%,rgba(34,211,238,0.12)_100%)] ring-1 ring-[#a855f7]/25">
                                         <FileText className="h-4 w-4 text-white/80" />
                                     </div>
                                     <div>
@@ -368,7 +368,7 @@ function BriefPrompts() {
                             key={p.label}
                             className="flex items-start gap-3 rounded-2xl border border-white/[0.05] bg-white/[0.02] p-3"
                         >
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[linear-gradient(135deg,rgba(232,121,249,0.1)_0%,rgba(168,85,247,0.1)_50%,rgba(96,165,250,0.1)_100%)] ring-1 ring-white/5">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[linear-gradient(135deg,rgba(232,121,249,0.1)_0%,rgba(168,85,247,0.1)_50%,rgba(34,211,238,0.1)_100%)] ring-1 ring-white/5">
                                 <Icon className="h-3.5 w-3.5 text-white/60" />
                             </div>
                             <div className="flex-1 min-w-0 pt-0.5">
@@ -427,7 +427,7 @@ function LivePublishedCard({ liveUrl }: { liveUrl: string | null }) {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...MOTION.reveal, delay: 0.08 }}
-            className="relative mb-6 overflow-hidden rounded-[2rem] border border-emerald-500/25 bg-[linear-gradient(135deg,rgba(16,185,129,0.08)_0%,rgba(16,185,129,0.04)_50%,rgba(96,165,250,0.06)_100%)] p-7 shadow-[0_0_40px_-14px_rgba(16,185,129,0.45)]"
+            className="relative mb-6 overflow-hidden rounded-[2rem] border border-emerald-500/25 bg-[linear-gradient(135deg,rgba(16,185,129,0.08)_0%,rgba(16,185,129,0.04)_50%,rgba(34,211,238,0.06)_100%)] p-7 shadow-[0_0_40px_-14px_rgba(16,185,129,0.45)]"
         >
             <div className="flex items-center gap-6">
                 <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-500/25">

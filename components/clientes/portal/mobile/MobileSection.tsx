@@ -37,8 +37,8 @@ export function MobileSection({
     completion === "complete"
       ? "bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20"
       : completion === "partial"
-      ? "bg-[linear-gradient(135deg,rgba(232,121,249,0.14)_0%,rgba(168,85,247,0.14)_50%,rgba(96,165,250,0.14)_100%)] ring-1 ring-[#a855f7]/30 shadow-[0_0_40px_-12px_rgba(168,85,247,0.55)]"
-      : "bg-[linear-gradient(135deg,rgba(232,121,249,0.06)_0%,rgba(168,85,247,0.06)_50%,rgba(96,165,250,0.06)_100%)] ring-1 ring-white/[0.08]";
+      ? "bg-[linear-gradient(135deg,rgba(232,121,249,0.14)_0%,rgba(168,85,247,0.14)_50%,rgba(34,211,238,0.14)_100%)] ring-1 ring-[#a855f7]/30 shadow-[0_0_40px_-12px_rgba(168,85,247,0.55)]"
+      : "bg-[linear-gradient(135deg,rgba(232,121,249,0.06)_0%,rgba(168,85,247,0.06)_50%,rgba(34,211,238,0.06)_100%)] ring-1 ring-white/[0.08]";
 
   const ctaStyle =
     completion === "complete"

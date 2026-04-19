@@ -481,7 +481,7 @@ export function CatalogoItemEditor({
                     <button
                         type="button"
                         onClick={onClose}
-                        className="flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] px-6 py-2.5 text-[11px] font-black uppercase tracking-[0.22em] text-white shadow-[0_4px_20px_-4px_rgba(168,85,247,0.6)] transition-transform hover:scale-[1.02]"
+                        className="flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] px-6 py-2.5 text-[11px] font-black uppercase tracking-[0.22em] text-white shadow-[0_4px_20px_-4px_rgba(168,85,247,0.6)] transition-transform hover:scale-[1.02]"
                     >
                         <Check className="h-3.5 w-3.5" strokeWidth={3} />
                         Guardar

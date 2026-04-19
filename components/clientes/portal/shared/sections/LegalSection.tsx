@@ -29,14 +29,14 @@ export function LegalSection({
     <>
       {/* Rubro actual (deriva del tipo de negocio) */}
       <FieldItem>
-        <div className="rounded-[2rem] border border-[#a855f7]/20 bg-[linear-gradient(135deg,rgba(232,121,249,0.04)_0%,rgba(168,85,247,0.04)_50%,rgba(96,165,250,0.04)_100%)] p-5">
+        <div className="rounded-[2rem] border border-[#a855f7]/20 bg-[linear-gradient(135deg,rgba(232,121,249,0.04)_0%,rgba(168,85,247,0.04)_50%,rgba(34,211,238,0.04)_100%)] p-5">
           <div className="mb-3 flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(232,121,249,0.12)_0%,rgba(168,85,247,0.12)_50%,rgba(96,165,250,0.12)_100%)] ring-1 ring-[#a855f7]/25">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(232,121,249,0.12)_0%,rgba(168,85,247,0.12)_50%,rgba(34,211,238,0.12)_100%)] ring-1 ring-[#a855f7]/25">
               <ShieldCheck className="h-5 w-5" style={BRAND_ICON_STYLE} />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[9px] font-black uppercase tracking-[0.28em]">
-                <span className="bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] bg-clip-text text-transparent">
+                <span className="bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-transparent">
                   Tu rubro
                 </span>
               </p>

@@ -29,7 +29,7 @@ export function ToggleRow({
         <div
           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors ${
             checked
-              ? "bg-[linear-gradient(135deg,rgba(232,121,249,0.12)_0%,rgba(168,85,247,0.12)_50%,rgba(96,165,250,0.12)_100%)]"
+              ? "bg-[linear-gradient(135deg,rgba(232,121,249,0.12)_0%,rgba(168,85,247,0.12)_50%,rgba(34,211,238,0.12)_100%)]"
               : "bg-white/[0.04] text-white/40"
           }`}
         >
@@ -45,7 +45,7 @@ export function ToggleRow({
       <span
         className={`relative flex h-6 w-11 shrink-0 rounded-full transition-colors ${
           checked
-            ? "bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] shadow-[0_0_12px_-2px_rgba(168,85,247,0.6)]"
+            ? "bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] shadow-[0_0_12px_-2px_rgba(168,85,247,0.6)]"
             : "bg-white/[0.1]"
         }`}
       >

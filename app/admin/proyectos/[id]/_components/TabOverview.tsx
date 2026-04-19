@@ -271,7 +271,7 @@ function ConstruccionState({
       <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full bg-[#a855f7] opacity-[0.06] blur-[120px] pointer-events-none" />
 
       <header className="flex items-start gap-4 relative">
-        <div className="w-12 h-12 rounded-2xl bg-[linear-gradient(135deg,rgba(232,121,249,0.14)_0%,rgba(168,85,247,0.14)_50%,rgba(96,165,250,0.14)_100%)] ring-1 ring-[#a855f7]/25 flex items-center justify-center shrink-0">
+        <div className="w-12 h-12 rounded-2xl bg-[linear-gradient(135deg,rgba(232,121,249,0.14)_0%,rgba(168,85,247,0.14)_50%,rgba(34,211,238,0.14)_100%)] ring-1 ring-[#a855f7]/25 flex items-center justify-center shrink-0">
           <Hammer className="w-5 h-5 text-[#a855f7]" />
         </div>
         <div className="min-w-0">
@@ -501,7 +501,7 @@ function BuildCountdown({
             className={`absolute inset-y-0 left-0 rounded-full ${
               done
                 ? "bg-[linear-gradient(90deg,#ef4444_0%,#f87171_100%)]"
-                : "bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)]"
+                : "bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)]"
             }`}
           />
         </div>
@@ -525,7 +525,7 @@ function BigTimeUnit({
         className={`bg-clip-text text-5xl sm:text-6xl font-black leading-none text-transparent tabular-nums ${
           done
             ? "bg-[linear-gradient(135deg,#ef4444_0%,#f87171_100%)] animate-pulse"
-            : "bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)]"
+            : "bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)]"
         }`}
       >
         {value}

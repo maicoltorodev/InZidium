@@ -275,7 +275,7 @@ export function Chat({
             aria-label="Enviar"
             className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition-all ${
               canSend
-                ? "bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] text-white shadow-[0_4px_16px_-4px_rgba(168,85,247,0.6)]"
+                ? "bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] text-white shadow-[0_4px_16px_-4px_rgba(168,85,247,0.6)]"
                 : "bg-white/[0.04] text-white/25"
             }`}
           >
@@ -323,7 +323,7 @@ function Bubble({ msg, mine, stacked, variant = "mobile" }: { msg: Msg; mine: bo
       <div
         className={`${bubbleMaxW} rounded-2xl px-3.5 py-2.5 ${cornerCls} ${
           mine
-            ? "bg-[linear-gradient(135deg,rgba(232,121,249,0.18)_0%,rgba(168,85,247,0.18)_50%,rgba(96,165,250,0.18)_100%)] border border-[#a855f7]/25 text-white"
+            ? "bg-[linear-gradient(135deg,rgba(232,121,249,0.18)_0%,rgba(168,85,247,0.18)_50%,rgba(34,211,238,0.18)_100%)] border border-[#a855f7]/25 text-white"
             : "border border-white/[0.08] bg-white/[0.04] text-white/85"
         }`}
       >
@@ -362,8 +362,8 @@ function EmptyState({ adminNombre }: { adminNombre: string }) {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
       <div className="relative">
-        <div className="absolute inset-0 rounded-full bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] opacity-20 blur-2xl" />
-        <div className="relative flex h-20 w-20 items-center justify-center rounded-full border border-[#a855f7]/20 bg-[linear-gradient(135deg,rgba(232,121,249,0.08)_0%,rgba(168,85,247,0.08)_50%,rgba(96,165,250,0.08)_100%)]">
+        <div className="absolute inset-0 rounded-full bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] opacity-20 blur-2xl" />
+        <div className="relative flex h-20 w-20 items-center justify-center rounded-full border border-[#a855f7]/20 bg-[linear-gradient(135deg,rgba(232,121,249,0.08)_0%,rgba(168,85,247,0.08)_50%,rgba(34,211,238,0.08)_100%)]">
           <MessageSquare className="h-8 w-8" style={{ stroke: "url(#inzidium-brand)" }} />
         </div>
       </div>

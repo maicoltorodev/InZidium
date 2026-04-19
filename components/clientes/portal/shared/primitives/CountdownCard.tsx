@@ -74,7 +74,7 @@ export function CountdownCard({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ ...MOTION.reveal, delay: 0.08 }}
-      className="relative mb-6 overflow-hidden rounded-[2rem] border border-[#a855f7]/25 bg-[linear-gradient(135deg,rgba(232,121,249,0.06)_0%,rgba(168,85,247,0.05)_50%,rgba(96,165,250,0.06)_100%)] p-5 shadow-[0_0_40px_-14px_rgba(168,85,247,0.5)]"
+      className="relative mb-6 overflow-hidden rounded-[2rem] border border-[#a855f7]/25 bg-[linear-gradient(135deg,rgba(232,121,249,0.06)_0%,rgba(168,85,247,0.05)_50%,rgba(34,211,238,0.06)_100%)] p-5 shadow-[0_0_40px_-14px_rgba(168,85,247,0.5)]"
     >
       <div
         aria-hidden
@@ -83,7 +83,7 @@ export function CountdownCard({
 
       <div className="relative">
         <div className="mb-4 flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(232,121,249,0.14)_0%,rgba(168,85,247,0.14)_50%,rgba(96,165,250,0.14)_100%)] ring-1 ring-[#a855f7]/25">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(232,121,249,0.14)_0%,rgba(168,85,247,0.14)_50%,rgba(34,211,238,0.14)_100%)] ring-1 ring-[#a855f7]/25">
             <Hammer className="h-4 w-4" style={BRAND_ICON_STYLE} />
           </div>
           <div className="flex-1 min-w-0">
@@ -112,7 +112,7 @@ export function CountdownCard({
               Progreso estimado
             </p>
             <p className="text-[13px] font-black tabular-nums">
-              <span className="bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] bg-clip-text text-transparent">
+              <span className="bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-transparent">
                 {pct}%
               </span>
             </p>
@@ -122,7 +122,7 @@ export function CountdownCard({
               initial={false}
               animate={{ width: `${pct}%` }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute inset-y-0 left-0 rounded-full bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)]"
+              className="absolute inset-y-0 left-0 rounded-full bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)]"
             />
           </div>
         </div>
@@ -147,7 +147,7 @@ function TimeUnit({ value, unit, done }: { value: string; unit: string; done: bo
         className={`bg-clip-text text-[44px] font-black leading-none text-transparent tabular-nums ${
           done
             ? "bg-[linear-gradient(135deg,#ef4444_0%,#f87171_100%)] animate-pulse"
-            : "bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)]"
+            : "bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)]"
         }`}
       >
         {value}

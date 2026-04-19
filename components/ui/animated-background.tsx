@@ -32,7 +32,7 @@ export function AnimatedBackground() {
       {/* Glow 2: Blue — right */}
       <motion.div
         aria-hidden
-        className="absolute top-[30%] -right-[14%] h-[700px] w-[700px] rounded-full bg-[#60a5fa] blur-[180px] will-change-transform backface-hidden"
+        className="absolute top-[30%] -right-[14%] h-[700px] w-[700px] rounded-full bg-[#22d3ee] blur-[180px] will-change-transform backface-hidden"
         initial={{ x: 0, y: 0, opacity: 0.12 }}
         animate={reduced ? { opacity: 0.12 } : {
           x:       [0,  -200,   140,  -70,   0],

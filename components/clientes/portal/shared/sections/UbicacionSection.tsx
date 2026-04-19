@@ -156,8 +156,8 @@ export function UbicacionSection({
                   <>Copia el código HTML completo (el que empieza con <code className="inline-block rounded bg-white/[0.08] px-1.5 py-0.5 text-[11px] text-white/80">&lt;iframe</code>) y pégalo arriba — nosotros extraemos lo necesario.</>,
                 ].map((node, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,rgba(232,121,249,0.15)_0%,rgba(168,85,247,0.15)_50%,rgba(96,165,250,0.15)_100%)] text-[10px] font-black">
-                      <span className="bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] bg-clip-text text-transparent">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,rgba(232,121,249,0.15)_0%,rgba(168,85,247,0.15)_50%,rgba(34,211,238,0.15)_100%)] text-[10px] font-black">
+                      <span className="bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-transparent">
                         {i + 1}
                       </span>
                     </span>

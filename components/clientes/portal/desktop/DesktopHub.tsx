@@ -131,7 +131,7 @@ export function DesktopHub({
       />
       <motion.div
         aria-hidden
-        className="pointer-events-none absolute top-[30%] -right-60 h-[820px] w-[820px] rounded-full bg-[#60a5fa] blur-[200px]"
+        className="pointer-events-none absolute top-[30%] -right-60 h-[820px] w-[820px] rounded-full bg-[#22d3ee] blur-[200px]"
         initial={{ x: 0, y: 0, opacity: 0.12 }}
         animate={reduced ? { opacity: 0.12 } : {
           x:       [0,  -260,   180,  -90,   0],
@@ -160,7 +160,7 @@ export function DesktopHub({
           transition={MOTION.reveal}
           className="mb-10 text-center"
         >
-          <p className="bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] bg-clip-text text-[11px] font-black uppercase tracking-[0.36em] text-transparent">
+          <p className="inline-block bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-[11px] font-black uppercase tracking-[0.36em] text-transparent">
             Hola, {clientName.split(" ")[0] || "bienvenido"}
           </p>
           <h1 className="mt-5 bg-[linear-gradient(135deg,#f5e7ff_0%,#ffffff_40%,#d6e9ff_100%)] bg-clip-text text-6xl font-black leading-[0.95] tracking-tight text-transparent">
@@ -191,7 +191,7 @@ export function DesktopHub({
               initial={reduced ? { opacity: 0 } : { opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...MOTION.reveal, delay: reduced ? 0 : 0.08 }}
-              className="relative overflow-hidden rounded-[2rem] border border-white/[0.08] bg-[linear-gradient(135deg,rgba(232,121,249,0.06)_0%,rgba(168,85,247,0.04)_50%,rgba(96,165,250,0.06)_100%)] p-7"
+              className="relative overflow-hidden rounded-[2rem] border border-white/[0.08] bg-[linear-gradient(135deg,rgba(232,121,249,0.06)_0%,rgba(168,85,247,0.04)_50%,rgba(34,211,238,0.06)_100%)] p-7"
             >
               <div className="flex items-center gap-6">
                 <ProgressRing value={progressPct} size={120} stroke={10} />
@@ -300,7 +300,7 @@ function LivePublishedCard({ liveUrl }: { liveUrl: string | null }) {
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ ...MOTION.reveal, delay: 0.08 }}
-      className="relative overflow-hidden rounded-[2rem] border border-emerald-500/25 bg-[linear-gradient(135deg,rgba(16,185,129,0.08)_0%,rgba(16,185,129,0.04)_50%,rgba(96,165,250,0.06)_100%)] p-7 shadow-[0_0_40px_-14px_rgba(16,185,129,0.45)]"
+      className="relative overflow-hidden rounded-[2rem] border border-emerald-500/25 bg-[linear-gradient(135deg,rgba(16,185,129,0.08)_0%,rgba(16,185,129,0.04)_50%,rgba(34,211,238,0.06)_100%)] p-7 shadow-[0_0_40px_-14px_rgba(16,185,129,0.45)]"
     >
       <div className="flex items-center gap-6">
         <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-500/25">
@@ -335,7 +335,7 @@ function LivePublishedCard({ liveUrl }: { liveUrl: string | null }) {
 function FinalMessage({ fase }: { fase: ProjectFase }) {
   if (fase === "construccion") {
     return (
-      <div className="mt-12 rounded-2xl border border-white/[0.05] bg-[linear-gradient(135deg,rgba(232,121,249,0.03)_0%,rgba(168,85,247,0.03)_50%,rgba(96,165,250,0.03)_100%)] px-8 py-6 text-center">
+      <div className="mt-12 rounded-2xl border border-white/[0.05] bg-[linear-gradient(135deg,rgba(232,121,249,0.03)_0%,rgba(168,85,247,0.03)_50%,rgba(34,211,238,0.03)_100%)] px-8 py-6 text-center">
         <p className="text-[13px] leading-relaxed text-white/55">
           Estamos construyendo tu sitio. Cuando esté listo, podrás editar cualquier información sin problemas.{" "}
           <span className="text-white/35">Si hay cambios urgentes, escríbenos por Mensajes.</span>
@@ -351,8 +351,14 @@ function FinalMessage({ fase }: { fase: ProjectFase }) {
     );
   }
   return (
-    <p className="mt-12 text-center text-[11px] text-white/20">
-      Los cambios se guardan automáticamente.
-    </p>
+    <div className="mt-12 flex justify-center">
+      <span className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.24em] text-emerald-400">
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400 opacity-70" />
+          <span className="relative h-2 w-2 rounded-full bg-emerald-400" />
+        </span>
+        Guardado automático
+      </span>
+    </div>
   );
 }

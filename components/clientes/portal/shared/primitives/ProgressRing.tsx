@@ -45,7 +45,7 @@ export function ProgressRing({
           <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%"   stopColor="#e879f9" />
             <stop offset="50%"  stopColor="#a855f7" />
-            <stop offset="100%" stopColor="#60a5fa" />
+            <stop offset="100%" stopColor="#22d3ee" />
           </linearGradient>
         </defs>
         <circle

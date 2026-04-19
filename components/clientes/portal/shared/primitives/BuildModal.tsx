@@ -51,8 +51,8 @@ export function BuildModal({
           >
             {/* Icono con halo */}
             <div className="relative mx-auto mb-4 h-16 w-16">
-              <div className="absolute inset-0 rounded-full bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] opacity-25 blur-xl" />
-              <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-[#a855f7]/30 bg-[linear-gradient(135deg,rgba(232,121,249,0.12)_0%,rgba(168,85,247,0.12)_50%,rgba(96,165,250,0.12)_100%)]">
+              <div className="absolute inset-0 rounded-full bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] opacity-25 blur-xl" />
+              <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-[#a855f7]/30 bg-[linear-gradient(135deg,rgba(232,121,249,0.12)_0%,rgba(168,85,247,0.12)_50%,rgba(34,211,238,0.12)_100%)]">
                 <Hammer className="h-7 w-7" style={BRAND_ICON_STYLE} />
               </div>
             </div>
@@ -78,7 +78,7 @@ export function BuildModal({
             <button
               type="button"
               onClick={onClose}
-              className="mt-5 w-full rounded-2xl bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] py-3 text-[11px] font-black uppercase tracking-[0.24em] text-white shadow-[0_4px_16px_-4px_rgba(168,85,247,0.6)] transition-transform active:scale-[0.98]"
+              className="mt-5 w-full rounded-2xl bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] py-3 text-[11px] font-black uppercase tracking-[0.24em] text-white shadow-[0_4px_16px_-4px_rgba(168,85,247,0.6)] transition-transform active:scale-[0.98]"
             >
               Entendido
             </button>

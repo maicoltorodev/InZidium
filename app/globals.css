@@ -371,6 +371,13 @@
   100% { background-position: 200% 50%; }
 }
 
+/* BrandDivider del portal onboarding — corre el gradient fucsia→azul→fucsia
+   horizontal en loop (background-size: 200%). */
+@keyframes brandDividerShift {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
 /* Stable viewport height — prevents browser chrome repaints on scroll */
 .min-h-screen {
   min-height: 100svh;

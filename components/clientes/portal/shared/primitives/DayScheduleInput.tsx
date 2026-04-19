@@ -177,7 +177,7 @@ export function DayScheduleInput({
             className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl ${
               closed
                 ? "bg-white/[0.03] text-white/20"
-                : "bg-[linear-gradient(135deg,rgba(232,121,249,0.1)_0%,rgba(168,85,247,0.1)_50%,rgba(96,165,250,0.1)_100%)]"
+                : "bg-[linear-gradient(135deg,rgba(232,121,249,0.1)_0%,rgba(168,85,247,0.1)_50%,rgba(34,211,238,0.1)_100%)]"
             }`}
           >
             <Clock className="h-3.5 w-3.5" style={closed ? undefined : BRAND_ICON_STYLE} />

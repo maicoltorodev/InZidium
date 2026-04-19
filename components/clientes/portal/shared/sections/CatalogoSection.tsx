@@ -177,7 +177,7 @@ export function CatalogoSection({
             <button
               type="button"
               onClick={createItem}
-              className="mt-1 flex items-center gap-1.5 rounded-full bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-[0_0_24px_-6px_rgba(168,85,247,0.7)] transition-transform active:scale-95"
+              className="mt-1 flex items-center gap-1.5 rounded-full bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-[0_0_24px_-6px_rgba(168,85,247,0.7)] transition-transform active:scale-95"
             >
               <Plus className="h-3.5 w-3.5" strokeWidth={3} />
               {cfg.add}
@@ -203,7 +203,7 @@ export function CatalogoSection({
           <button
             type="button"
             onClick={createItem}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-[#a855f7]/30 bg-[linear-gradient(135deg,rgba(232,121,249,0.08)_0%,rgba(168,85,247,0.08)_50%,rgba(96,165,250,0.08)_100%)] py-3 text-[11px] font-black uppercase tracking-[0.22em] transition-colors hover:border-[#a855f7]/50 [&>span]:bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] [&>span]:bg-clip-text [&>span]:text-transparent"
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-[#a855f7]/30 bg-[linear-gradient(135deg,rgba(232,121,249,0.08)_0%,rgba(168,85,247,0.08)_50%,rgba(34,211,238,0.08)_100%)] py-3 text-[11px] font-black uppercase tracking-[0.22em] transition-colors hover:border-[#a855f7]/50 [&>span]:bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] [&>span]:bg-clip-text [&>span]:text-transparent"
           >
             <Plus className="h-4 w-4" strokeWidth={3} style={BRAND_ICON_STYLE} />
             <span>{cfg.add}</span>
@@ -347,13 +347,13 @@ function CatalogoCard({
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
-          <div className="flex h-full items-center justify-center bg-[linear-gradient(135deg,rgba(232,121,249,0.08)_0%,rgba(168,85,247,0.06)_50%,rgba(96,165,250,0.08)_100%)] text-white/25">
+          <div className="flex h-full items-center justify-center bg-[linear-gradient(135deg,rgba(232,121,249,0.08)_0%,rgba(168,85,247,0.06)_50%,rgba(34,211,238,0.08)_100%)] text-white/25">
             <Icon className="h-8 w-8" />
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
         {item.categoria && (
-          <span className="absolute left-3 top-3 rounded-full border border-white/20 bg-[linear-gradient(90deg,rgba(168,85,247,0.9),rgba(96,165,250,0.9))] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.22em] text-white shadow-lg backdrop-blur-sm">
+          <span className="absolute left-3 top-3 rounded-full border border-white/20 bg-[linear-gradient(90deg,rgba(168,85,247,0.9),rgba(34,211,238,0.9))] px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.22em] text-white shadow-lg backdrop-blur-sm">
             {item.categoria}
           </span>
         )}
@@ -373,7 +373,7 @@ function CatalogoCard({
               <span className="text-[9px] uppercase tracking-[0.2em] text-white/30">
                 Precio
               </span>
-              <span className="text-[13px] font-bold bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] bg-clip-text text-transparent">
+              <span className="text-[13px] font-bold bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-transparent">
                 {item.precio}
               </span>
             </div>

@@ -59,7 +59,7 @@ export function PalettePresetGrid({
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={MOTION.reveal}
-                  className="flex h-4 w-4 items-center justify-center rounded-full bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] text-white"
+                  className="flex h-4 w-4 items-center justify-center rounded-full bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] text-white"
                 >
                   <Check className="h-2.5 w-2.5" strokeWidth={3.5} />
                 </motion.span>

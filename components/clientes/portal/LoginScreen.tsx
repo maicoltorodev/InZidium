@@ -109,7 +109,7 @@ export function LoginScreen({
                   <button
                     type="submit"
                     disabled={loading || !cedula}
-                    className="w-11 h-11 bg-gradient-to-br from-[#e879f9] via-[#a855f7] to-[#60a5fa] rounded-xl flex items-center justify-center text-white hover:scale-95 active:scale-90 transition-all duration-150 disabled:opacity-30 disabled:scale-100 shrink-0"
+                    className="w-11 h-11 bg-gradient-to-br from-[#e879f9] via-[#a855f7] to-[#22d3ee] rounded-xl flex items-center justify-center text-white hover:scale-95 active:scale-90 transition-all duration-150 disabled:opacity-30 disabled:scale-100 shrink-0"
                   >
                     {loading
                       ? <Loader2 className="w-4 h-4 animate-spin" />

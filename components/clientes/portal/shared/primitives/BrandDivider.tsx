@@ -27,7 +27,7 @@ export function BrandDivider({
       className={`mx-auto h-px ${width} ${className}`}
       style={{
         backgroundImage:
-          "linear-gradient(90deg, #e879f9 0%, #a855f7 25%, #60a5fa 50%, #a855f7 75%, #e879f9 100%)",
+          "linear-gradient(90deg, #e879f9 0%, #a855f7 25%, #22d3ee 50%, #a855f7 75%, #e879f9 100%)",
         backgroundSize: "200% 100%",
         backgroundRepeat: "repeat-x",
         WebkitMaskImage: fadeMask,

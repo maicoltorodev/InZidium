@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare, X } from "lucide-react";
 import { Chat, type ChatVariant } from "./Chat";
+import { usePrefersReducedMotion } from "./primitives/motion";
 
 /**
  * FAB de soporte persistente en todo el portal.
@@ -28,6 +29,7 @@ export function SupportFab({
 }) {
     const [open, setOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const reduced = usePrefersReducedMotion();
 
     useEffect(() => setMounted(true), []);
 
@@ -46,18 +48,62 @@ export function SupportFab({
 
     return createPortal(
         <>
-            {/* Botón FAB */}
-            <motion.button
-                type="button"
-                onClick={() => setOpen((v) => !v)}
-                whileTap={{ scale: 0.92 }}
-                whileHover={{ scale: 1.05 }}
+            {/* Wrapper del FAB con float continuo + pulse ring para dar
+                presencia visual sin costo de layout (solo transform/opacity
+                animadas, GPU-friendly). */}
+            <motion.div
+                className="fixed bottom-6 right-6 z-[70]"
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.4, type: "spring", stiffness: 260, damping: 20 }}
-                className="fixed bottom-6 right-6 z-[70] flex h-14 w-14 items-center justify-center rounded-full bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] text-white shadow-[0_8px_28px_-6px_rgba(168,85,247,0.7)] transition-shadow hover:shadow-[0_10px_36px_-6px_rgba(168,85,247,0.85)]"
-                aria-label={open ? "Cerrar mensajes" : "Abrir mensajes"}
             >
+                <motion.div
+                    className="relative"
+                    animate={!reduced && !open ? { y: [0, -5, 0] } : { y: 0 }}
+                    transition={
+                        !reduced && !open
+                            ? { duration: 2.8, repeat: Infinity, ease: "easeInOut" }
+                            : { duration: 0.3 }
+                    }
+                >
+                    {/* Pulse rings — dos capas desfasadas para efecto de ondas
+                        continuas. Solo cuando el FAB está cerrado. */}
+                    {!open && !reduced && (
+                        <>
+                            <motion.span
+                                aria-hidden
+                                className="absolute inset-0 rounded-full bg-[#a855f7]/50"
+                                initial={{ scale: 1, opacity: 0.55 }}
+                                animate={{ scale: 1.7, opacity: 0 }}
+                                transition={{
+                                    duration: 2.2,
+                                    repeat: Infinity,
+                                    ease: "easeOut",
+                                }}
+                            />
+                            <motion.span
+                                aria-hidden
+                                className="absolute inset-0 rounded-full bg-[#a855f7]/40"
+                                initial={{ scale: 1, opacity: 0.45 }}
+                                animate={{ scale: 1.7, opacity: 0 }}
+                                transition={{
+                                    duration: 2.2,
+                                    repeat: Infinity,
+                                    ease: "easeOut",
+                                    delay: 1.1,
+                                }}
+                            />
+                        </>
+                    )}
+
+                    <motion.button
+                        type="button"
+                        onClick={() => setOpen((v) => !v)}
+                        whileTap={{ scale: 0.92 }}
+                        whileHover={{ scale: 1.05 }}
+                        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] text-white shadow-[0_8px_28px_-6px_rgba(168,85,247,0.7)] transition-shadow hover:shadow-[0_10px_36px_-6px_rgba(168,85,247,0.85)]"
+                        aria-label={open ? "Cerrar mensajes" : "Abrir mensajes"}
+                    >
                 <AnimatePresence mode="wait" initial={false}>
                     {open ? (
                         <motion.span
@@ -94,7 +140,9 @@ export function SupportFab({
                         className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-blue-400 ring-2 ring-[#060214]"
                     />
                 )}
-            </motion.button>
+                    </motion.button>
+                </motion.div>
+            </motion.div>
 
             <AnimatePresence>
                 {open && (
@@ -131,7 +179,7 @@ export function SupportFab({
                         >
                             <header className="flex shrink-0 items-center justify-between border-b border-white/[0.06] px-5 py-4">
                                 <div className="flex items-center gap-2.5">
-                                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[linear-gradient(135deg,rgba(232,121,249,0.15)_0%,rgba(168,85,247,0.15)_50%,rgba(96,165,250,0.15)_100%)] ring-1 ring-[#a855f7]/30">
+                                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[linear-gradient(135deg,rgba(232,121,249,0.15)_0%,rgba(168,85,247,0.15)_50%,rgba(34,211,238,0.15)_100%)] ring-1 ring-[#a855f7]/30">
                                         <MessageSquare className="h-4 w-4 text-white/85" />
                                     </div>
                                     <div>

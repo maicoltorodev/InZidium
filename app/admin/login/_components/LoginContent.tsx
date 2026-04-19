@@ -88,7 +88,7 @@ export default function LoginContent() {
 
             <h1 className="font-orbitron text-2xl sm:text-3xl font-medium tracking-[0.08em] text-white mb-3 leading-snug">
               Panel de{' '}
-              <span className="bg-gradient-to-r from-[#a855f7] via-[#e879f9] to-[#60a5fa] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#a855f7] via-[#e879f9] to-[#22d3ee] bg-clip-text text-transparent">
                 Administración
               </span>
             </h1>
@@ -116,7 +116,7 @@ export default function LoginContent() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Username */}
             <div className="relative group">
-              <div className="absolute -inset-px bg-gradient-to-r from-[#a855f7]/40 to-[#60a5fa]/40 rounded-2xl blur-sm opacity-0 group-focus-within:opacity-100 transition-opacity duration-300" />
+              <div className="absolute -inset-px bg-gradient-to-r from-[#a855f7]/40 to-[#22d3ee]/40 rounded-2xl blur-sm opacity-0 group-focus-within:opacity-100 transition-opacity duration-300" />
               <div className="relative bg-white/[0.04] border border-white/10 rounded-2xl p-2 flex items-center gap-2 transition-all duration-200 focus-within:border-[#a855f7]/40">
                 <div className="w-11 h-11 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center shrink-0">
                   <User className="w-4 h-4 text-white/25" />
@@ -135,7 +135,7 @@ export default function LoginContent() {
 
             {/* Password */}
             <div className="relative group">
-              <div className="absolute -inset-px bg-gradient-to-r from-[#a855f7]/40 to-[#60a5fa]/40 rounded-2xl blur-sm opacity-0 group-focus-within:opacity-100 transition-opacity duration-300" />
+              <div className="absolute -inset-px bg-gradient-to-r from-[#a855f7]/40 to-[#22d3ee]/40 rounded-2xl blur-sm opacity-0 group-focus-within:opacity-100 transition-opacity duration-300" />
               <div className="relative bg-white/[0.04] border border-white/10 rounded-2xl p-2 flex items-center gap-2 transition-all duration-200 focus-within:border-[#a855f7]/40">
                 <div className="w-11 h-11 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center shrink-0">
                   <Lock className="w-4 h-4 text-white/25" />
@@ -152,7 +152,7 @@ export default function LoginContent() {
                 <button
                   type="submit"
                   disabled={loading || !username || !password}
-                  className="w-11 h-11 bg-gradient-to-br from-[#a855f7] via-[#e879f9] to-[#60a5fa] rounded-xl flex items-center justify-center text-white hover:scale-95 active:scale-90 transition-all duration-150 disabled:opacity-30 disabled:scale-100 shrink-0"
+                  className="w-11 h-11 bg-gradient-to-br from-[#a855f7] via-[#e879f9] to-[#22d3ee] rounded-xl flex items-center justify-center text-white hover:scale-95 active:scale-90 transition-all duration-150 disabled:opacity-30 disabled:scale-100 shrink-0"
                 >
                   {loading
                     ? <Loader2 className="w-4 h-4 animate-spin" />

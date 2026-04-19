@@ -73,7 +73,7 @@ export function PhaseTimeline({
                                             done
                                                 ? "text-emerald-400/80"
                                                 : active
-                                                  ? "bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] bg-clip-text text-transparent"
+                                                  ? "bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-transparent"
                                                   : upcoming
                                                     ? "text-white/20"
                                                     : "text-white/60"
@@ -96,7 +96,7 @@ export function PhaseTimeline({
                                         animate={{ scaleX: segmentDone ? 1 : 0 }}
                                         transition={{ duration: 0.5, ease: "easeOut" }}
                                         style={{ transformOrigin: "left" }}
-                                        className="absolute inset-0 h-px bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)]"
+                                        className="absolute inset-0 h-px bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)]"
                                     />
                                 </div>
                             )}
@@ -143,17 +143,43 @@ function PhaseNode({
                 <span className="text-[11px] font-black">{idx + 1}</span>
             )}
             {active && !reduced && (
-                <motion.span
-                    aria-hidden
-                    className="absolute inset-0 rounded-full ring-2 ring-[#a855f7]/40"
-                    initial={{ scale: 1, opacity: 0.6 }}
-                    animate={{ scale: 1.35, opacity: 0 }}
-                    transition={{
-                        duration: 1.6,
-                        repeat: Infinity,
-                        ease: "easeOut",
-                    }}
-                />
+                <>
+                    {/* Dos ondas desfasadas que fade-in desde invisible,
+                        expanden y fade-out. Empiezan y terminan en opacity 0
+                        para que el loop sea imperceptible (antes saltaba a
+                        opacity 0.6 al reiniciar → flash). */}
+                    <motion.span
+                        aria-hidden
+                        className="absolute inset-0 rounded-full ring-2 ring-[#a855f7]/50"
+                        initial={{ scale: 1, opacity: 0 }}
+                        animate={{
+                            scale: [1, 1, 1.45],
+                            opacity: [0, 0.55, 0],
+                        }}
+                        transition={{
+                            duration: 2.4,
+                            repeat: Infinity,
+                            times: [0, 0.1, 1],
+                            ease: "easeOut",
+                        }}
+                    />
+                    <motion.span
+                        aria-hidden
+                        className="absolute inset-0 rounded-full ring-2 ring-[#a855f7]/40"
+                        initial={{ scale: 1, opacity: 0 }}
+                        animate={{
+                            scale: [1, 1, 1.45],
+                            opacity: [0, 0.45, 0],
+                        }}
+                        transition={{
+                            duration: 2.4,
+                            repeat: Infinity,
+                            times: [0, 0.1, 1],
+                            ease: "easeOut",
+                            delay: 1.2,
+                        }}
+                    />
+                </>
             )}
         </motion.div>
     );

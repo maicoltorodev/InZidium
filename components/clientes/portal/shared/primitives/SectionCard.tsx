@@ -39,11 +39,11 @@ export const SectionCard = memo(function SectionCard({
   const publishedComplete = published && completion === "complete";
   const useBrandGradient = publishedComplete || completion === "partial" || (status.kind === "messages" && status.unread);
   const badgeStyle = publishedComplete
-    ? "bg-[linear-gradient(135deg,rgba(232,121,249,0.15)_0%,rgba(168,85,247,0.15)_50%,rgba(96,165,250,0.15)_100%)] ring-1 ring-[#a855f7]/40 shadow-[0_0_24px_-8px_rgba(168,85,247,0.6)]"
+    ? "bg-[linear-gradient(135deg,rgba(232,121,249,0.15)_0%,rgba(168,85,247,0.15)_50%,rgba(34,211,238,0.15)_100%)] ring-1 ring-[#a855f7]/40 shadow-[0_0_24px_-8px_rgba(168,85,247,0.6)]"
     : completion === "complete"
       ? "bg-emerald-500/10 text-emerald-400 ring-1 ring-emerald-500/20"
       : completion === "partial"
-      ? "bg-[linear-gradient(135deg,rgba(232,121,249,0.12)_0%,rgba(168,85,247,0.12)_50%,rgba(96,165,250,0.12)_100%)] ring-1 ring-[#a855f7]/25 shadow-[0_0_24px_-8px_rgba(168,85,247,0.55)]"
+      ? "bg-[linear-gradient(135deg,rgba(232,121,249,0.12)_0%,rgba(168,85,247,0.12)_50%,rgba(34,211,238,0.12)_100%)] ring-1 ring-[#a855f7]/25 shadow-[0_0_24px_-8px_rgba(168,85,247,0.55)]"
       : "bg-white/[0.04] text-white/30 ring-1 ring-white/[0.05]";
 
   return (
@@ -88,7 +88,7 @@ export const SectionCard = memo(function SectionCard({
           initial={{ x: "-120%" }}
           animate={{ x: "120%" }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="pointer-events-none absolute inset-y-0 w-1/2 bg-[linear-gradient(90deg,transparent_0%,rgba(232,121,249,0.18)_25%,rgba(168,85,247,0.25)_50%,rgba(96,165,250,0.18)_75%,transparent_100%)]"
+          className="pointer-events-none absolute inset-y-0 w-1/2 bg-[linear-gradient(90deg,transparent_0%,rgba(232,121,249,0.18)_25%,rgba(168,85,247,0.25)_50%,rgba(34,211,238,0.18)_75%,transparent_100%)]"
         />
       )}
       <div className="relative flex items-center gap-4">
@@ -104,7 +104,7 @@ export const SectionCard = memo(function SectionCard({
               transition={MOTION.reveal}
               className={`absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full ring-2 ring-[#0d0820] ${
                 publishedComplete
-                  ? "bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] text-white"
+                  ? "bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] text-white"
                   : "bg-emerald-500 text-black"
               }`}
             >
@@ -129,11 +129,11 @@ export const SectionCard = memo(function SectionCard({
             <p
               className={`mt-1.5 text-[10px] font-bold uppercase tracking-[0.18em] ${
                 publishedComplete
-                  ? "bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] bg-clip-text text-transparent"
+                  ? "bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-transparent"
                   : completion === "complete"
                   ? "text-emerald-400/80"
                   : completion === "partial"
-                  ? "bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] bg-clip-text text-transparent"
+                  ? "bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-transparent"
                   : "text-white/25"
               }`}
             >

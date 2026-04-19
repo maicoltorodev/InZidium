@@ -102,15 +102,15 @@ export function AvanzadoSection({
                 onClick={() => handleChangeTipo(key)}
                 className={`group relative flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-all ${
                   active
-                    ? "border-[#a855f7]/50 bg-[linear-gradient(135deg,rgba(232,121,249,0.08)_0%,rgba(168,85,247,0.08)_50%,rgba(96,165,250,0.08)_100%)]"
+                    ? "border-[#a855f7]/50 bg-[linear-gradient(135deg,rgba(232,121,249,0.08)_0%,rgba(168,85,247,0.08)_50%,rgba(34,211,238,0.08)_100%)]"
                     : "border-white/[0.07] bg-white/[0.02] hover:border-white/20"
                 }`}
               >
                 <div
                   className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ring-1 ${
                     active
-                      ? "bg-[linear-gradient(135deg,rgba(232,121,249,0.18)_0%,rgba(168,85,247,0.18)_50%,rgba(96,165,250,0.18)_100%)] ring-[#a855f7]/40"
-                      : "bg-[linear-gradient(135deg,rgba(232,121,249,0.08)_0%,rgba(168,85,247,0.08)_50%,rgba(96,165,250,0.08)_100%)] ring-[#a855f7]/15"
+                      ? "bg-[linear-gradient(135deg,rgba(232,121,249,0.18)_0%,rgba(168,85,247,0.18)_50%,rgba(34,211,238,0.18)_100%)] ring-[#a855f7]/40"
+                      : "bg-[linear-gradient(135deg,rgba(232,121,249,0.08)_0%,rgba(168,85,247,0.08)_50%,rgba(34,211,238,0.08)_100%)] ring-[#a855f7]/15"
                   }`}
                 >
                   <Icon className="h-4 w-4" style={BRAND_ICON_STYLE} />
@@ -122,7 +122,7 @@ export function AvanzadoSection({
                   </p>
                 </div>
                 {active && (
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] text-white">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] text-white">
                     <Check className="h-3 w-3" strokeWidth={3} />
                   </span>
                 )}

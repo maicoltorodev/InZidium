@@ -19,14 +19,14 @@ export function BrandDefs() {
         <linearGradient id="inzidium-brand" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%"   stopColor="#e879f9" />
           <stop offset="50%"  stopColor="#a855f7" />
-          <stop offset="100%" stopColor="#60a5fa" />
+          <stop offset="100%" stopColor="#22d3ee" />
         </linearGradient>
 
         {/* Variante vertical (para texto / glyphs altos) */}
         <linearGradient id="inzidium-brand-v" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%"   stopColor="#e879f9" />
           <stop offset="50%"  stopColor="#a855f7" />
-          <stop offset="100%" stopColor="#60a5fa" />
+          <stop offset="100%" stopColor="#22d3ee" />
         </linearGradient>
       </defs>
     </svg>
