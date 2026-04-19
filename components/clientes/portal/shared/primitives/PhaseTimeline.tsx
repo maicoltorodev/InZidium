@@ -143,43 +143,25 @@ function PhaseNode({
                 <span className="text-[11px] font-black">{idx + 1}</span>
             )}
             {active && !reduced && (
-                <>
-                    {/* Dos ondas desfasadas que fade-in desde invisible,
-                        expanden y fade-out. Empiezan y terminan en opacity 0
-                        para que el loop sea imperceptible (antes saltaba a
-                        opacity 0.6 al reiniciar → flash). */}
-                    <motion.span
-                        aria-hidden
-                        className="absolute inset-0 rounded-full ring-2 ring-[#a855f7]/50"
-                        initial={{ scale: 1, opacity: 0 }}
-                        animate={{
-                            scale: [1, 1, 1.45],
-                            opacity: [0, 0.55, 0],
-                        }}
-                        transition={{
-                            duration: 2.4,
-                            repeat: Infinity,
-                            times: [0, 0.1, 1],
-                            ease: "easeOut",
-                        }}
-                    />
-                    <motion.span
-                        aria-hidden
-                        className="absolute inset-0 rounded-full ring-2 ring-[#a855f7]/40"
-                        initial={{ scale: 1, opacity: 0 }}
-                        animate={{
-                            scale: [1, 1, 1.45],
-                            opacity: [0, 0.45, 0],
-                        }}
-                        transition={{
-                            duration: 2.4,
-                            repeat: Infinity,
-                            times: [0, 0.1, 1],
-                            ease: "easeOut",
-                            delay: 1.2,
-                        }}
-                    />
-                </>
+                // Una sola onda — fade-in desde invisible, expande y fade-out.
+                // Empieza y termina en opacity 0 para que el loop sea
+                // imperceptible. Duración larga + easeOut suave para feel
+                // premium, sin overlap.
+                <motion.span
+                    aria-hidden
+                    className="absolute inset-0 rounded-full ring-2 ring-[#a855f7]/50"
+                    initial={{ scale: 1, opacity: 0 }}
+                    animate={{
+                        scale: [1, 1, 1.5],
+                        opacity: [0, 0.55, 0],
+                    }}
+                    transition={{
+                        duration: 2.8,
+                        repeat: Infinity,
+                        times: [0, 0.12, 1],
+                        ease: "easeOut",
+                    }}
+                />
             )}
         </motion.div>
     );

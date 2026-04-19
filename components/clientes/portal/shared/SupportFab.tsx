@@ -66,34 +66,26 @@ export function SupportFab({
                             : { duration: 0.3 }
                     }
                 >
-                    {/* Pulse rings — dos capas desfasadas para efecto de ondas
-                        continuas. Solo cuando el FAB está cerrado. */}
+                    {/* Una sola onda que fade-in, expande y fade-out. El
+                        loop empieza y termina en opacity 0 (sin keyframe
+                        intermedio "pop"), así se siente una ola continua y
+                        limpia. Solo cuando el FAB está cerrado. */}
                     {!open && !reduced && (
-                        <>
-                            <motion.span
-                                aria-hidden
-                                className="absolute inset-0 rounded-full bg-[#a855f7]/50"
-                                initial={{ scale: 1, opacity: 0.55 }}
-                                animate={{ scale: 1.7, opacity: 0 }}
-                                transition={{
-                                    duration: 2.2,
-                                    repeat: Infinity,
-                                    ease: "easeOut",
-                                }}
-                            />
-                            <motion.span
-                                aria-hidden
-                                className="absolute inset-0 rounded-full bg-[#a855f7]/40"
-                                initial={{ scale: 1, opacity: 0.45 }}
-                                animate={{ scale: 1.7, opacity: 0 }}
-                                transition={{
-                                    duration: 2.2,
-                                    repeat: Infinity,
-                                    ease: "easeOut",
-                                    delay: 1.1,
-                                }}
-                            />
-                        </>
+                        <motion.span
+                            aria-hidden
+                            className="absolute inset-0 rounded-full bg-[#a855f7]/50"
+                            initial={{ scale: 1, opacity: 0 }}
+                            animate={{
+                                scale: [1, 1, 1.75],
+                                opacity: [0, 0.5, 0],
+                            }}
+                            transition={{
+                                duration: 2.6,
+                                repeat: Infinity,
+                                times: [0, 0.12, 1],
+                                ease: "easeOut",
+                            }}
+                        />
                     )}
 
                     <motion.button

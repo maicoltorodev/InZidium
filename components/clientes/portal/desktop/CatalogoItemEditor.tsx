@@ -15,7 +15,9 @@ import {
 import { uploadProjectFile } from "@/lib/client/upload-archivo";
 import { StringArrayField } from "../fields";
 import { ToggleRow } from "../shared/primitives/ToggleRow";
-import { MOTION } from "../shared/primitives/motion";
+import { MOTION, usePrefersReducedMotion } from "../shared/primitives/motion";
+import { BrandDivider } from "../shared/primitives/BrandDivider";
+import { BRAND_ICON_STYLE } from "../shared/primitives/BrandDefs";
 import type { CatalogoItem } from "../types";
 
 // Los 3 tipos de catálogo comparten shape. Definimos localmente el subset
@@ -64,6 +66,7 @@ export function CatalogoItemEditor({
     onAddCategory: (raw: string) => string | null;
     showToast: (msg: string, type: "success" | "error") => void;
 }) {
+    const reduced = usePrefersReducedMotion();
     const [uploadingImg, setUploadingImg] = useState(false);
     const [precioOn, setPrecioOn] = useState<boolean>(!!item.precio);
     const [showNewCat, setShowNewCat] = useState(false);
@@ -127,8 +130,10 @@ export function CatalogoItemEditor({
 
     const fieldCls =
         "w-full rounded-xl border border-white/[0.08] bg-black/30 px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/20 focus:border-[#a855f7]/40 transition-colors";
+    // Eyebrow con gradient brand para los títulos de cada grupo — patrón
+    // visual consistente con los eyebrows del hub.
     const groupLabel =
-        "mb-3 block text-[9px] font-black uppercase tracking-[0.26em] text-white/35";
+        "mb-3 inline-block bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-[9px] font-black uppercase tracking-[0.28em] text-transparent";
 
     if (!mounted) return null;
 
@@ -153,27 +158,112 @@ export function CatalogoItemEditor({
                 role="dialog"
                 aria-modal="true"
                 aria-label={title}
-                className="fixed left-1/2 top-1/2 z-[90] flex w-[min(1100px,92vw)] max-h-[88vh] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[2rem] border border-white/[0.08] bg-[#0d0820] shadow-[0_0_60px_-10px_rgba(168,85,247,0.5)]"
+                className="fixed left-1/2 top-1/2 z-[90] flex w-[min(1100px,92vw)] max-h-[88vh] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[2rem] border border-white/[0.08] bg-[#060214] shadow-[0_0_80px_-10px_rgba(168,85,247,0.55)]"
             >
-                {/* Header */}
-                <header className="flex shrink-0 items-center justify-between border-b border-white/[0.06] px-6 py-4">
-                    <h2 className="text-[13px] font-black uppercase tracking-[0.24em] text-white">
-                        {title}
-                    </h2>
+                {/* Ambient glows — mismo patrón del hub/secciones para
+                    continuidad visual. Contenidos dentro del overflow-hidden
+                    del modal, así no se escapan. */}
+                <motion.div
+                    aria-hidden
+                    className="pointer-events-none absolute -top-40 -left-32 h-[480px] w-[480px] rounded-full bg-[#e879f9] blur-[140px]"
+                    initial={{ opacity: 0.1 }}
+                    animate={
+                        reduced
+                            ? { opacity: 0.1 }
+                            : {
+                                  x: [0, 80, -40, 30, 0],
+                                  y: [0, -60, 40, -20, 0],
+                                  opacity: [0.1, 0.14, 0.08, 0.12, 0.1],
+                              }
+                    }
+                    transition={
+                        reduced
+                            ? undefined
+                            : { duration: 24, repeat: Infinity, ease: "easeInOut" }
+                    }
+                />
+                <motion.div
+                    aria-hidden
+                    className="pointer-events-none absolute top-[30%] -right-40 h-[520px] w-[520px] rounded-full bg-[#22d3ee] blur-[160px]"
+                    initial={{ opacity: 0.08 }}
+                    animate={
+                        reduced
+                            ? { opacity: 0.08 }
+                            : {
+                                  x: [0, -120, 80, -40, 0],
+                                  y: [0, 90, -60, 30, 0],
+                                  opacity: [0.08, 0.12, 0.05, 0.09, 0.08],
+                              }
+                    }
+                    transition={
+                        reduced
+                            ? undefined
+                            : {
+                                  duration: 30,
+                                  repeat: Infinity,
+                                  ease: "easeInOut",
+                                  delay: 3,
+                              }
+                    }
+                />
+                <motion.div
+                    aria-hidden
+                    className="pointer-events-none absolute -bottom-40 left-[25%] h-[440px] w-[440px] rounded-full bg-[#a855f7] blur-[140px]"
+                    initial={{ opacity: 0.08 }}
+                    animate={
+                        reduced
+                            ? { opacity: 0.08 }
+                            : {
+                                  x: [0, 70, -100, 50, 0],
+                                  y: [0, -50, 70, -30, 0],
+                                  opacity: [0.08, 0.11, 0.05, 0.09, 0.08],
+                              }
+                    }
+                    transition={
+                        reduced
+                            ? undefined
+                            : {
+                                  duration: 27,
+                                  repeat: Infinity,
+                                  ease: "easeInOut",
+                                  delay: 6,
+                              }
+                    }
+                />
+
+                {/* Header con hero — ícono del tipo + título gradient */}
+                <header className="relative z-10 flex shrink-0 items-center justify-between border-b border-white/[0.06] bg-[#060214]/60 px-7 py-5 backdrop-blur-xl">
+                    <div className="flex items-center gap-4">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(232,121,249,0.15)_0%,rgba(168,85,247,0.15)_50%,rgba(34,211,238,0.15)_100%)] ring-1 ring-[#a855f7]/30 shadow-[0_0_30px_-8px_rgba(168,85,247,0.5)]">
+                            <cfg.icon
+                                className="h-5 w-5"
+                                style={BRAND_ICON_STYLE}
+                            />
+                        </div>
+                        <div>
+                            <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/30">
+                                {item.titulo.trim() ? "Editar" : "Nuevo"}
+                            </p>
+                            <h2 className="mt-0.5 bg-[linear-gradient(135deg,#f5e7ff_0%,#ffffff_40%,#d6e9ff_100%)] bg-clip-text text-[20px] font-black leading-none tracking-tight text-transparent">
+                                {item.titulo.trim() ||
+                                    `Nuevo ${cfg.singular.toLowerCase()}`}
+                            </h2>
+                        </div>
+                    </div>
                     <button
                         type="button"
                         onClick={onClose}
                         aria-label="Cerrar"
-                        className="flex h-9 w-9 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/5 hover:text-white"
+                        className="flex h-10 w-10 items-center justify-center rounded-full text-white/60 transition-colors hover:bg-white/5 hover:text-white"
                     >
                         <X className="h-4 w-4" />
                     </button>
                 </header>
 
                 {/* Body 2-col */}
-                <div className="grid flex-1 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] overflow-hidden">
-                    {/* Form */}
-                    <div className="space-y-7 overflow-y-auto border-r border-white/[0.05] px-6 py-6">
+                <div className="relative z-10 grid flex-1 grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] overflow-hidden">
+                    {/* Form — columna izquierda con fields en glass card */}
+                    <div className="space-y-6 overflow-y-auto border-r border-white/[0.05] px-7 py-6">
                         {/* Básicos */}
                         <section>
                             <p className={groupLabel}>Básicos</p>
@@ -433,10 +523,10 @@ export function CatalogoItemEditor({
 
                     {/* Preview fiel al sitio — toggle entre card de la lista
                         y el modal de detalle que abre al hacer click en "Ver". */}
-                    <div className="overflow-y-auto bg-[#060214] px-6 py-6">
-                        <div className="mb-3 flex items-center justify-between">
+                    <div className="overflow-y-auto px-7 py-6">
+                        <div className="mb-4 flex items-center justify-between">
                             <p className={`${groupLabel} mb-0`}>
-                                Así se verá en tu sitio
+                                Así se verá
                             </p>
                             <div className="flex gap-1 rounded-full border border-white/[0.06] bg-white/[0.02] p-0.5">
                                 <PreviewTab
@@ -477,13 +567,12 @@ export function CatalogoItemEditor({
                 {/* Footer — solo acción primaria. Aunque el autoguardado ya
                     persiste en cada cambio, el botón refuerza que la edición
                     quedó confirmada y cierra el modal. */}
-                <footer className="flex shrink-0 items-center justify-end border-t border-white/[0.06] px-6 py-4">
+                <footer className="relative z-10 flex shrink-0 items-center justify-center border-t border-white/[0.06] bg-[#060214]/80 px-6 py-4 backdrop-blur-xl">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] px-6 py-2.5 text-[11px] font-black uppercase tracking-[0.22em] text-white shadow-[0_4px_20px_-4px_rgba(168,85,247,0.6)] transition-transform hover:scale-[1.02]"
+                        className="rounded-2xl bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] px-10 py-3 text-[11px] font-black uppercase tracking-[0.24em] text-white shadow-[0_8px_28px_-6px_rgba(168,85,247,0.65)] transition-transform hover:scale-[1.02]"
                     >
-                        <Check className="h-3.5 w-3.5" strokeWidth={3} />
                         Guardar
                     </button>
                 </footer>
