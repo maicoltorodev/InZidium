@@ -21,6 +21,7 @@ export const SectionCard = memo(function SectionCard({
   delay = 0,
   disabled = false,
   published = false,
+  isNext = false,
 }: {
   icon: React.ElementType;
   title: string;
@@ -31,6 +32,8 @@ export const SectionCard = memo(function SectionCard({
   delay?: number;
   disabled?: boolean;
   published?: boolean;
+  /** Marca la sección como "próximo paso" durante onboarding. */
+  isNext?: boolean;
 }) {
   const completion = status.kind === "progress" ? status.completion : "empty";
   const publishedComplete = published && completion === "complete";
@@ -58,9 +61,26 @@ export const SectionCard = memo(function SectionCard({
       className={`relative w-full overflow-hidden rounded-[1.75rem] border bg-[#0d0820] px-5 py-4 text-left transition-colors ${
         publishedComplete
           ? "border-[#a855f7]/30 shadow-[0_0_32px_-12px_rgba(168,85,247,0.45)]"
-          : "border-white/[0.06]"
+          : isNext
+            ? "border-[#a855f7]/40 shadow-[0_0_32px_-14px_rgba(168,85,247,0.55)]"
+            : "border-white/[0.06]"
       } ${disabled ? "cursor-not-allowed" : "active:bg-white/[0.02]"}`}
     >
+      {isNext && !disabled && (
+        <>
+          <span className="absolute right-3 top-3 z-10 flex items-center gap-1 rounded-full border border-[#a855f7]/40 bg-[#a855f7]/15 px-2 py-0.5 text-[8px] font-black uppercase tracking-[0.22em] text-white backdrop-blur">
+            <span className="h-1 w-1 rounded-full bg-[#a855f7]" />
+            Siguiente
+          </span>
+          <motion.span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 rounded-[1.75rem] ring-1 ring-[#a855f7]/50"
+            initial={{ opacity: 0.4 }}
+            animate={{ opacity: [0.4, 0.1, 0.4] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </>
+      )}
       {/* Shimmer celebration overlay */}
       {celebrate && (
         <motion.span

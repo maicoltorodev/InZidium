@@ -6,6 +6,7 @@ import { MobileOnboarding } from "./mobile/MobileOnboarding";
 import { TabletOnboarding } from "./tablet/TabletOnboarding";
 import { DesktopOnboarding } from "./desktop/DesktopOnboarding";
 import { CustomProjectView } from "./custom/CustomProjectView";
+import { DesktopCustomProjectView } from "./custom/DesktopCustomProjectView";
 import { PLANS } from "@/lib/constants";
 
 export type PortalDevice = "desktop" | "tablet" | "mobile";
@@ -74,6 +75,16 @@ export function PortalPage({
   // Usamos una vista libre con brief + chat; los archivos se mandan por chat.
   const isCustom = project?.plan === PLANS.ala_medida.title;
   if (isCustom) {
+    if (device === "desktop") {
+      return (
+        <DesktopCustomProjectView
+          project={project}
+          clientName={clientName}
+          onReset={onReset}
+          showToast={showToast}
+        />
+      );
+    }
     return (
       <CustomProjectView
         project={project}

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { MessageSquare, Settings2, ChevronRight, CheckCircle2 } from "lucide-react";
+import { MessageSquare, Settings2, ChevronRight, CheckCircle2, ExternalLink, Sparkles } from "lucide-react";
 import { getSectionCompletion } from "../types";
 import type { ProjectFase } from "@/lib/data/types";
 import { ProgressRing } from "../shared/primitives/ProgressRing";
@@ -10,6 +10,7 @@ import { SectionCard } from "../shared/primitives/SectionCard";
 import { DomainCard } from "../shared/primitives/DomainCard";
 import { CountdownCard } from "../shared/primitives/CountdownCard";
 import { BuildModal } from "../shared/primitives/BuildModal";
+import { PhaseTimeline } from "../shared/primitives/PhaseTimeline";
 import { MOTION, STAGGER, usePrefersReducedMotion } from "../shared/primitives/motion";
 import { BrandDivider } from "../shared/primitives/BrandDivider";
 import { HUB_SECTIONS, getCatalogoSubtitle, type SectionKey } from "../shared/sections/registry";
@@ -20,6 +21,12 @@ function subtitleFor(completion: "empty" | "partial" | "complete") {
   if (completion === "complete") return "Completa";
   if (completion === "partial") return "En progreso";
   return "Por iniciar";
+}
+
+function buildLiveUrl(data: any): string | null {
+  if (data?.seoCanonicalUrl) return data.seoCanonicalUrl;
+  if (data?.dominioUno) return `https://www.${data.dominioUno}.com`;
+  return null;
 }
 
 export function MobileHub({
@@ -57,25 +64,48 @@ export function MobileHub({
   const sectionsLocked = fase === "construccion";
   const isLive = fase === "publicado";
   const isBuilding = fase === "construccion";
+  const isOnboarding = fase === "onboarding";
 
-  const sectionsCompleted = HUB_SECTIONS.filter(
-    (s) => getSectionCompletion(s.key, data) === "complete"
-  ).length;
+  const { nextSection, sectionsCompleted } = useMemo(() => {
+    let next: (typeof HUB_SECTIONS)[number] | null = null;
+    let completed = 0;
+    for (const s of HUB_SECTIONS) {
+      const c = getSectionCompletion(s.key, data);
+      if (c === "complete") completed++;
+      else if (!next) next = s;
+    }
+    return { nextSection: next, sectionsCompleted: completed };
+  }, [data]);
+
   const domainComplete = !!data.dominioUno;
   const totalSteps = HUB_SECTIONS.length + 1;
   const completedCount = sectionsCompleted + (domainComplete ? 1 : 0);
   const progressPct = Math.round((completedCount / totalSteps) * 100);
 
-  const heroCopy =
-    progressPct === 100
+  const heroCopy = isOnboarding
+    ? progressPct === 100
       ? "¡Tu información está lista!"
       : !domainComplete
-      ? "Empecemos eligiendo tu dominio."
-      : progressPct >= 70
-      ? "¡Vas muy bien, casi terminas!"
-      : progressPct >= 30
-      ? "Buen avance. Sigamos completando."
-      : "Ya diste el primer paso.";
+        ? "Empecemos eligiendo tu dominio."
+        : nextSection
+          ? `Tu siguiente paso: ${nextSection.label}.`
+          : "Seguí completando la info."
+    : isBuilding
+      ? "Estamos construyendo tu sitio."
+      : "Tu sitio está en vivo.";
+
+  const heroSub = isOnboarding
+    ? "Apenas completes la info tendremos la web lista en 48 horas."
+    : isBuilding
+      ? "Si hay cambios, escribinos por Mensajes."
+      : "Podés editar cualquier información.";
+
+  const liveUrl = buildLiveUrl(data);
+  const timelineSubtitle = isOnboarding
+    ? `${completedCount}/${totalSteps}`
+    : isBuilding
+      ? "48 horas"
+      : "En vivo";
 
   return (
     <motion.main
@@ -109,7 +139,7 @@ export function MobileHub({
           initial={reduced ? { opacity: 0 } : { opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={MOTION.reveal}
-          className="mb-8 text-center"
+          className="mb-6 text-center"
         >
           <p className="bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#60a5fa_100%)] bg-clip-text text-[10px] font-black uppercase tracking-[0.32em] text-transparent">
             Hola, {clientName.split(" ")[0] || "bienvenido"}
@@ -123,6 +153,8 @@ export function MobileHub({
           </p>
         </motion.div>
 
+        <PhaseTimeline fase={fase} activeSubtitle={timelineSubtitle} />
+
         {isBuilding ? (
           <CountdownCard
             buildStartedAt={buildStartedAt}
@@ -130,7 +162,7 @@ export function MobileHub({
             chat={chat}
           />
         ) : isLive ? (
-          <LivePublishedCard />
+          <LivePublishedCard liveUrl={liveUrl} />
         ) : (
           <motion.div
             initial={reduced ? { opacity: 0 } : { opacity: 0, y: 16 }}
@@ -145,9 +177,7 @@ export function MobileHub({
                   {completedCount} de {totalSteps} completados
                 </p>
                 <p className="mt-1.5 text-[15px] font-bold leading-snug text-white">{heroCopy}</p>
-                <p className="mt-1 text-[11px] leading-snug text-white/40">
-                  Apenas completes la info tendremos la web lista en 48 horas.
-                </p>
+                <p className="mt-1 text-[11px] leading-snug text-white/40">{heroSub}</p>
               </div>
             </div>
           </motion.div>
@@ -176,6 +206,7 @@ export function MobileHub({
         >
           {HUB_SECTIONS.map((sec) => {
             const completion = getSectionCompletion(sec.key, data);
+            const isNext = isOnboarding && nextSection?.key === sec.key;
             return (
               <motion.div
                 key={sec.key}
@@ -191,6 +222,7 @@ export function MobileHub({
                   celebrate={justCompleted === sec.key}
                   disabled={sectionsLocked}
                   published={isLive}
+                  isNext={isNext}
                 />
               </motion.div>
             );
@@ -203,7 +235,11 @@ export function MobileHub({
             <SectionCard
               icon={MessageSquare}
               title="Mensajes"
-              description="Habla con el equipo de desarrollo"
+              description={
+                isBuilding
+                  ? "Escribinos si hay cambios durante la construcción"
+                  : "Habla con el equipo de desarrollo"
+              }
               status={{ kind: "messages", unread: hasUnread, preview: lastAdminMessage }}
               onPress={() => onSelect("chat")}
             />
@@ -226,7 +262,7 @@ export function MobileHub({
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[12px] font-bold text-white/55">Ajustes avanzados</p>
-              <p className="text-[10px] text-white/25">Legal, fuente y analíticas</p>
+              <p className="text-[10px] text-white/25">Tipo de negocio, legal, fuente y analíticas</p>
             </div>
             {!sectionsLocked && <ChevronRight className="h-4 w-4 text-white/20" />}
           </motion.button>
@@ -244,7 +280,7 @@ export function MobileHub({
   );
 }
 
-function LivePublishedCard() {
+function LivePublishedCard({ liveUrl }: { liveUrl: string | null }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -257,13 +293,27 @@ function LivePublishedCard() {
           <CheckCircle2 className="h-7 w-7 text-emerald-400" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-emerald-400/80">Publicado</p>
+          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.24em] text-emerald-400/80">
+            <Sparkles className="h-3 w-3" />
+            Publicado
+          </p>
           <p className="mt-1 text-[18px] font-black leading-tight text-white">Tu sitio está en vivo</p>
           <p className="mt-1 text-[11px] leading-snug text-white/45">
-            Ahora puedes editar cualquier información cuando quieras.
+            Podés seguir editando — los cambios se actualizan solos.
           </p>
         </div>
       </div>
+      {liveUrl && (
+        <a
+          href={liveUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#10b981_0%,#3b82f6_100%)] py-3 text-[11px] font-black uppercase tracking-[0.22em] text-white shadow-[0_0_24px_-6px_rgba(16,185,129,0.7)] transition-transform active:scale-[0.98]"
+        >
+          <ExternalLink className="h-3.5 w-3.5" strokeWidth={3} />
+          Ver mi sitio
+        </a>
+      )}
     </motion.div>
   );
 }
@@ -273,9 +323,9 @@ function FinalMessage({ fase }: { fase: ProjectFase }) {
     return (
       <div className="mt-8 rounded-2xl border border-white/[0.05] bg-[linear-gradient(135deg,rgba(232,121,249,0.03)_0%,rgba(168,85,247,0.03)_50%,rgba(96,165,250,0.03)_100%)] px-5 py-4 text-center">
         <p className="text-[12px] leading-relaxed text-white/55">
-          Cuando terminemos de construir tu página, podrás editar cualquier información sin ningún problema.
+          Estamos construyendo tu sitio. Cuando esté listo podrás editar sin problemas.
           <br />
-          <span className="text-white/35">Entendemos que las cosas pueden ir cambiando.</span>
+          <span className="text-white/35">Si hay cambios urgentes, escribinos por Mensajes.</span>
         </p>
       </div>
     );
@@ -283,7 +333,7 @@ function FinalMessage({ fase }: { fase: ProjectFase }) {
   if (fase === "publicado") {
     return (
       <p className="mt-8 text-center text-[11px] leading-relaxed text-white/40">
-        Puedes editar cualquier información y se actualizará en tu sitio.
+        Cualquier cambio se refleja automáticamente en tu sitio.
       </p>
     );
   }

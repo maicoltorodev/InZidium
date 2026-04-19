@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Globe, Check, Lock, ExternalLink } from "lucide-react";
+import { Globe, Check, Lock, ExternalLink, AlertTriangle } from "lucide-react";
 import { DomainField } from "../../fields";
 import { MOTION } from "./motion";
 import { BRAND_ICON_STYLE } from "./BrandDefs";
@@ -70,6 +70,15 @@ function EditCard({ value, onSave }: { value: string; onSave: (v: string) => voi
         Es la dirección de tu sitio web. Verificamos disponibilidad en tiempo real.
       </p>
       <DomainField value={value} onSave={onSave} />
+      <div className="mt-3 flex items-start gap-2.5 rounded-xl border border-amber-500/20 bg-amber-500/[0.04] px-3 py-2.5">
+        <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-400 mt-0.5" />
+        <p className="text-[11px] leading-snug text-white/65">
+          <span className="font-bold text-amber-300">Elegílo con calma.</span>{" "}
+          Cuando empiece la construcción compramos este dominio y queda ligado
+          a tu sitio. Si más adelante querés cambiarlo, el nuevo dominio corre
+          por tu cuenta.
+        </p>
+      </div>
     </motion.div>
   );
 }

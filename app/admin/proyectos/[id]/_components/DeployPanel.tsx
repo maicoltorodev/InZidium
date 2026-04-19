@@ -105,8 +105,10 @@ export function DeployPanel({ project }: { project: any }) {
                         ) : (
                             <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-4 text-[10px] font-bold uppercase tracking-widest text-gray-600">
                                 Sin dominio personalizado configurado.
-                                Cuando el cliente compre un dominio, cargalo en "Enlace público"
-                                arriba para que se active.
+                                Comprá el dominio que eligió el cliente en
+                                Namecheap, configurá el DNS hacia Vercel, agregá
+                                el dominio al proyecto en Vercel y cargalo en
+                                "Enlace público" abajo.
                             </div>
                         )}
                     </>
