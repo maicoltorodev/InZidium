@@ -152,7 +152,7 @@ export function DesktopHub({
         transition={reduced ? undefined : { duration: 29, repeat: Infinity, ease: "easeInOut", delay: 8 }}
       />
 
-      <div className="relative mx-auto w-full max-w-[1080px]">
+      <div className="relative mx-auto w-full max-w-[680px]">
         {/* Hero */}
         <motion.div
           initial={reduced ? { opacity: 0 } : { opacity: 0, y: 18 }}
@@ -175,8 +175,9 @@ export function DesktopHub({
         {/* Phase timeline — contexto global del journey */}
         <PhaseTimeline fase={fase} activeSubtitle={timelineSubtitle} />
 
-        {/* Fila superior: progress/countdown/live card + DomainCard */}
-        <div className="mb-6 grid grid-cols-2 gap-5">
+        {/* Status del proyecto + DomainCard — apilados para marcar jerarquía
+            visual: primero el estado global, después el dominio. */}
+        <div className="mb-6 space-y-4">
           {isBuilding ? (
             <CountdownCard
               buildStartedAt={buildStartedAt}
@@ -229,7 +230,7 @@ export function DesktopHub({
               },
             },
           }}
-          className="grid grid-cols-2 gap-3"
+          className="space-y-3"
         >
           {HUB_SECTIONS.map((sec) => {
             const completion = getSectionCompletion(sec.key, data);
