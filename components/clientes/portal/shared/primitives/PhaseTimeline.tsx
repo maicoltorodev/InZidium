@@ -20,7 +20,7 @@ type Phase = {
 };
 
 const PHASES: Phase[] = [
-    { key: "onboarding", label: "Onboarding" },
+    { key: "onboarding", label: "Preparación" },
     { key: "construccion", label: "Construcción" },
     { key: "publicado", label: "Publicado" },
 ];

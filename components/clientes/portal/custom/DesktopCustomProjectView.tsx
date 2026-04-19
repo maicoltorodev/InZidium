@@ -109,7 +109,7 @@ export function DesktopCustomProjectView({
                 );
             } else {
                 setStatus("idle");
-                showToast("No se pudo guardar el brief", "error");
+                showToast("No se pudo guardar tu info", "error");
             }
         }, AUTOSAVE_DEBOUNCE);
         return () => {
@@ -285,12 +285,12 @@ export function DesktopCustomProjectView({
                                     </div>
                                     <div>
                                         <h2 className="text-[13px] font-black uppercase tracking-[0.24em] text-white">
-                                            Brief del proyecto
+                                            Cuéntanos tu proyecto
                                         </h2>
                                         <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/30">
                                             {briefReadOnly
-                                                ? "Lectura · construyendo"
-                                                : "Guarda automáticamente"}
+                                                ? "Solo lectura · construyendo"
+                                                : "Se guarda automáticamente"}
                                         </p>
                                     </div>
                                 </div>
@@ -337,7 +337,7 @@ export function DesktopCustomProjectView({
 
                 <p className="mt-10 text-center text-[12px] leading-relaxed text-white/35">
                     {isOnboarding
-                        ? "Tu brief se guarda automáticamente. Escribinos por el chat cuando quieras."
+                        ? "Tu info se guarda automáticamente. Escribinos por el chat cuando quieras."
                         : isBuilding
                           ? "Estamos construyendo tu sitio. Si hay cambios, escribinos por el chat."
                           : "Tu sitio ya está en vivo. Cualquier ajuste lo coordinamos por el chat."}

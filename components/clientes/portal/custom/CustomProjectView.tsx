@@ -65,7 +65,7 @@ export function CustomProjectView({
         setTimeout(() => setStatus((s) => (s === "saved" ? "idle" : s)), 1800);
       } else {
         setStatus("idle");
-        showToast("No se pudo guardar el brief", "error");
+        showToast("No se pudo guardar tu info", "error");
       }
     }, AUTOSAVE_DEBOUNCE);
     return () => {
@@ -126,10 +126,10 @@ export function CustomProjectView({
               </div>
               <div>
                 <h2 className="text-sm font-black uppercase tracking-widest text-white">
-                  Brief del proyecto
+                  Cuéntanos tu proyecto
                 </h2>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                  Guarda automáticamente
+                  Se guarda automáticamente
                 </p>
               </div>
             </div>
