@@ -1,7 +1,8 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Globe, Check, Lock, ExternalLink, AlertTriangle } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Globe, Check, Lock, ExternalLink, AlertTriangle, Info, X } from "lucide-react";
 import { DomainField } from "../../fields";
 import { MOTION } from "./motion";
 import { BRAND_ICON_STYLE } from "./BrandDefs";
@@ -44,43 +45,97 @@ function EditCard({ value, onSave }: { value: string; onSave: (v: string) => voi
       transition={{ ...MOTION.reveal, delay: 0.04 }}
       className="relative mb-5 overflow-hidden rounded-[2rem] border border-[#a855f7]/25 bg-[linear-gradient(135deg,rgba(232,121,249,0.06)_0%,rgba(168,85,247,0.05)_50%,rgba(34,211,238,0.06)_100%)] p-5 shadow-[0_0_32px_-12px_rgba(168,85,247,0.4)]"
     >
-      <div className="mb-3 flex items-center gap-3">
+      {/* Header centrado: ícono → eyebrow → heading → descripción */}
+      <div className="flex flex-col items-center text-center">
         <div
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-colors ${
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition-colors ${
             hasValue
               ? "bg-emerald-500/10 ring-1 ring-emerald-500/20"
               : "bg-[linear-gradient(135deg,rgba(232,121,249,0.15)_0%,rgba(168,85,247,0.15)_50%,rgba(34,211,238,0.15)_100%)] ring-1 ring-[#a855f7]/30"
           }`}
         >
           {hasValue ? (
-            <Check className="h-4 w-4 text-emerald-400" strokeWidth={3} />
+            <Check className="h-5 w-5 text-emerald-400" strokeWidth={3} />
           ) : (
-            <Globe className="h-4 w-4" style={BRAND_ICON_STYLE} />
+            <Globe className="h-5 w-5" style={BRAND_ICON_STYLE} />
           )}
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-[9px] font-black uppercase tracking-[0.28em]">
-            <span className="bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-transparent">
-              Paso 1
-            </span>
-          </p>
-          <h3 className="mt-0.5 text-[15px] font-black leading-tight text-white">
-            Elige tu dominio
-          </h3>
-        </div>
-      </div>
-      <p className="mb-3 text-[11px] leading-relaxed text-white/45">
-        Es la dirección de tu sitio web.
-      </p>
-      <DomainField value={value} onSave={onSave} />
-      <div className="mt-3 flex items-start gap-2 rounded-xl border border-amber-500/20 bg-amber-500/[0.04] px-3 py-2.5">
-        <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-400 mt-0.5" />
-        <p className="text-[11px] leading-snug text-white/65">
-          <span className="font-bold text-amber-300">Elígelo con calma.</span>{" "}
-          Lo compramos al pasar a construcción. Cambiarlo después corre por tu cuenta.
+        <p className="mt-3 inline-block bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-[9px] font-black uppercase tracking-[0.28em] text-transparent">
+          Paso 1
+        </p>
+        <h3 className="mt-1 text-[16px] font-black leading-tight text-white">
+          Elige tu dominio
+        </h3>
+        <p className="mt-1.5 text-[11px] leading-relaxed text-white/45">
+          Es la dirección de tu sitio web.
         </p>
       </div>
+
+      <div className="mt-4">
+        <DomainField value={value} onSave={onSave} />
+      </div>
+
+      <DomainWarning />
     </motion.div>
+  );
+}
+
+// Warning box — en sm+ se muestra el mensaje completo centrado; en mobile
+// solo el highlight "Elígelo con calma" con un botón ℹ︎ que al tocar expande
+// el texto completo debajo.
+function DomainWarning() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="mt-4 overflow-hidden rounded-xl border border-amber-500/20 bg-amber-500/[0.04]">
+      {/* Mobile: highlight + botón info */}
+      <div className="flex items-center justify-center gap-2 px-3 py-2.5 sm:hidden">
+        <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />
+        <p className="text-[11px] font-bold text-amber-300">
+          Elígelo con calma.
+        </p>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-label={open ? "Ocultar detalle" : "Ver más información"}
+          className="flex h-5 w-5 items-center justify-center rounded-full text-amber-300/60 transition-colors hover:bg-amber-500/10 hover:text-amber-300"
+        >
+          {open ? <X className="h-3 w-3" /> : <Info className="h-3 w-3" />}
+        </button>
+      </div>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            key="warning-expanded"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={MOTION.reveal}
+            className="overflow-hidden sm:hidden"
+          >
+            <p className="px-4 pb-3 pt-1 text-center text-[11px] leading-relaxed text-white/65">
+              Cuando empiece la construcción compramos este dominio y queda
+              ligado a tu sitio. Si más adelante quieres cambiarlo, el nuevo
+              dominio corre por tu cuenta.
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Desktop / tablet: mensaje completo siempre visible, centrado. */}
+      <div className="hidden flex-col items-center gap-2 px-4 py-3 text-center sm:flex">
+        <div className="flex items-center gap-1.5">
+          <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />
+          <p className="text-[11px] font-bold text-amber-300">
+            Elígelo con calma.
+          </p>
+        </div>
+        <p className="text-[11px] leading-relaxed text-white/65">
+          Cuando empiece la construcción compramos este dominio y queda ligado
+          a tu sitio. Si más adelante quieres cambiarlo, el nuevo dominio
+          corre por tu cuenta.
+        </p>
+      </div>
+    </div>
   );
 }
 
