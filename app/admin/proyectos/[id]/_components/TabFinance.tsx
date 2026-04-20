@@ -243,9 +243,10 @@ function RegistroPagosPanel({
   };
 
   const handleAdd = async () => {
+    if (saving) return;
     const monto = parseInt(montoInput.replace(/\D/g, ""), 10);
     if (!monto || monto <= 0 || !fechaInput) return;
-    setSaving(true);
+
     const nuevo: RegistroPago = {
       id:
         typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -256,10 +257,17 @@ function RegistroPagosPanel({
       nota: notaInput.trim() || undefined,
       createdAt: new Date().toISOString(),
     };
-    await savePatch({ registroPagos: [...registros, nuevo] });
-    setSaving(false);
-    resetForm();
+    const nextList = [...registros, nuevo];
+
+    // Cerramos y reseteamos de entrada: la UI responde al toque sin esperar
+    // el roundtrip. El realtime reconcilia si hubo error (el optimistic del
+    // savePatch queda descartado y el pago no aparece).
     setAdding(false);
+    resetForm();
+
+    setSaving(true);
+    await savePatch({ registroPagos: nextList });
+    setSaving(false);
   };
 
   const handleDelete = async (id: string) => {
