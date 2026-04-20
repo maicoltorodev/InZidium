@@ -48,6 +48,10 @@ export interface IDataProvider {
     archivos: {
         add(data: Omit<Archivo, 'id' | 'createdAt'>): Promise<{ success: boolean; error?: string }>;
         delete(id: string): Promise<{ success: boolean; storagePath?: string | null; error?: string }>;
+        /** Borra la/s fila/s con ese storagePath. Usado cuando Storage ya fue purgado
+         *  (ej: reemplazo de logo/favicon/imagen de sección) para que no queden
+         *  filas huérfanas apuntando a archivos borrados. */
+        deleteByStoragePath(storagePath: string): Promise<{ success: boolean; error?: string }>;
         getAll(): Promise<Archivo[]>;
     };
 

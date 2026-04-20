@@ -264,6 +264,22 @@ export const DrizzleProvider: IDataProvider = {
         return { success: false, error: "Error al eliminar archivo" };
       }
     },
+    deleteByStoragePath: async (storagePath) => {
+      try {
+        await db
+          .delete(archivos)
+          .where(
+            and(
+              eq(archivos.storagePath, storagePath),
+              eq(archivos.estudioId, estudioId),
+            ),
+          );
+        return { success: true };
+      } catch (e) {
+        const message = e instanceof Error ? e.message : String(e);
+        return { success: false, error: message };
+      }
+    },
     getAll: async () => {
       const data = await db
         .select()

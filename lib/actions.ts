@@ -582,7 +582,10 @@ export async function uploadArchivo(formData: FormData) {
     const idx = oldUrl.indexOf(marker);
     if (idx !== -1) {
       const oldPath = oldUrl.slice(idx + marker.length).split("?")[0];
+      // Borra el archivo viejo de Storage y la fila correspondiente en la tabla
+      // `archivos` para que no quede metadata huérfana apuntando a un blob borrado.
       await supabaseAdmin.storage.from("archivos").remove([oldPath]);
+      await archivos.deleteByStoragePath(oldPath);
     }
   }
 

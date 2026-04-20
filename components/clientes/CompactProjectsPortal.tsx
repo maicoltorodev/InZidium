@@ -113,10 +113,12 @@ export default function CompactProjectsPortal({
     if (selectedProject) {
       const updated = result.proyectos.find((p: any) => p.id === selectedProject.id);
       if (updated) {
-        setSelectedProject((prev: any) => ({
-          ...updated,
-          onboardingData: prev?.onboardingData ?? updated.onboardingData,
-        }));
+        // Aceptar onboardingData fresh del server es imprescindible para que
+        // cambios hechos por el admin (desde otro dispositivo) se reflejen en
+        // vivo en el portal del cliente. Los campos del portal tienen su propio
+        // useState local con debounce, así que esto no interrumpe tipeo
+        // en curso.
+        setSelectedProject(updated);
       } else setSelectedProject(null);
     }
   }

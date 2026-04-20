@@ -120,6 +120,9 @@ export const MockProvider: IDataProvider = {
         delete: async (id) => {
             return { success: true };
         },
+        deleteByStoragePath: async (storagePath) => {
+            return { success: true };
+        },
         getAll: async () => []
     },
     getSystemStatus: async () => ({ database: 'ok (MOCK)', blob: 'ok (MOCK)', auth: 'ok (MOCK)' })
