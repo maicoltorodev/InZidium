@@ -29,8 +29,10 @@ import {
   Sparkles,
   AlertCircle,
   Trash2,
+  Pencil,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import { AdminLoading } from "@/lib/ui/AdminLoading";
 import { useRealtimeRefresh } from "@/hooks/use-realtime-refresh";
 
@@ -214,19 +216,28 @@ export default function ClientsAdmin() {
                             .toUpperCase()}
                         </span>
                       </div>
-                      <button
-                        onClick={() =>
-                          setConfirmDelete({
-                            id: client.id,
-                            nombre: client.nombre,
-                            cedula: client.cedula,
-                          })
-                        }
-                        className="w-10 h-10 rounded-xl bg-red-500/5 hover:bg-red-500 text-red-500/50 hover:text-white border border-red-500/10 hover:border-red-500 transition-all duration-300 flex items-center justify-center group/trash hover:scale-110 active:scale-90 shadow-lg"
-                        title="Eliminar Cliente"
-                      >
-                        <Trash2 className="w-4 h-4 group-hover/trash:rotate-12 transition-transform" />
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/admin/clientes/${client.id}`}
+                          className="w-10 h-10 rounded-xl bg-[#22d3ee]/5 hover:bg-[#22d3ee] text-[#22d3ee]/60 hover:text-black border border-[#22d3ee]/15 hover:border-[#22d3ee] transition-all duration-300 flex items-center justify-center hover:scale-110 active:scale-90 shadow-lg"
+                          title="Editar cliente"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Link>
+                        <button
+                          onClick={() =>
+                            setConfirmDelete({
+                              id: client.id,
+                              nombre: client.nombre,
+                              cedula: client.cedula,
+                            })
+                          }
+                          className="w-10 h-10 rounded-xl bg-red-500/5 hover:bg-red-500 text-red-500/50 hover:text-white border border-red-500/10 hover:border-red-500 transition-all duration-300 flex items-center justify-center group/trash hover:scale-110 active:scale-90 shadow-lg"
+                          title="Eliminar Cliente"
+                        >
+                          <Trash2 className="w-4 h-4 group-hover/trash:rotate-12 transition-transform" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
