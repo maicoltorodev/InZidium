@@ -596,16 +596,17 @@ function CountdownHero({
         : fechaEntrega.getTime();
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 60_000);
+    const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
   if (endMs == null || !Number.isFinite(endMs)) return null;
 
   const remaining = endMs - now;
   const done = remaining <= 0;
-  const totalMin = done ? 0 : Math.floor(remaining / 60_000);
-  const hh = Math.floor(totalMin / 60);
-  const mm = totalMin % 60;
+  const totalSec = done ? 0 : Math.floor(remaining / 1000);
+  const hh = Math.floor(totalSec / 3600);
+  const mm = Math.floor((totalSec % 3600) / 60);
+  const ss = totalSec % 60;
 
   if (done) {
     return (
@@ -622,21 +623,19 @@ function CountdownHero({
     <div className="relative mt-4 overflow-hidden rounded-3xl border border-cyan-400/20 bg-gradient-to-br from-cyan-400/[0.06] via-white/[0.02] to-[#a855f7]/[0.06] p-5 sm:p-6">
       <div className="absolute -top-16 -right-16 w-40 h-40 bg-cyan-400/10 blur-[80px] pointer-events-none" />
       <div className="absolute -bottom-16 -left-16 w-40 h-40 bg-[#a855f7]/10 blur-[80px] pointer-events-none" />
-      <div className="relative flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-cyan-300/80">
-          <Clock className="w-3.5 h-3.5" />
-          Tiempo restante
-        </div>
-        <div className="flex items-baseline gap-1.5">
-          <span className="bg-gradient-to-r from-cyan-300 to-[#a855f7] bg-clip-text text-transparent text-4xl sm:text-5xl font-black tracking-tighter tabular-nums">
-            {hh}
-          </span>
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300/60">h</span>
-          <span className="bg-gradient-to-r from-cyan-300 to-[#a855f7] bg-clip-text text-transparent text-4xl sm:text-5xl font-black tracking-tighter tabular-nums ml-2">
-            {String(mm).padStart(2, "0")}
-          </span>
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300/60">m</span>
-        </div>
+      <div className="relative flex items-baseline justify-center gap-1.5">
+        <span className="bg-gradient-to-r from-cyan-300 to-[#a855f7] bg-clip-text text-transparent text-4xl sm:text-5xl font-black tracking-tighter tabular-nums">
+          {hh}
+        </span>
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300/60">h</span>
+        <span className="bg-gradient-to-r from-cyan-300 to-[#a855f7] bg-clip-text text-transparent text-4xl sm:text-5xl font-black tracking-tighter tabular-nums ml-2">
+          {String(mm).padStart(2, "0")}
+        </span>
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300/60">m</span>
+        <span className="bg-gradient-to-r from-cyan-300 to-[#a855f7] bg-clip-text text-transparent text-4xl sm:text-5xl font-black tracking-tighter tabular-nums ml-2">
+          {String(ss).padStart(2, "0")}
+        </span>
+        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300/60">s</span>
       </div>
     </div>
   );
