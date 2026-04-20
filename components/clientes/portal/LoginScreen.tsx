@@ -104,7 +104,7 @@ export function LoginScreen({
                     value={cedula}
                     onChange={(e) => setCedula(e.target.value)}
                     placeholder="Número de Identificación"
-                    className="w-full bg-transparent border-none outline-none text-white font-medium h-11 text-base placeholder:text-white/20"
+                    className="w-full min-w-0 bg-transparent border-none outline-none text-white font-medium h-11 text-base placeholder:text-[clamp(11px,3.2vw,14px)] placeholder:text-white/20"
                   />
                   <button
                     type="submit"
