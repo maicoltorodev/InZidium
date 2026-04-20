@@ -13,6 +13,9 @@ type Mode = "edit" | "locked" | "live";
  *  - edit: onboarding, DomainField inline
  *  - locked: fase construccion, tap abre modal "estamos trabajando"
  *  - live: fase publicado, link funcional al sitio
+ *
+ * El layout en mobile separa el dominio a su propia fila con `break-all`
+ * para que `www.lo-que-sea.com` nunca se corte; en sm+ vuelve inline.
  */
 export function DomainCard({
   value,
@@ -67,16 +70,14 @@ function EditCard({ value, onSave }: { value: string; onSave: (v: string) => voi
         </div>
       </div>
       <p className="mb-3 text-[11px] leading-relaxed text-white/45">
-        Es la dirección de tu sitio web. Verificamos disponibilidad en tiempo real.
+        Es la dirección de tu sitio web.
       </p>
       <DomainField value={value} onSave={onSave} />
-      <div className="mt-3 flex items-start gap-2.5 rounded-xl border border-amber-500/20 bg-amber-500/[0.04] px-3 py-2.5">
+      <div className="mt-3 flex items-start gap-2 rounded-xl border border-amber-500/20 bg-amber-500/[0.04] px-3 py-2.5">
         <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-400 mt-0.5" />
         <p className="text-[11px] leading-snug text-white/65">
           <span className="font-bold text-amber-300">Elígelo con calma.</span>{" "}
-          Cuando empiece la construcción compramos este dominio y queda ligado
-          a tu sitio. Si más adelante quieres cambiarlo, el nuevo dominio corre
-          por tu cuenta.
+          Lo compramos al pasar a construcción. Cambiarlo después corre por tu cuenta.
         </p>
       </div>
     </motion.div>
@@ -86,6 +87,7 @@ function EditCard({ value, onSave }: { value: string; onSave: (v: string) => voi
 // ─── Locked (construccion) ───────────────────────────────────────────────────
 
 function LockedCard({ domain, onTap }: { domain: string; onTap?: () => void }) {
+  const fullDomain = `www.${domain || "tudominio"}.com`;
   return (
     <motion.button
       type="button"
@@ -100,17 +102,17 @@ function LockedCard({ domain, onTap }: { domain: string; onTap?: () => void }) {
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(232,121,249,0.12)_0%,rgba(168,85,247,0.12)_50%,rgba(34,211,238,0.12)_100%)] ring-1 ring-[#a855f7]/25">
           <Lock className="h-4 w-4" style={BRAND_ICON_STYLE} />
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-[9px] font-black uppercase tracking-[0.28em] text-white/35">
-            Dominio
-          </p>
-          <p className="mt-0.5 truncate text-[14px] font-bold">
-            <span className="bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-transparent underline decoration-[#a855f7]/40 decoration-1 underline-offset-2 group-active:decoration-[#a855f7]">
-              www.{domain || "tudominio"}.com
-            </span>
-          </p>
-        </div>
+        <p className="text-[9px] font-black uppercase tracking-[0.28em] text-white/35">
+          Dominio
+        </p>
       </div>
+      {/* Dominio en su propia fila con break-all — evita que `.com` se corte
+          en pantallas estrechas (antes tenía `truncate` en flex row). */}
+      <p className="mt-3 break-all text-[15px] font-bold leading-tight">
+        <span className="bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-transparent">
+          {fullDomain}
+        </span>
+      </p>
     </motion.button>
   );
 }
@@ -119,6 +121,7 @@ function LockedCard({ domain, onTap }: { domain: string; onTap?: () => void }) {
 
 function LiveCard({ domain }: { domain: string }) {
   const href = domain ? `https://www.${domain}.com` : "#";
+  const fullDomain = `www.${domain || "tudominio"}.com`;
   return (
     <motion.a
       href={href}
@@ -130,22 +133,23 @@ function LiveCard({ domain }: { domain: string }) {
       whileTap={{ scale: 0.985 }}
       className="relative mb-5 block overflow-hidden rounded-[2rem] border border-emerald-500/25 bg-[linear-gradient(135deg,rgba(16,185,129,0.08)_0%,rgba(168,85,247,0.04)_50%,rgba(34,211,238,0.06)_100%)] p-5 shadow-[0_0_32px_-12px_rgba(16,185,129,0.4)]"
     >
-      <div className="mb-3 flex items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-500/25">
-          <Check className="h-4 w-4 text-emerald-400" strokeWidth={3} />
-        </div>
-        <div className="flex-1 min-w-0">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-500/25">
+            <Check className="h-4 w-4 text-emerald-400" strokeWidth={3} />
+          </div>
           <p className="text-[9px] font-black uppercase tracking-[0.28em] text-emerald-400/80">
-            Tu sitio está en vivo
+            En vivo
           </p>
-          <h3 className="mt-0.5 text-[15px] font-black leading-tight text-white truncate">
-            www.{domain || "tudominio"}.com
-          </h3>
         </div>
         <ExternalLink className="h-4 w-4 shrink-0 text-white/40" />
       </div>
-      <p className="text-[11px] leading-relaxed text-white/45">
-        Toca la tarjeta para visitar tu sitio en una pestaña nueva.
+      {/* Dominio en fila propia con break-all para que no se corte. */}
+      <p className="mt-3 break-all text-[16px] font-black leading-tight text-white">
+        {fullDomain}
+      </p>
+      <p className="mt-2 text-[11px] leading-relaxed text-white/45">
+        Toca para visitar tu sitio.
       </p>
     </motion.a>
   );
