@@ -24,6 +24,11 @@ export function TabSitioWeb({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.25 }}
+      // `transform` crea un containing block para descendientes con `position: fixed`.
+      // Así el DesktopSection del portal (fixed inset-0) queda scopeado a esta área
+      // y no tapa el sidebar del admin.
+      style={{ transform: "translateZ(0)" }}
+      className="relative min-h-full"
     >
       <PortalPage
         project={project}
