@@ -1,55 +1,23 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    FileText,
     LogOut,
-    Loader2,
-    Check,
     Archive,
     ChevronDown,
     ExternalLink,
     Sparkles,
-    Target,
-    Camera,
-    Calendar,
-    Link2,
     CheckCircle2,
 } from "lucide-react";
-import { updateProyectoBriefing } from "@/lib/actions";
 import { Chat } from "../shared/Chat";
 import type { ProjectFase } from "@/lib/data/types";
 import { BrandDefs } from "../shared/primitives/BrandDefs";
 import { BrandDivider } from "../shared/primitives/BrandDivider";
 import { PhaseTimeline } from "../shared/primitives/PhaseTimeline";
 import { CountdownCard } from "../shared/primitives/CountdownCard";
+import { SharedVault } from "../shared/primitives/SharedVault";
 import { MOTION, usePrefersReducedMotion } from "../shared/primitives/motion";
-
-const AUTOSAVE_DEBOUNCE = 900;
-
-const BRIEF_PROMPTS = [
-    {
-        icon: Target,
-        label: "¿Qué quieres lograr?",
-        hint: "Objetivos del proyecto, para quién es.",
-    },
-    {
-        icon: Camera,
-        label: "¿Qué tienes hoy?",
-        hint: "Marca, sitio previo, redes, referencias.",
-    },
-    {
-        icon: Calendar,
-        label: "¿Tienes deadline?",
-        hint: "Fechas clave o prioridades.",
-    },
-    {
-        icon: Link2,
-        label: "Inspiración",
-        hint: "Links o sitios que te gustan.",
-    },
-];
 
 function buildLiveUrl(data: any): string | null {
     if (data?.seoCanonicalUrl) return data.seoCanonicalUrl;
@@ -71,51 +39,12 @@ export function DesktopCustomProjectView({
     const reduced = usePrefersReducedMotion();
     const onboardingData: Record<string, any> =
         (project?.onboardingData as any) ?? {};
-    const initialBrief: string = onboardingData.briefing ?? "";
-    const [brief, setBrief] = useState(initialBrief);
-    const [status, setStatus] = useState<"idle" | "saving" | "saved">("idle");
-    const lastSavedRef = useRef(initialBrief);
-    const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const fase: ProjectFase = (project?.fase ?? "onboarding") as ProjectFase;
     const isBuilding = fase === "construccion";
     const isLive = fase === "publicado";
     const isOnboarding = fase === "onboarding";
     const liveUrl = buildLiveUrl(onboardingData);
-
-    // Re-sincronizar cuando llega el proyecto actualizado por realtime.
-    useEffect(() => {
-        const incoming = (project?.onboardingData as any)?.briefing ?? "";
-        if (incoming !== lastSavedRef.current && incoming !== brief) {
-            setBrief(incoming);
-            lastSavedRef.current = incoming;
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [project?.onboardingData]);
-
-    // Autosave con debounce.
-    useEffect(() => {
-        if (brief === lastSavedRef.current) return;
-        if (saveTimer.current) clearTimeout(saveTimer.current);
-        setStatus("saving");
-        saveTimer.current = setTimeout(async () => {
-            const res = await updateProyectoBriefing(project.id, brief);
-            if (res.success) {
-                lastSavedRef.current = brief;
-                setStatus("saved");
-                setTimeout(
-                    () => setStatus((s) => (s === "saved" ? "idle" : s)),
-                    1800,
-                );
-            } else {
-                setStatus("idle");
-                showToast("No se pudo guardar tu info", "error");
-            }
-        }, AUTOSAVE_DEBOUNCE);
-        return () => {
-            if (saveTimer.current) clearTimeout(saveTimer.current);
-        };
-    }, [brief, project.id, showToast]);
 
     const hasPrevData = useMemo(
         () =>
@@ -131,8 +60,6 @@ export function DesktopCustomProjectView({
           ? "Construyendo"
           : "En vivo";
 
-    const briefReadOnly = isBuilding;
-
     return (
         <motion.main
             initial={{ opacity: 0 }}
@@ -143,11 +70,11 @@ export function DesktopCustomProjectView({
         >
             <BrandDefs />
 
-            {/* Ambient glows — igual que el hub para continuidad visual */}
+            {/* Ambient glows */}
             <motion.div
                 aria-hidden
                 className="pointer-events-none absolute -top-60 -left-52 h-[720px] w-[720px] rounded-full bg-[#e879f9] blur-[180px]"
-                initial={{ x: 0, y: 0, opacity: 0.14 }}
+                initial={{ opacity: 0.14 }}
                 animate={
                     reduced
                         ? { opacity: 0.14 }
@@ -160,17 +87,13 @@ export function DesktopCustomProjectView({
                 transition={
                     reduced
                         ? undefined
-                        : {
-                              duration: 26,
-                              repeat: Infinity,
-                              ease: "easeInOut",
-                          }
+                        : { duration: 26, repeat: Infinity, ease: "easeInOut" }
                 }
             />
             <motion.div
                 aria-hidden
                 className="pointer-events-none absolute top-[30%] -right-60 h-[820px] w-[820px] rounded-full bg-[#22d3ee] blur-[200px]"
-                initial={{ x: 0, y: 0, opacity: 0.12 }}
+                initial={{ opacity: 0.12 }}
                 animate={
                     reduced
                         ? { opacity: 0.12 }
@@ -183,18 +106,13 @@ export function DesktopCustomProjectView({
                 transition={
                     reduced
                         ? undefined
-                        : {
-                              duration: 32,
-                              repeat: Infinity,
-                              ease: "easeInOut",
-                              delay: 4,
-                          }
+                        : { duration: 32, repeat: Infinity, ease: "easeInOut", delay: 4 }
                 }
             />
             <motion.div
                 aria-hidden
                 className="pointer-events-none absolute -bottom-52 left-[20%] h-[640px] w-[640px] rounded-full bg-[#a855f7] blur-[180px]"
-                initial={{ x: 0, y: 0, opacity: 0.11 }}
+                initial={{ opacity: 0.11 }}
                 animate={
                     reduced
                         ? { opacity: 0.11 }
@@ -207,22 +125,15 @@ export function DesktopCustomProjectView({
                 transition={
                     reduced
                         ? undefined
-                        : {
-                              duration: 29,
-                              repeat: Infinity,
-                              ease: "easeInOut",
-                              delay: 8,
-                          }
+                        : { duration: 29, repeat: Infinity, ease: "easeInOut", delay: 8 }
                 }
             />
 
             <div className="relative mx-auto w-full max-w-[1200px]">
-                {/* Header con botón logout */}
+                {/* Header */}
                 <div className="mb-10 flex items-start justify-between gap-6">
                     <motion.div
-                        initial={
-                            reduced ? { opacity: 0 } : { opacity: 0, y: 18 }
-                        }
+                        initial={reduced ? { opacity: 0 } : { opacity: 0, y: 18 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={MOTION.reveal}
                         className="flex-1 text-center"
@@ -246,7 +157,7 @@ export function DesktopCustomProjectView({
 
                 <PhaseTimeline fase={fase} activeSubtitle={timelineSubtitle} />
 
-                {/* Estado por fase — protagonista según momento */}
+                {/* Estado por fase */}
                 {isBuilding && (
                     <div className="mb-6">
                         <CountdownCard
@@ -256,65 +167,19 @@ export function DesktopCustomProjectView({
                         />
                     </div>
                 )}
-                {isLive && (
-                    <LivePublishedCard liveUrl={liveUrl} />
-                )}
+                {isLive && <LivePublishedCard liveUrl={liveUrl} />}
 
-                {/* Layout 2 columnas: brief a la izq, chat sticky derecha */}
+                {/* Layout 2 columnas: archivos compartidos a la izq, chat sticky derecha */}
                 <div className="grid grid-cols-[minmax(0,1fr)_420px] gap-6 items-start">
                     <div className="space-y-6">
-                        {/* Prompts guía */}
-                        {!briefReadOnly && (
-                            <BriefPrompts />
-                        )}
-
-                        {/* Brief */}
-                        <motion.section
-                            initial={reduced ? { opacity: 0 } : { opacity: 0, y: 12 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ ...MOTION.reveal, delay: reduced ? 0 : 0.08 }}
-                            className="relative rounded-[2rem] border border-white/[0.08] bg-[linear-gradient(135deg,rgba(232,121,249,0.04)_0%,rgba(168,85,247,0.03)_50%,rgba(34,211,238,0.04)_100%)] p-7"
-                        >
-                            <div className="mb-5 flex items-center justify-between gap-3">
-                                <div className="flex items-center gap-3">
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[linear-gradient(135deg,rgba(232,121,249,0.12)_0%,rgba(168,85,247,0.12)_50%,rgba(34,211,238,0.12)_100%)] ring-1 ring-[#a855f7]/25">
-                                        <FileText className="h-4 w-4 text-white/80" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-[13px] font-black uppercase tracking-[0.24em] text-white">
-                                            Cuéntanos tu proyecto
-                                        </h2>
-                                        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/30">
-                                            {briefReadOnly
-                                                ? "Solo lectura · construyendo"
-                                                : "Se guarda automáticamente"}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <CharCount value={brief} />
-                                    <SaveIndicator status={status} />
-                                </div>
-                            </div>
-                            <textarea
-                                value={brief}
-                                onChange={(e) => setBrief(e.target.value)}
-                                disabled={briefReadOnly}
-                                placeholder={
-                                    "Cuéntanos tu proyecto en tus palabras.\n\n" +
-                                    "Mira las preguntas guía de arriba — no tienes que responderlas todas, " +
-                                    "solo sirven para arrancar. Puedes ir editando cuando quieras."
-                                }
-                                rows={14}
-                                className="w-full resize-y rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-white placeholder:text-white/25 focus:border-[#a855f7]/50 focus:outline-none transition-colors leading-relaxed disabled:cursor-not-allowed disabled:opacity-70"
-                            />
-                            <p className="mt-3 text-[11px] leading-relaxed text-white/35">
-                                Para imágenes, PDFs o referencias, usa el chat de la derecha →
-                            </p>
-                        </motion.section>
+                        <SharedVault
+                            project={project}
+                            showToast={showToast}
+                            variant="desktop"
+                            uploadedBy="cliente"
+                        />
                     </div>
 
-                    {/* Sidebar derecho: plan previo + chat sticky */}
                     <div className="sticky top-6 space-y-4 max-h-[calc(100dvh-3rem)] flex flex-col">
                         {hasPrevData && <PreviousPlanPanel data={onboardingData} />}
                         <motion.section
@@ -334,85 +199,13 @@ export function DesktopCustomProjectView({
 
                 <p className="mt-10 text-center text-[12px] leading-relaxed text-white/35">
                     {isOnboarding
-                        ? "Tu info se guarda automáticamente. Escríbenos por el chat cuando quieras."
+                        ? "Comparte archivos y conversa con nosotros por el chat. Agendamos una llamada cuando estés listo."
                         : isBuilding
                           ? "Estamos construyendo tu sitio. Si hay cambios, escríbenos por el chat."
                           : "Tu sitio ya está en vivo. Cualquier ajuste lo coordinamos por el chat."}
                 </p>
             </div>
         </motion.main>
-    );
-}
-
-// ─── Prompts guía ─────────────────────────────────────────────────────────────
-
-function BriefPrompts() {
-    return (
-        <motion.section
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={MOTION.reveal}
-            aria-hidden
-        >
-            <p className="mb-3 text-[10px] font-black uppercase tracking-[0.26em] text-white/30">
-                Preguntas guía · opcional
-            </p>
-            <div className="grid grid-cols-2 gap-2.5">
-                {BRIEF_PROMPTS.map((p) => {
-                    const Icon = p.icon;
-                    return (
-                        <div
-                            key={p.label}
-                            className="flex items-start gap-3 rounded-2xl border border-white/[0.05] bg-white/[0.02] p-3"
-                        >
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[linear-gradient(135deg,rgba(232,121,249,0.1)_0%,rgba(168,85,247,0.1)_50%,rgba(34,211,238,0.1)_100%)] ring-1 ring-white/5">
-                                <Icon className="h-3.5 w-3.5 text-white/60" />
-                            </div>
-                            <div className="flex-1 min-w-0 pt-0.5">
-                                <p className="text-[12px] font-bold text-white leading-tight">
-                                    {p.label}
-                                </p>
-                                <p className="mt-0.5 text-[11px] text-white/40 leading-snug">
-                                    {p.hint}
-                                </p>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-        </motion.section>
-    );
-}
-
-// ─── Indicador de guardado ───────────────────────────────────────────────────
-
-function SaveIndicator({ status }: { status: "idle" | "saving" | "saved" }) {
-    if (status === "saving") {
-        return (
-            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-white/40">
-                <Loader2 className="h-3 w-3 animate-spin" />
-                Guardando
-            </div>
-        );
-    }
-    if (status === "saved") {
-        return (
-            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-emerald-400">
-                <Check className="h-3 w-3" />
-                Guardado
-            </div>
-        );
-    }
-    return null;
-}
-
-function CharCount({ value }: { value: string }) {
-    const len = value.trim().length;
-    if (len === 0) return null;
-    return (
-        <span className="text-[10px] font-bold uppercase tracking-widest text-white/25">
-            {len} caracteres
-        </span>
     );
 }
 
@@ -458,7 +251,7 @@ function LivePublishedCard({ liveUrl }: { liveUrl: string | null }) {
     );
 }
 
-// ─── Panel del plan previo ────────────────────────────────────────────────────
+// ─── Plan previo (cross-plan data preservation) ──────────────────────────────
 
 function hasValue(v: unknown): boolean {
     if (v == null) return false;
@@ -478,11 +271,8 @@ function PreviousPlanPanel({ data }: { data: Record<string, any> }) {
     const catalogoCount = Array.isArray(data.catalogo)
         ? data.catalogo.length
         : 0;
-    const colores = [
-        data.colorPrimario,
-        data.colorAcento,
-        data.colorAcento2,
-    ].filter(Boolean);
+    const colores = [data.colorPrimario, data.colorAcento, data.colorAcento2]
+        .filter(Boolean);
     const contacto = [data.whatsapp, data.telefono, data.email].filter(Boolean);
 
     return (

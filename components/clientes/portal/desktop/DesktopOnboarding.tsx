@@ -37,6 +37,7 @@ export function DesktopOnboarding({
   setUploadingFavicon,
   uploadingNosotros,
   setUploadingNosotros,
+  hideSupportFab = false,
 }: {
   project: any;
   clientName: string;
@@ -55,6 +56,7 @@ export function DesktopOnboarding({
   setUploadingFavicon: (v: boolean) => void;
   uploadingNosotros: boolean;
   setUploadingNosotros: (v: boolean) => void;
+  hideSupportFab?: boolean;
 }) {
   const d = project.onboardingData || {};
   const [view, setView] = useState<View>("hub");
@@ -208,12 +210,14 @@ export function DesktopOnboarding({
 
       {/* FAB de soporte — reemplaza la card "Mensajes" del grid. Persistente
           en toda la navegación del portal. */}
-      <SupportFab
-        project={project}
-        showToast={showToast}
-        device="desktop"
-        hasUnread={chatInfo.hasUnread}
-      />
+      {!hideSupportFab && (
+        <SupportFab
+          project={project}
+          showToast={showToast}
+          device="desktop"
+          hasUnread={chatInfo.hasUnread}
+        />
+      )}
     </main>
   );
 }

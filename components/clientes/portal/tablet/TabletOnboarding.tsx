@@ -37,6 +37,7 @@ export function TabletOnboarding({
   setUploadingFavicon,
   uploadingNosotros,
   setUploadingNosotros,
+  hideSupportFab = false,
 }: {
   project: any;
   clientName: string;
@@ -55,6 +56,7 @@ export function TabletOnboarding({
   setUploadingFavicon: (v: boolean) => void;
   uploadingNosotros: boolean;
   setUploadingNosotros: (v: boolean) => void;
+  hideSupportFab?: boolean;
 }) {
   const d = project.onboardingData || {};
   const [view, setView] = useState<View>("hub");
@@ -207,12 +209,14 @@ export function TabletOnboarding({
       </AnimatePresence>
 
       {/* FAB de soporte — persistente en toda la navegación. */}
-      <SupportFab
-        project={project}
-        showToast={showToast}
-        device="tablet"
-        hasUnread={chatInfo.hasUnread}
-      />
+      {!hideSupportFab && (
+        <SupportFab
+          project={project}
+          showToast={showToast}
+          device="tablet"
+          hasUnread={chatInfo.hasUnread}
+        />
+      )}
     </main>
   );
 }

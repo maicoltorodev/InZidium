@@ -23,6 +23,8 @@ export function PortalPage({
   showToast,
   device,
   useDesktopLandingBackground = false,
+  hideSupportFab = false,
+  uploadedBy = "cliente",
 }: {
   project: any;
   clientName: string;
@@ -31,6 +33,10 @@ export function PortalPage({
   showToast: (msg: string, type: "success" | "error") => void;
   device: PortalDevice;
   useDesktopLandingBackground?: boolean;
+  /** Oculta el FAB de soporte. Útil cuando el portal se embebe en el admin. */
+  hideSupportFab?: boolean;
+  /** Autor al que se le atribuyen los uploads de imágenes del portal. */
+  uploadedBy?: "cliente" | "admin";
 }) {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingFavicon, setUploadingFavicon] = useState(false);
@@ -45,7 +51,7 @@ export function PortalPage({
     setLoading(true);
     try {
       const result = await uploadProjectFile({
-        file, proyectoId: project.id, subidoPor: "cliente", oldUrl,
+        file, proyectoId: project.id, subidoPor: uploadedBy, oldUrl,
       });
       if (result.success && result.url) onDone(result.url);
       else showToast(result.error || "Error al subir la imagen", "error");
@@ -69,6 +75,7 @@ export function PortalPage({
     setUploadingFavicon,
     uploadingNosotros,
     setUploadingNosotros,
+    hideSupportFab,
   };
 
   // Plan "a la medida": el producto no mapea a un wizard de secciones.

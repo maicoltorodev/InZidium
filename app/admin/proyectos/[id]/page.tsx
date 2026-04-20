@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   getProyectos,
@@ -11,23 +11,23 @@ import {
   deleteProyecto,
   addChatMessage,
   updateProyectoPrecioCustom,
+  updateProyectoOnboarding,
 } from "@/lib/actions";
 import { useToast } from "@/app/providers/ToastProvider";
 import {
-  Loader2,
   ChevronLeft,
   User,
   Grid,
   MessageCircle,
   FolderOpen,
   Cpu,
-  Briefcase,
+  Globe,
   TrendingUp,
   X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { PLANS_ARRAY } from "@/lib/constants";
+import { PLANS, PLANS_ARRAY } from "@/lib/constants";
 import { uploadProjectFile } from "@/lib/client/upload-archivo";
 import { useRealtimeRefresh } from "@/hooks/use-realtime-refresh";
 import { AdminLoading } from "@/lib/ui/AdminLoading";
@@ -37,7 +37,7 @@ import { ModalConfirm } from "./_components/ModalConfirm";
 import { TabOverview } from "./_components/TabOverview";
 import { TabCommunication } from "./_components/TabCommunication";
 import { TabVault } from "./_components/TabVault";
-import { TabBriefing } from "./_components/TabBriefing";
+import { TabSitioWeb } from "./_components/TabSitioWeb";
 import { TabSettings } from "./_components/TabSettings";
 import { TabFinance } from "./_components/TabFinance";
 
@@ -46,7 +46,7 @@ type TabType =
   | "communication"
   | "vault"
   | "settings"
-  | "briefing"
+  | "sitioweb"
   | "finance";
 
 export default function ProyectoDetalle() {
@@ -93,6 +93,17 @@ export default function ProyectoDetalle() {
   // Realtime: recarga silenciosamente si cambia algo en el proyecto, chat o archivos
   useRealtimeRefresh(["proyectos", "chat", "archivos"], () => loadProject(true));
 
+  // Si cambia el plan y el tab activo ya no existe (ej: "sitioweb" -> custom),
+  // caer a "overview".
+  useEffect(() => {
+    if (!project) return;
+    const isEstandar = project.plan === PLANS.estandar.title;
+    if (activeTab === "sitioweb" && !isEstandar) setActiveTab("overview");
+    if (activeTab === "vault" && isEstandar) setActiveTab("overview");
+    // Legacy: tab "briefing" ya no existe.
+    if ((activeTab as string) === "briefing") setActiveTab("overview");
+  }, [project?.plan, activeTab]);
+
   // --- EFFECT: Notificación Nuevos Archivos ---
   useEffect(() => {
     if (project?.archivos) {
@@ -127,6 +138,30 @@ export default function ProyectoDetalle() {
       if (!silent) setLoading(false);
     }
   }
+
+  // savePatch admin: mismo contrato que el del cliente, pero usa session admin.
+  // Hace optimistic update local y llama al server action. El realtime refresh
+  // se encarga de sincronizar cualquier cambio que venga del cliente.
+  const savePatchAdmin = useCallback(
+    async (patch: Record<string, any>) => {
+      if (!project) return;
+      const merged = { ...(project.onboardingData || {}), ...patch };
+      if (patch.dominioUno !== undefined) {
+        merged.seoCanonicalUrl = patch.dominioUno
+          ? `https://www.${patch.dominioUno}.com`
+          : "";
+      }
+      setProject((prev: any) =>
+        prev ? { ...prev, onboardingData: merged } : prev,
+      );
+      try {
+        await updateProyectoOnboarding(project.id, 1, merged);
+      } catch {
+        showToast("No se pudo guardar. Inténtalo de nuevo.", "error");
+      }
+    },
+    [project, showToast],
+  );
 
   const handleConfirmNombreChange = async () => {
     if (!project) return;
@@ -340,6 +375,45 @@ export default function ProyectoDetalle() {
   const projectPlan =
     PLANS_ARRAY.find((p) => p.title === project.plan) || PLANS_ARRAY[0];
 
+  const isEstandar = project.plan === PLANS.estandar.title;
+
+  // Tabs condicionales por plan. Estándar muestra el embed del portal como
+  // "Sitio web"; a la medida muestra "Archivos" compartidos con el cliente.
+  const tabs: Array<{
+    key: TabType;
+    label: string;
+    shortLabel?: string;
+    icon: any;
+    color: string;
+    count?: number;
+  }> = [
+    { key: "overview", label: "Resumen", icon: Grid, color: "text-blue-400" },
+    { key: "finance", label: "Pagos", icon: TrendingUp, color: "text-emerald-400" },
+    {
+      key: "communication",
+      label: "Mensajes",
+      icon: MessageCircle,
+      color: "text-amber-400",
+      count: project.chat?.filter((n: any) => n.autor !== "admin").length,
+    },
+    isEstandar
+      ? {
+          key: "sitioweb",
+          label: "Sitio web",
+          shortLabel: "Sitio",
+          icon: Globe,
+          color: "text-[#22d3ee]",
+        }
+      : {
+          key: "vault",
+          label: "Archivos",
+          icon: FolderOpen,
+          color: "text-emerald-400",
+          count: project.archivos?.length,
+        },
+    { key: "settings", label: "Configuración", shortLabel: "Ajustes", icon: Cpu, color: "text-gray-400" },
+  ];
+
   // --- RENDER ---
   return (
     <div className="text-white flex flex-col font-sans selection:bg-[#22d3ee] selection:text-black lg:min-h-screen lg:overflow-hidden">
@@ -379,52 +453,17 @@ export default function ProyectoDetalle() {
         {/* SIDEBAR NAVIGATION (desktop) */}
         <aside className="w-64 border-r border-white/5 bg-[#060214]/60 hidden lg:flex flex-col shrink-0">
           <nav className="flex-1 p-4 space-y-2">
-            <NavTab
-              active={activeTab === "overview"}
-              onClick={() => setActiveTab("overview")}
-              icon={Grid}
-              label="Resumen"
-              color="text-blue-400"
-            />
-            <NavTab
-              active={activeTab === "finance"}
-              onClick={() => setActiveTab("finance")}
-              icon={TrendingUp}
-              label="Pagos"
-              color="text-emerald-400"
-            />
-            <NavTab
-              active={activeTab === "communication"}
-              onClick={() => setActiveTab("communication")}
-              icon={MessageCircle}
-              label="Mensajes"
-              notificationCount={
-                project.chat?.filter((n: any) => n.autor !== "admin").length
-              }
-              color="text-amber-400"
-            />
-            <NavTab
-              active={activeTab === "vault"}
-              onClick={() => setActiveTab("vault")}
-              icon={FolderOpen}
-              label="Archivos"
-              notificationCount={project.archivos?.length}
-              color="text-emerald-400"
-            />
-            <NavTab
-              active={activeTab === "briefing"}
-              onClick={() => setActiveTab("briefing")}
-              icon={Briefcase}
-              label="Información"
-              color="text-purple-400"
-            />
-            <NavTab
-              active={activeTab === "settings"}
-              onClick={() => setActiveTab("settings")}
-              icon={Cpu}
-              label="Configuración"
-              color="text-gray-400"
-            />
+            {tabs.map((t) => (
+              <NavTab
+                key={t.key}
+                active={activeTab === t.key}
+                onClick={() => setActiveTab(t.key)}
+                icon={t.icon}
+                label={t.label}
+                color={t.color}
+                notificationCount={t.count}
+              />
+            ))}
           </nav>
 
         </aside>
@@ -434,14 +473,7 @@ export default function ProyectoDetalle() {
           {/* Mobile/tablet horizontal tabs */}
           <div className="lg:hidden sticky top-14 z-30 bg-[#060214]/90 backdrop-blur-xl border-b border-white/5">
             <nav className="flex gap-1 overflow-x-auto px-3 py-2 scrollbar-none">
-              {[
-                { key: "overview", label: "Resumen", icon: Grid, color: "text-blue-400" },
-                { key: "finance", label: "Pagos", icon: TrendingUp, color: "text-emerald-400" },
-                { key: "communication", label: "Mensajes", icon: MessageCircle, color: "text-amber-400", count: project.chat?.filter((n: any) => n.autor !== "admin").length },
-                { key: "vault", label: "Archivos", icon: FolderOpen, color: "text-emerald-400", count: project.archivos?.length },
-                { key: "briefing", label: "Info", icon: Briefcase, color: "text-purple-400" },
-                { key: "settings", label: "Ajustes", icon: Cpu, color: "text-gray-400" },
-              ].map((t) => {
+              {tabs.map((t) => {
                 const Icon = t.icon;
                 const active = activeTab === t.key;
                 return (
@@ -451,7 +483,7 @@ export default function ProyectoDetalle() {
                     className={`relative shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${active ? "bg-white/10 text-white" : "text-gray-500 hover:text-white hover:bg-white/5"}`}
                   >
                     <Icon className={`w-4 h-4 ${active ? t.color : ""}`} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">{t.label}</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">{t.shortLabel ?? t.label}</span>
                     {t.count !== undefined && t.count > 0 && (
                       <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">{t.count}</span>
                     )}
@@ -461,7 +493,22 @@ export default function ProyectoDetalle() {
             </nav>
           </div>
 
-          <div className="p-4 sm:p-6 lg:p-12 max-w-6xl mx-auto">
+          {/* Sitio web: embed del portal a ancho completo, sin padding externo.
+              Se mantiene dentro de AnimatePresence para las transiciones. */}
+          <AnimatePresence mode="wait">
+            {activeTab === "sitioweb" && (
+              <TabSitioWeb
+                key="sitioweb"
+                project={project}
+                savePatch={savePatchAdmin}
+                showToast={showToast}
+              />
+            )}
+          </AnimatePresence>
+
+          <div
+            className={`p-4 sm:p-6 lg:p-12 max-w-6xl mx-auto ${activeTab === "sitioweb" ? "hidden" : ""}`}
+          >
             <AnimatePresence mode="wait">
               {activeTab === "overview" && (
                 <TabOverview
@@ -502,13 +549,6 @@ export default function ProyectoDetalle() {
                   handleDownload={handleDownload}
                   onOpenLightbox={(url) => setLightboxUrl(url)}
                   onRequestDelete={(archivo) => setArchivoToDelete(archivo)}
-                />
-              )}
-
-              {activeTab === "briefing" && (
-                <TabBriefing
-                  key="briefing"
-                  project={project}
                 />
               )}
 
@@ -558,6 +598,7 @@ export default function ProyectoDetalle() {
                     await updateProyectoPrecioCustom(params.id as string, precio);
                     await loadProject(true);
                   }}
+                  savePatch={savePatchAdmin}
                 />
               )}
             </AnimatePresence>

@@ -1,26 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  FileText,
-  LogOut,
-  Loader2,
-  Check,
-  Archive,
-  ChevronDown,
-} from "lucide-react";
-import { updateProyectoBriefing } from "@/lib/actions";
+import { LogOut, Archive, ChevronDown } from "lucide-react";
 import { Chat, type ChatVariant } from "../shared/Chat";
 import type { PortalDevice } from "../PortalPage";
-
-const AUTOSAVE_DEBOUNCE = 900;
+import type { ProjectFase } from "@/lib/data/types";
+import { PhaseTimeline } from "../shared/primitives/PhaseTimeline";
+import { CountdownCard } from "../shared/primitives/CountdownCard";
+import { SharedVault } from "../shared/primitives/SharedVault";
 
 /**
- * Vista del portal para proyectos con plan "a la medida".
- * A diferencia del wizard de secciones estándar, no hay estructura fija —
- * el cliente articula el scope en un brief libre y conversa con el admin vía
- * chat. Las imágenes y archivos se intercambian por el chat (que ya los soporta).
+ * Vista del portal para proyectos con plan "a la medida", mobile/tablet.
+ * Resumen (fase + countdown) + archivos compartidos con el estudio + chat.
+ * Sin wizard, sin brief — la información del proyecto sale de las reuniones
+ * y queda registrada en chat/archivos.
  */
 export function CustomProjectView({
   project,
@@ -35,71 +29,37 @@ export function CustomProjectView({
   showToast: (msg: string, type: "success" | "error") => void;
   device: PortalDevice;
 }) {
-  const initialBrief: string =
-    (project?.onboardingData as any)?.briefing ?? "";
-  const [brief, setBrief] = useState(initialBrief);
-  const [status, setStatus] = useState<"idle" | "saving" | "saved">("idle");
-  const lastSavedRef = useRef(initialBrief);
-  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Re-sincronizar cuando llega el proyecto actualizado por realtime.
-  useEffect(() => {
-    const incoming = (project?.onboardingData as any)?.briefing ?? "";
-    if (incoming !== lastSavedRef.current && incoming !== brief) {
-      setBrief(incoming);
-      lastSavedRef.current = incoming;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [project?.onboardingData]);
-
-  // Autosave con debounce
-  useEffect(() => {
-    if (brief === lastSavedRef.current) return;
-    if (saveTimer.current) clearTimeout(saveTimer.current);
-    setStatus("saving");
-    saveTimer.current = setTimeout(async () => {
-      const res = await updateProyectoBriefing(project.id, brief);
-      if (res.success) {
-        lastSavedRef.current = brief;
-        setStatus("saved");
-        setTimeout(() => setStatus((s) => (s === "saved" ? "idle" : s)), 1800);
-      } else {
-        setStatus("idle");
-        showToast("No se pudo guardar tu info", "error");
-      }
-    }, AUTOSAVE_DEBOUNCE);
-    return () => {
-      if (saveTimer.current) clearTimeout(saveTimer.current);
-    };
-  }, [brief, project.id, showToast]);
-
   const chatVariant: ChatVariant = device;
-  const wrapMax = device === "desktop" ? "max-w-3xl" : "max-w-xl";
+  const wrapMax = device === "tablet" ? "max-w-2xl" : "max-w-xl";
 
-  // Si venís de un plan estándar, tus datos previos (nombre, colores, catálogo, etc.)
-  // se conservan en onboardingData. Los mostramos como referencia visible.
+  const fase: ProjectFase = (project?.fase ?? "onboarding") as ProjectFase;
+  const isBuilding = fase === "construccion";
+  const isOnboarding = fase === "onboarding";
+
   const onboardingData: Record<string, any> =
     (project?.onboardingData as any) ?? {};
   const hasPrevData = Object.keys(onboardingData).some(
     (k) => k !== "briefing" && hasValue(onboardingData[k]),
   );
 
+  const timelineSubtitle = isOnboarding
+    ? "Cuéntanos tu visión"
+    : isBuilding
+      ? "Construyendo"
+      : "En vivo";
+
   return (
     <main className="min-h-dvh bg-[#020608] text-white">
-      <div className={`mx-auto ${wrapMax} px-4 py-8 sm:px-6 sm:py-10 space-y-8`}>
+      <div className={`mx-auto ${wrapMax} px-4 py-8 sm:px-6 sm:py-10 space-y-6`}>
         {/* Header */}
         <header className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#22d3ee] mb-2">
-              Proyecto a la medida
+          <div className="flex-1 min-w-0">
+            <p className="inline-block bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-[10px] font-black uppercase tracking-[0.32em] text-transparent">
+              Hola, {clientName.split(" ")[0] || "bienvenido"} · Proyecto a la medida
             </p>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tighter">
+            <h1 className="mt-3 text-2xl sm:text-3xl font-black tracking-tighter">
               {project.nombre}
             </h1>
-            <p className="text-xs text-gray-500 mt-1">
-              Hola {clientName} — usa este espacio para contarnos tu proyecto y
-              compartir lo que necesitemos ver.
-            </p>
           </div>
           <button
             onClick={onReset}
@@ -110,44 +70,25 @@ export function CustomProjectView({
           </button>
         </header>
 
-        {/* Panel de referencia: datos del plan estándar previo */}
+        <PhaseTimeline fase={fase} activeSubtitle={timelineSubtitle} />
+
+        {isBuilding && (
+          <CountdownCard
+            buildStartedAt={project.buildStartedAt ?? null}
+            fechaEntrega={project.fechaEntrega ?? null}
+            chat={project.chat ?? []}
+          />
+        )}
+
         {hasPrevData && <PreviousPlanPanel data={onboardingData} />}
 
-        {/* Brief */}
-        <motion.section
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative rounded-3xl border border-white/8 bg-white/[0.04] backdrop-blur-xl p-5 sm:p-7"
-        >
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#22d3ee]/10 text-[#22d3ee]">
-                <FileText className="h-4 w-4" />
-              </div>
-              <div>
-                <h2 className="text-sm font-black uppercase tracking-widest text-white">
-                  Cuéntanos tu proyecto
-                </h2>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
-                  Se guarda automáticamente
-                </p>
-              </div>
-            </div>
-            <SaveIndicator status={status} />
-          </div>
-          <textarea
-            value={brief}
-            onChange={(e) => setBrief(e.target.value)}
-            placeholder={
-              "¿Qué quieres lograr?\n¿Qué tienes hoy (sitio, marca, referencias)?\n¿Tienes deadline o ideas concretas?\nCualquier info útil va aquí — puedes ir editando cuando quieras."
-            }
-            rows={10}
-            className="w-full resize-y rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-white placeholder:text-gray-600 focus:border-[#22d3ee]/50 focus:outline-none transition-colors leading-relaxed"
-          />
-          <p className="mt-3 text-[10px] text-gray-600 leading-relaxed">
-            Para adjuntar imágenes, PDFs o referencias, usa el chat de abajo.
-          </p>
-        </motion.section>
+        {/* Archivos compartidos */}
+        <SharedVault
+          project={project}
+          showToast={showToast}
+          variant="mobile"
+          uploadedBy="cliente"
+        />
 
         {/* Chat */}
         <motion.section
@@ -158,33 +99,17 @@ export function CustomProjectView({
         >
           <Chat project={project} showToast={showToast} variant={chatVariant} />
         </motion.section>
+
+        <p className="text-center text-[11px] leading-relaxed text-white/35 pt-2">
+          {isOnboarding
+            ? "Comparte archivos y escríbenos por el chat. Agendamos una llamada cuando estés listo."
+            : isBuilding
+              ? "Estamos construyendo tu sitio. Si hay cambios, escríbenos por el chat."
+              : "Tu sitio ya está en vivo. Cualquier ajuste lo coordinamos por el chat."}
+        </p>
       </div>
     </main>
   );
-}
-
-function SaveIndicator({
-  status,
-}: {
-  status: "idle" | "saving" | "saved";
-}) {
-  if (status === "saving") {
-    return (
-      <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-500">
-        <Loader2 className="h-3 w-3 animate-spin" />
-        Guardando
-      </div>
-    );
-  }
-  if (status === "saved") {
-    return (
-      <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-emerald-400">
-        <Check className="h-3 w-3" />
-        Guardado
-      </div>
-    );
-  }
-  return null;
 }
 
 // ─── Panel de referencia al plan previo ──────────────────────────────────────

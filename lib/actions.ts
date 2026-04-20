@@ -399,12 +399,6 @@ export async function updateProyectoPrecioCustom(id: string, precio: number) {
   return mergeProyectoOnboardingData(id, { precioCustom: precio });
 }
 
-export async function updateProyectoBriefing(id: string, briefing: string) {
-  const res = await mergeProyectoOnboardingData(id, { briefing });
-  if (res.success) revalidateClientProjects();
-  return res;
-}
-
 /**
  * Mergea un parche parcial en la cuota correspondiente (o la crea si no existe)
  * dentro de `onboardingData.pagos`.

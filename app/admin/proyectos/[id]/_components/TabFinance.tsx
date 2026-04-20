@@ -15,6 +15,12 @@ import {
   ImageIcon,
   Ban,
   FileText,
+  Plus,
+  Trash2,
+  Receipt,
+  Calendar,
+  DollarSign,
+  StickyNote,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
@@ -43,12 +49,14 @@ interface TabFinanceProps {
   project: any;
   projectId: string;
   onUpdatePrecio: (precio: number) => Promise<void>;
+  savePatch: (patch: Record<string, any>) => Promise<void> | void;
 }
 
 export function TabFinance({
   project,
   projectId,
   onUpdatePrecio,
+  savePatch,
 }: TabFinanceProps) {
   const { data: session } = useSession();
   const isInZidium = (session?.user as any)?.username === "InZidium";
@@ -183,7 +191,266 @@ export function TabFinance({
           </div>
         </div>
       )}
+
+      {/* REGISTRO MANUAL cliente → estudio (solo custom). Sin lógica, solo historial. */}
+      {isAlaMedida && (
+        <RegistroPagosPanel project={project} savePatch={savePatch} />
+      )}
     </motion.div>
+  );
+}
+
+// ─── Registro manual de pagos del cliente al estudio (solo A la medida) ─────
+
+type RegistroPago = {
+  id: string;
+  monto: number;
+  fecha: string; // YYYY-MM-DD
+  nota?: string;
+  createdAt: string;
+};
+
+function RegistroPagosPanel({
+  project,
+  savePatch,
+}: {
+  project: any;
+  savePatch: (patch: Record<string, any>) => Promise<void> | void;
+}) {
+  const registros: RegistroPago[] = Array.isArray(
+    project?.onboardingData?.registroPagos,
+  )
+    ? [...project.onboardingData.registroPagos].sort((a, b) =>
+        b.fecha.localeCompare(a.fecha),
+      )
+    : [];
+
+  const [adding, setAdding] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [montoInput, setMontoInput] = useState("");
+  const [fechaInput, setFechaInput] = useState(
+    new Date().toISOString().slice(0, 10),
+  );
+  const [notaInput, setNotaInput] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const total = registros.reduce((sum, r) => sum + (r.monto || 0), 0);
+
+  const resetForm = () => {
+    setMontoInput("");
+    setFechaInput(new Date().toISOString().slice(0, 10));
+    setNotaInput("");
+  };
+
+  const handleAdd = async () => {
+    const monto = parseInt(montoInput.replace(/\D/g, ""), 10);
+    if (!monto || monto <= 0 || !fechaInput) return;
+    setSaving(true);
+    const nuevo: RegistroPago = {
+      id:
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random()}`,
+      monto,
+      fecha: fechaInput,
+      nota: notaInput.trim() || undefined,
+      createdAt: new Date().toISOString(),
+    };
+    await savePatch({ registroPagos: [...registros, nuevo] });
+    setSaving(false);
+    resetForm();
+    setAdding(false);
+  };
+
+  const handleDelete = async (id: string) => {
+    setDeletingId(id);
+    await savePatch({ registroPagos: registros.filter((r) => r.id !== id) });
+    setDeletingId(null);
+  };
+
+  return (
+    <div className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 sm:p-8">
+      <div className="flex items-start justify-between gap-4 mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#22d3ee]/10 border border-[#22d3ee]/20 flex items-center justify-center shrink-0">
+            <Receipt className="w-4 h-4 text-[#22d3ee]" />
+          </div>
+          <div>
+            <p className="text-sm font-black uppercase tracking-tight text-white">
+              Pagos del cliente
+            </p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500 mt-0.5">
+              Registro manual · sin lógica
+            </p>
+          </div>
+        </div>
+        {total > 0 && (
+          <div className="text-right shrink-0">
+            <p className="text-[9px] font-black uppercase tracking-widest text-gray-600">
+              Total registrado
+            </p>
+            <p className="text-lg font-black text-white tracking-tight">
+              {COP(total)}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Lista */}
+      {registros.length === 0 && !adding && (
+        <div className="rounded-2xl border-2 border-dashed border-white/5 bg-white/[0.01] p-8 text-center">
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">
+            Sin pagos registrados
+          </p>
+          <p className="text-[10px] text-gray-600 mt-1.5 leading-relaxed max-w-xs mx-auto">
+            Anota aquí cuánto y cuándo te ha pagado el cliente. Solo sirve como historial.
+          </p>
+        </div>
+      )}
+
+      {registros.length > 0 && (
+        <div className="space-y-2 mb-4">
+          {registros.map((r) => (
+            <div
+              key={r.id}
+              className="group flex items-start gap-3 p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/15 transition-all"
+            >
+              <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+                <DollarSign className="w-4 h-4 text-emerald-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-base font-black text-white">{COP(r.monto)}</p>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500 flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    {new Date(r.fecha + "T12:00:00").toLocaleDateString("es-CO", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
+                {r.nota && (
+                  <p className="text-xs text-gray-400 mt-1 leading-relaxed break-words">
+                    {r.nota}
+                  </p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => handleDelete(r.id)}
+                disabled={deletingId === r.id}
+                className="shrink-0 opacity-0 group-hover:opacity-100 flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 text-gray-500 hover:bg-red-500/20 hover:text-red-400 transition-all disabled:opacity-40"
+                aria-label="Eliminar registro"
+              >
+                {deletingId === r.id ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Trash2 className="w-3.5 h-3.5" />
+                )}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Form de agregar (inline) */}
+      <AnimatePresence initial={false}>
+        {adding && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="rounded-2xl border border-[#22d3ee]/20 bg-[#22d3ee]/[0.03] p-5 space-y-4 mb-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label className="block">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-1.5 mb-2">
+                    <DollarSign className="w-3 h-3" />
+                    Monto (COP)
+                  </span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={montoInput}
+                    onChange={(e) =>
+                      setMontoInput(e.target.value.replace(/\D/g, ""))
+                    }
+                    placeholder="0"
+                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm font-black text-white outline-none focus:border-[#22d3ee]/50"
+                    autoFocus
+                  />
+                </label>
+                <label className="block">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-1.5 mb-2">
+                    <Calendar className="w-3 h-3" />
+                    Fecha
+                  </span>
+                  <input
+                    type="date"
+                    value={fechaInput}
+                    onChange={(e) => setFechaInput(e.target.value)}
+                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm font-bold text-white outline-none focus:border-[#22d3ee]/50"
+                  />
+                </label>
+              </div>
+              <label className="block">
+                <span className="text-[9px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-1.5 mb-2">
+                  <StickyNote className="w-3 h-3" />
+                  Nota (opcional)
+                </span>
+                <input
+                  type="text"
+                  value={notaInput}
+                  onChange={(e) => setNotaInput(e.target.value)}
+                  placeholder="Ej: primera cuota, transferencia Bancolombia..."
+                  className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white outline-none focus:border-[#22d3ee]/50 placeholder:text-gray-600"
+                />
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAdding(false);
+                    resetForm();
+                  }}
+                  disabled={saving}
+                  className="py-2.5 rounded-xl border border-white/10 text-gray-500 font-black text-[10px] uppercase tracking-widest hover:bg-white/5"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleAdd}
+                  disabled={saving || !montoInput || !fechaInput}
+                  className="py-2.5 rounded-xl bg-[#22d3ee] text-black font-black text-[10px] uppercase tracking-widest hover:bg-[#22d3ee]/90 disabled:opacity-40 flex items-center justify-center gap-2"
+                >
+                  {saving ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : (
+                    <Check className="w-3 h-3" />
+                  )}
+                  Guardar
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {!adding && (
+        <button
+          type="button"
+          onClick={() => setAdding(true)}
+          className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-dashed border-white/10 text-xs font-black uppercase tracking-widest text-gray-400 hover:border-[#22d3ee]/40 hover:text-[#22d3ee] hover:bg-[#22d3ee]/5 transition-all"
+        >
+          <Plus className="w-4 h-4" />
+          Agregar pago
+        </button>
+      )}
+    </div>
   );
 }
 
