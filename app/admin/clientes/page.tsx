@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createCliente, getClientes, deleteCliente } from "@/lib/actions";
+import {
+  createCliente,
+  getClientes,
+  deleteCliente,
+  updateCliente,
+} from "@/lib/actions";
 import {
   formatName,
   validateName,
@@ -32,7 +37,6 @@ import {
   Pencil,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
 import { AdminLoading } from "@/lib/ui/AdminLoading";
 import { useRealtimeRefresh } from "@/hooks/use-realtime-refresh";
 
@@ -56,6 +60,27 @@ export default function ClientsAdmin() {
 
   const emptyClienteForm = { nombre: "", cedula: "", email: "", phoneDigits: "" };
   const [formCliente, setFormCliente] = useState(emptyClienteForm);
+  // `editingId` define el modo del modal: null = crear, string = editar ese cliente.
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const openCreate = () => {
+    setEditingId(null);
+    setFormCliente(emptyClienteForm);
+    setErrors({});
+    setIsAdding(true);
+  };
+
+  const openEdit = (client: any) => {
+    setEditingId(client.id);
+    setFormCliente({
+      nombre: client.nombre ?? "",
+      cedula: client.cedula ?? "",
+      email: client.email ?? "",
+      phoneDigits: formatPhoneDigitsCO(client.telefono ?? ""),
+    });
+    setErrors({});
+    setIsAdding(true);
+  };
 
   useEffect(() => {
     loadClients();
@@ -127,11 +152,7 @@ export default function ClientsAdmin() {
             />
           </div>
           <button
-            onClick={() => {
-              setFormCliente(emptyClienteForm);
-              setErrors({});
-              setIsAdding(true);
-            }}
+            onClick={openCreate}
             className="relative group px-6 py-3 rounded-2xl font-bold text-sm transition-all hover:scale-105 active:scale-95 overflow-hidden shadow-[0_0_20px_rgba(168,85,247,0.12),_0_0_20px_rgba(34,211,238,0.08)]"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] animate-gradient bg-[length:200%_auto]" />
@@ -217,13 +238,13 @@ export default function ClientsAdmin() {
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Link
-                          href={`/admin/clientes/${client.id}`}
+                        <button
+                          onClick={() => openEdit(client)}
                           className="w-10 h-10 rounded-xl bg-[#22d3ee]/5 hover:bg-[#22d3ee] text-[#22d3ee]/60 hover:text-black border border-[#22d3ee]/15 hover:border-[#22d3ee] transition-all duration-300 flex items-center justify-center hover:scale-110 active:scale-90 shadow-lg"
                           title="Editar cliente"
                         >
                           <Pencil className="w-4 h-4" />
-                        </Link>
+                        </button>
                         <button
                           onClick={() =>
                             setConfirmDelete({
@@ -262,11 +283,7 @@ export default function ClientsAdmin() {
               Crea el primer cliente.
             </p>
             <button
-              onClick={() => {
-              setFormCliente(emptyClienteForm);
-              setErrors({});
-              setIsAdding(true);
-            }}
+              onClick={openCreate}
               className="px-10 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 hover:bg-[#22d3ee] hover:text-black hover:border-transparent transition-all duration-500"
             >
               Crear cliente
@@ -283,7 +300,10 @@ export default function ClientsAdmin() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setIsAdding(false)}
+              onClick={() => {
+                setIsAdding(false);
+                setEditingId(null);
+              }}
               className="absolute inset-0 bg-black/40 backdrop-blur-md"
             />
             <motion.div
@@ -297,7 +317,10 @@ export default function ClientsAdmin() {
               <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#22d3ee]/10 blur-[80px] -z-10 rounded-full" />
 
               <button
-                onClick={() => setIsAdding(false)}
+                onClick={() => {
+                setIsAdding(false);
+                setEditingId(null);
+              }}
                 className="absolute top-4 right-4 sm:top-8 sm:right-8 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-gray-500 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all duration-300 group/close z-50"
               >
                 <X className="w-5 h-5 group-hover/close:rotate-90 transition-transform duration-300" />
@@ -313,13 +336,13 @@ export default function ClientsAdmin() {
                   <UserPlus className="w-8 h-8 sm:w-10 sm:h-10" />
                 </motion.div>
                 <h2 className="text-2xl sm:text-3xl font-black font-[family-name:var(--font-orbitron)] mb-3 uppercase tracking-tighter leading-tight">
-                  Nuevo <br />
+                  {editingId ? "Editar" : "Nuevo"} <br />
                   <span className="bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] bg-clip-text text-transparent">
                     Cliente
                   </span>
                 </h2>
                 <p className="text-gray-500 text-[10px] font-black uppercase tracking-[0.3em] opacity-80">
-                  Registro de cliente
+                  {editingId ? "Modificar datos del cliente" : "Registro de cliente"}
                 </p>
               </div>
 
@@ -343,24 +366,40 @@ export default function ClientsAdmin() {
                     return;
                   }
 
-                  const fd = new FormData();
-                  fd.append("nombre", formCliente.nombre.trim());
-                  fd.append("cedula", formCliente.cedula);
-                  fd.append("email", formCliente.email.trim());
-                  fd.append("telefono", fullPhoneCO(formCliente.phoneDigits));
+                  const payload = {
+                    nombre: formCliente.nombre.trim(),
+                    cedula: formCliente.cedula,
+                    email: formCliente.email.trim(),
+                    telefono: fullPhoneCO(formCliente.phoneDigits),
+                  };
 
                   setIsSaving(true);
                   try {
-                    const result = await createCliente(fd);
-
-                    if (result?.error) {
-                      setErrors({ cedula: result.error });
-                      showToast(result.error, "error");
-                      return;
+                    if (editingId) {
+                      const result: any = await updateCliente(editingId, payload);
+                      if (result?.error) {
+                        setErrors({ cedula: result.error });
+                        showToast(result.error, "error");
+                        return;
+                      }
+                      showToast("CLIENTE ACTUALIZADO CON ÉXITO", "success");
+                    } else {
+                      const fd = new FormData();
+                      fd.append("nombre", payload.nombre);
+                      fd.append("cedula", payload.cedula);
+                      fd.append("email", payload.email);
+                      fd.append("telefono", payload.telefono);
+                      const result = await createCliente(fd);
+                      if (result?.error) {
+                        setErrors({ cedula: result.error });
+                        showToast(result.error, "error");
+                        return;
+                      }
+                      showToast("CLIENTE REGISTRADO CON ÉXITO", "success");
                     }
 
-                    showToast("CLIENTE REGISTRADO CON ÉXITO", "success");
                     setIsAdding(false);
+                    setEditingId(null);
                     setErrors({});
                     setFormCliente(emptyClienteForm);
                     loadClients();
@@ -432,14 +471,19 @@ export default function ClientsAdmin() {
                     <div className="relative flex items-center justify-center gap-2">
                       {isSaving && <Loader2 className="w-4 h-4 animate-spin text-white" />}
                       <span className="font-black text-white uppercase tracking-[0.2em] text-xs">
-                        {isSaving ? "Guardando…" : "Guardar cliente"}
+                        {isSaving
+                          ? "Guardando…"
+                          : editingId
+                            ? "Actualizar cliente"
+                            : "Guardar cliente"}
                       </span>
                     </div>
                   </button>
 
                   <p className="mt-4 text-[9px] text-center text-gray-600 font-bold uppercase tracking-widest leading-relaxed">
-                    Al guardar, el cliente podrá acceder a sus proyectos con su
-                    número de cédula.
+                    {editingId
+                      ? "Los cambios se reflejan al toque en todos los proyectos del cliente."
+                      : "Al guardar, el cliente podrá acceder a sus proyectos con su número de cédula."}
                   </p>
                 </div>
               </form>
