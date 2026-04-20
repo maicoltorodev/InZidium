@@ -109,9 +109,9 @@ export function TabletHub({
 
   return (
     <motion.main
-      initial={reduced ? { opacity: 0 } : { opacity: 0, x: "-4%" }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={reduced ? { opacity: 0 } : { opacity: 0, x: "-10%" }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={MOTION.page}
       className="relative min-h-dvh overflow-hidden bg-[#060214] px-6 pb-20 pt-14 text-white"
     >
@@ -139,15 +139,12 @@ export function TabletHub({
           className="mb-8 text-center"
         >
           <p className="inline-block bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-[11px] font-black uppercase tracking-[0.34em] text-transparent">
-            Hola, {clientName.split(" ")[0] || "bienvenido"}
+            Hola, {clientName.split(" ")[0] || "bienvenido"} · Tu página web
           </p>
           <h1 className="mt-4 bg-[linear-gradient(135deg,#f5e7ff_0%,#ffffff_40%,#d6e9ff_100%)] bg-clip-text text-5xl font-black leading-[0.95] tracking-tight text-transparent">
             {projectName || "Tu proyecto"}
           </h1>
           <BrandDivider width="w-20" className="mt-5" />
-          <p className="mt-5 text-[13px] font-bold uppercase tracking-[0.24em] text-white/40 truncate">
-            Página web
-          </p>
         </motion.div>
 
         <PhaseTimeline fase={fase} activeSubtitle={timelineSubtitle} />

@@ -143,32 +143,65 @@ function DomainWarning() {
 
 function LockedCard({ domain, onTap }: { domain: string; onTap?: () => void }) {
   const fullDomain = `www.${domain || "tudominio"}.com`;
+  const [showInfo, setShowInfo] = useState(false);
   return (
-    <motion.button
-      type="button"
-      onClick={onTap}
-      whileTap={{ scale: 0.985 }}
-      transition={MOTION.tap}
+    <motion.div
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      className="group relative mb-5 block w-full overflow-hidden rounded-[1.75rem] border border-[#a855f7]/25 bg-[linear-gradient(135deg,rgba(232,121,249,0.05)_0%,rgba(168,85,247,0.04)_50%,rgba(34,211,238,0.05)_100%)] p-4 text-left"
+      className="relative mb-5 overflow-hidden rounded-[1.75rem] border border-[#a855f7]/25 bg-[linear-gradient(135deg,rgba(232,121,249,0.05)_0%,rgba(168,85,247,0.04)_50%,rgba(34,211,238,0.05)_100%)] p-5"
     >
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(232,121,249,0.12)_0%,rgba(168,85,247,0.12)_50%,rgba(34,211,238,0.12)_100%)] ring-1 ring-[#a855f7]/25">
-          <Lock className="h-4 w-4" style={BRAND_ICON_STYLE} />
+      <motion.button
+        type="button"
+        onClick={onTap}
+        whileTap={{ scale: 0.985 }}
+        transition={MOTION.tap}
+        className="group block w-full text-center"
+      >
+        {/* Ícono centrado arriba + eyebrow + dominio */}
+        <div className="flex flex-col items-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(232,121,249,0.12)_0%,rgba(168,85,247,0.12)_50%,rgba(34,211,238,0.12)_100%)] ring-1 ring-[#a855f7]/25">
+            <Lock className="h-5 w-5" style={BRAND_ICON_STYLE} />
+          </div>
+          <p className="mt-3 text-[9px] font-black uppercase tracking-[0.28em] text-white/35">
+            Dominio
+          </p>
+          <p className="mt-1 break-all text-[16px] font-black leading-tight">
+            <span className="bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-transparent underline decoration-[#a855f7]/40 decoration-1 underline-offset-2 group-active:decoration-[#a855f7]">
+              {fullDomain}
+            </span>
+          </p>
         </div>
-        <p className="text-[9px] font-black uppercase tracking-[0.28em] text-white/35">
-          Dominio
-        </p>
+      </motion.button>
+
+      {/* Botón info — abre/cierra el mensaje explicativo */}
+      <div className="mt-3 flex justify-center">
+        <button
+          type="button"
+          onClick={() => setShowInfo((v) => !v)}
+          aria-label={showInfo ? "Ocultar información" : "Ver información"}
+          className="flex items-center gap-1.5 rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 transition-colors hover:text-white/80"
+        >
+          <Info className="h-3 w-3" />
+          {showInfo ? "Ocultar" : "Info"}
+        </button>
       </div>
-      {/* Dominio en su propia fila con break-all — evita que `.com` se corte
-          en pantallas estrechas (antes tenía `truncate` en flex row). */}
-      <p className="mt-3 break-all text-[15px] font-bold leading-tight">
-        <span className="bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-transparent">
-          {fullDomain}
-        </span>
-      </p>
-    </motion.button>
+      <AnimatePresence initial={false}>
+        {showInfo && (
+          <motion.p
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={MOTION.reveal}
+            className="overflow-hidden text-center text-[11px] leading-relaxed text-white/55"
+          >
+            <span className="mt-3 block px-2">
+              Compraremos este dominio para ti. Si lo quieres cambiar, tendrás
+              que pagar otro.
+            </span>
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 

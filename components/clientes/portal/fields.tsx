@@ -75,8 +75,21 @@ export function DomainField({
   const [local, setLocal] = useState(value);
   const [checking, setChecking] = useState(false);
   const [availability, setAvailability] = useState<{ available: boolean; error?: string } | null>(null);
+  // Auto-width del input: medimos el texto (o el placeholder si está vacío)
+  // en un span oculto y aplicamos el ancho al input. Así `www.` queda pegado
+  // a la izquierda del texto escrito y `.com` a la derecha, centrados juntos
+  // en la card sin huecos.
+  const measureRef = useRef<HTMLSpanElement>(null);
+  const [inputWidth, setInputWidth] = useState(88);
 
   useEffect(() => setLocal(value), [value]);
+
+  useEffect(() => {
+    if (measureRef.current) {
+      // +2 de margen para que el caret no se corte al escribir al final.
+      setInputWidth(Math.max(measureRef.current.offsetWidth + 2, 24));
+    }
+  }, [local]);
 
   useEffect(() => {
     if (!local || local.length < 3) {
@@ -106,32 +119,57 @@ export function DomainField({
         ? "border-emerald-500/50"
         : "border-white/[0.08]";
 
+  const displayText = local || "tuempresa";
+
   return (
     <div>
       <div
-        className={`flex items-center gap-1 rounded-2xl border bg-white/[0.03] px-4 transition-colors duration-200 focus-within:border-[#E8AA14]/50 ${borderCls}`}
+        className={`relative flex items-center justify-center gap-0 overflow-hidden rounded-2xl border bg-white/[0.03] py-3.5 pl-4 pr-10 transition-colors duration-200 focus-within:border-[#E8AA14]/50 ${borderCls}`}
       >
-        <span className="text-sm text-white/30 font-bold">www.</span>
+        {/* Span oculto para medir ancho de texto. Debe compartir font-size
+            y font-weight del input (text-sm, normal). */}
+        <span
+          ref={measureRef}
+          aria-hidden
+          className="pointer-events-none invisible absolute left-0 top-0 whitespace-pre text-sm font-normal"
+        >
+          {displayText}
+        </span>
+
+        <span className="shrink-0 text-sm font-bold text-white/30">www.</span>
         <input
           value={local}
-          onChange={(e) => setLocal(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))}
+          onChange={(e) =>
+            setLocal(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))
+          }
           onBlur={() => local !== value && onSave(local)}
           placeholder="tuempresa"
-          className="flex-1 bg-transparent py-3.5 text-sm text-white outline-none placeholder:text-white/20"
+          style={{ width: `${inputWidth}px` }}
+          className="bg-transparent text-sm text-white outline-none placeholder:text-white/20"
         />
-        <span className="text-sm text-white/30 font-bold">.com</span>
-        {checking && <Loader2 className="ml-1 h-4 w-4 animate-spin text-[#E8AA14]" />}
-        {!checking && availability?.available === true && <Check className="ml-1 h-4 w-4 text-emerald-500" />}
-        {!checking && availability?.available === false && <X className="ml-1 h-4 w-4 text-red-500" />}
+        <span className="shrink-0 text-sm font-bold text-white/30">.com</span>
+
+        {/* Status icon absolute para no romper el centrado del grupo. */}
+        <span className="pointer-events-none absolute right-4 flex items-center">
+          {checking && <Loader2 className="h-4 w-4 animate-spin text-[#E8AA14]" />}
+          {!checking && availability?.available === true && (
+            <Check className="h-4 w-4 text-emerald-500" />
+          )}
+          {!checking && availability?.available === false && (
+            <X className="h-4 w-4 text-red-500" />
+          )}
+        </span>
       </div>
-      <div className="mt-1.5 h-4">
+      <div className="mt-1.5 h-4 text-center">
         {checking ? (
           <p className="text-[11px] text-white/30">Verificando disponibilidad…</p>
         ) : availability ? (
           availability.available ? (
             <p className="text-[11px] font-bold text-emerald-400">¡Dominio disponible!</p>
           ) : (
-            <p className="text-[11px] font-bold text-red-400">{availability.error || "No disponible."}</p>
+            <p className="text-[11px] font-bold text-red-400">
+              {availability.error || "No disponible."}
+            </p>
           )
         ) : null}
       </div>

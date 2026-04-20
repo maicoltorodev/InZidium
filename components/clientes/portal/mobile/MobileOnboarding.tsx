@@ -19,8 +19,6 @@ import { UbicacionSection } from "../shared/sections/UbicacionSection";
 import { ContactoSection } from "../shared/sections/ContactoSection";
 import { RedesSection } from "../shared/sections/RedesSection";
 import { ColoresSection } from "../shared/sections/ColoresSection";
-import { LegalSection } from "../shared/sections/LegalSection";
-import { AvanzadoSection } from "../shared/sections/AvanzadoSection";
 import { SupportFab } from "../shared/SupportFab";
 import { AjustesSection } from "../shared/sections/AjustesSection";
 
@@ -228,13 +226,6 @@ export function MobileOnboarding({
             {view === "colores" && <ColoresSection d={d} savePatch={savePatch} />}
             {view === "ajustes" && (
               <AjustesSection
-                d={d}
-                onSelect={(key) => changeView(key)}
-              />
-            )}
-            {view === "legal" && <LegalSection d={d} savePatch={savePatch} />}
-            {view === "avanzado" && (
-              <AvanzadoSection
                 d={d}
                 savePatch={savePatch}
                 uploadingFavicon={uploadingFavicon}

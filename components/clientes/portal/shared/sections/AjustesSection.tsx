@@ -1,46 +1,34 @@
 "use client";
 
-import { Lock, SlidersHorizontal } from "lucide-react";
-import { getSectionCompletion } from "../../types";
-import { SectionCard } from "../primitives/SectionCard";
-import { FieldItem } from "../primitives/FieldItem";
+import { LegalSection } from "./LegalSection";
+import { AvanzadoSection } from "./AvanzadoSection";
 
+/**
+ * Ajustes avanzados — renderea Legal y Avanzado directamente inline.
+ * Antes había un sub-hub con 2 cards que navegaba a cada uno como páginas
+ * separadas, lo que obligaba a ir y volver. Ahora todo vive en la misma
+ * vista, el cliente hace scroll y configura todo de corrido.
+ */
 export function AjustesSection({
   d,
-  onSelect,
+  savePatch,
+  uploadingFavicon,
+  onUploadFavicon,
 }: {
   d: any;
-  onSelect: (key: "legal" | "avanzado") => void;
+  savePatch: (patch: any) => void;
+  uploadingFavicon: boolean;
+  onUploadFavicon: (file: File) => void;
 }) {
-  const legalCompletion = getSectionCompletion("legal", d);
-  const legalSub =
-    legalCompletion === "complete"
-      ? "Completa"
-      : legalCompletion === "partial"
-      ? "En progreso"
-      : "Por iniciar";
-
   return (
-    <FieldItem>
-      <p className="mb-3 text-[11px] text-white/35">
-        Configuraciones secundarias que no necesitas tocar a diario.
-      </p>
-      <div className="space-y-2.5">
-        <SectionCard
-          icon={Lock}
-          title="Legal"
-          description="Términos, privacidad y rubro del negocio"
-          status={{ kind: "progress", completion: legalCompletion, subtitle: legalSub }}
-          onPress={() => onSelect("legal")}
-        />
-        <SectionCard
-          icon={SlidersHorizontal}
-          title="Fuente y analíticas"
-          description="Tipografía, Google Analytics y más"
-          status={{ kind: "progress", completion: "empty", subtitle: "Opcional" }}
-          onPress={() => onSelect("avanzado")}
-        />
-      </div>
-    </FieldItem>
+    <>
+      <LegalSection d={d} savePatch={savePatch} />
+      <AvanzadoSection
+        d={d}
+        savePatch={savePatch}
+        uploadingFavicon={uploadingFavicon}
+        onUploadFavicon={onUploadFavicon}
+      />
+    </>
   );
 }

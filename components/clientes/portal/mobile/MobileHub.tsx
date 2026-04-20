@@ -109,9 +109,9 @@ export function MobileHub({
 
   return (
     <motion.main
-      initial={reduced ? { opacity: 0 } : { opacity: 0, x: "-6%" }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={reduced ? { opacity: 0 } : { opacity: 0, x: "-12%" }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={MOTION.page}
       className="relative min-h-dvh overflow-hidden bg-[#060214] px-4 pb-16 pt-10 text-white"
     >
@@ -139,15 +139,12 @@ export function MobileHub({
           className="mb-6 text-center"
         >
           <p className="inline-block bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-[10px] font-black uppercase tracking-[0.32em] text-transparent">
-            Hola, {clientName.split(" ")[0] || "bienvenido"}
+            Hola, {clientName.split(" ")[0] || "bienvenido"} · Tu página web
           </p>
           <h1 className="mt-3 bg-[linear-gradient(135deg,#f5e7ff_0%,#ffffff_40%,#d6e9ff_100%)] bg-clip-text text-[2.75rem] font-black leading-[0.95] tracking-tight text-transparent">
             {projectName || "Tu proyecto"}
           </h1>
           <BrandDivider width="w-16" className="mt-4" />
-          <p className="mt-4 text-[12px] font-bold uppercase tracking-[0.22em] text-white/40 truncate">
-            Página web
-          </p>
         </motion.div>
 
         <PhaseTimeline fase={fase} activeSubtitle={timelineSubtitle} />

@@ -135,9 +135,9 @@ export function DesktopCustomProjectView({
 
     return (
         <motion.main
-            initial={reduced ? { opacity: 0 } : { opacity: 0, x: "-3%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={reduced ? { opacity: 0 } : { opacity: 0, x: "-8%" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={MOTION.page}
             className="relative min-h-dvh overflow-hidden bg-[#060214] px-10 pb-24 pt-16 text-white"
         >
@@ -234,9 +234,6 @@ export function DesktopCustomProjectView({
                             {project.nombre || "Tu proyecto"}
                         </h1>
                         <BrandDivider width="w-24" className="mt-6" />
-                        <p className="mt-6 text-[13px] font-bold uppercase tracking-[0.26em] text-white/40">
-                            Página web
-                        </p>
                     </motion.div>
                     <button
                         onClick={onReset}

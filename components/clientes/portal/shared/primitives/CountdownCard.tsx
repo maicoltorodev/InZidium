@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Hammer, MessageSquare } from "lucide-react";
+import { Hammer } from "lucide-react";
 import { MOTION } from "./motion";
 import { BRAND_ICON_STYLE } from "./BrandDefs";
 
@@ -31,10 +31,10 @@ function toMs(value: Date | string | null | undefined): number | null {
 export function CountdownCard({
   buildStartedAt,
   fechaEntrega,
-  chat,
 }: {
   buildStartedAt: Date | string | null;
   fechaEntrega: Date | string | null;
+  /** chat se mantiene por compat pero ya no se usa acá. */
   chat?: any[];
 }) {
   const startMs = toMs(buildStartedAt);
@@ -55,19 +55,6 @@ export function CountdownCard({
   const pct = totalMs > 0
     ? Math.max(0, Math.min(100, Math.round((elapsed / totalMs) * 100)))
     : 0;
-
-  // Señal de actividad: timestamp del último mensaje del admin, para que el
-  // cliente sienta que el estudio está trabajando. Se recalcula con `chat`.
-  const adminActivity = useMemo(() => {
-    const msgs = chat ?? [];
-    const lastAdmin = [...msgs]
-      .reverse()
-      .find((m: any) => m?.autor && m.autor !== "cliente" && m.createdAt);
-    if (!lastAdmin) return null;
-    const ts = toMs(lastAdmin.createdAt);
-    if (ts == null) return null;
-    return relativeTimeEs(now - ts);
-  }, [chat, now]);
 
   return (
     <motion.div
@@ -127,14 +114,6 @@ export function CountdownCard({
           </div>
         </div>
 
-        {adminActivity && (
-          <div className="mt-4 flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-[10px] text-white/55">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-            <MessageSquare className="h-3 w-3 text-white/40" />
-            <span className="font-medium">Última actividad del estudio:</span>
-            <span className="font-black text-white/75">{adminActivity}</span>
-          </div>
-        )}
       </div>
     </motion.div>
   );
@@ -169,12 +148,3 @@ function Colon({ done }: { done: boolean }) {
   );
 }
 
-function relativeTimeEs(deltaMs: number): string {
-  if (deltaMs < 60_000) return "hace un momento";
-  const mins = Math.floor(deltaMs / 60_000);
-  if (mins < 60) return `hace ${mins} min`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `hace ${hrs}h`;
-  const days = Math.floor(hrs / 24);
-  return `hace ${days}d`;
-}

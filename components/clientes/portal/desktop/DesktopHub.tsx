@@ -111,9 +111,9 @@ export function DesktopHub({
 
   return (
     <motion.main
-      initial={reduced ? { opacity: 0 } : { opacity: 0, x: "-3%" }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={reduced ? { opacity: 0 } : { opacity: 0, x: "-8%" }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={MOTION.page}
       className="relative min-h-dvh overflow-hidden bg-[#060214] px-10 pb-24 pt-16 text-white"
     >
@@ -161,15 +161,12 @@ export function DesktopHub({
           className="mb-10 text-center"
         >
           <p className="inline-block bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-[11px] font-black uppercase tracking-[0.36em] text-transparent">
-            Hola, {clientName.split(" ")[0] || "bienvenido"}
+            Hola, {clientName.split(" ")[0] || "bienvenido"} · Tu página web
           </p>
           <h1 className="mt-5 bg-[linear-gradient(135deg,#f5e7ff_0%,#ffffff_40%,#d6e9ff_100%)] bg-clip-text text-6xl font-black leading-[0.95] tracking-tight text-transparent">
             {projectName || "Tu proyecto"}
           </h1>
           <BrandDivider width="w-24" className="mt-6" />
-          <p className="mt-6 text-[13px] font-bold uppercase tracking-[0.26em] text-white/40">
-            Página web
-          </p>
         </motion.div>
 
         {/* Phase timeline — contexto global del journey */}
