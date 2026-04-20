@@ -11,6 +11,7 @@ import {
 import { supabaseAdmin } from "@/lib/supabase/server";
 import { estudioId } from "@/lib/env";
 import { revalidatePath } from "next/cache";
+import { revalidateProyecto, revalidateAdmin } from "./revalidate";
 import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
 import { auth as getSession } from "@/auth";
@@ -62,11 +63,6 @@ async function requireAuthenticatedAdmin() {
   return Boolean(session?.user);
 }
 
-function revalidateClientProjects() {
-  revalidatePath("/clientes/proyectos");
-  revalidatePath("/mobile/clientes/proyectos");
-  revalidatePath("/tablet/clientes/proyectos");
-}
 
 /**
  * 🛠️ SERVER ACTIONS REFACTORIZADAS
@@ -95,7 +91,7 @@ export async function createCliente(formData: FormData) {
     return { error: "ESTE DOCUMENTO YA PERTENECE A UN CLIENTE REGISTRADO." };
 
   const res = await clientes.create({ nombre, cedula, email, telefono });
-  if (res.success) revalidatePath("/admin");
+  if (res.success) revalidateAdmin();
   return res;
 }
 
@@ -127,7 +123,7 @@ export async function updateCliente(id: string, data: any) {
   }
 
   const res = await clientes.update(id, data);
-  if (res.success) revalidatePath("/admin");
+  if (res.success) revalidateAdmin();
   return res;
 }
 
@@ -162,7 +158,7 @@ export async function deleteCliente(id: string) {
   const res = await clientes.delete(id);
   if (res.success) {
     await Promise.all(projs.map((p) => purgeProyectoStorage(p.id)));
-    revalidatePath("/admin");
+    revalidateAdmin();
   }
   return res;
 }
@@ -208,15 +204,14 @@ export async function createProyecto(formData: FormData) {
     fechaEntrega: null,
   } as any);
 
-  if (res.success) revalidatePath("/admin");
+  if (res.success) revalidateAdmin();
   return res;
 }
 
 export async function updateProyectoPlan(id: string, plan: string) {
   const res = await proyectos.update(id, { plan });
   if (res.success) {
-    revalidatePath("/admin");
-    revalidateClientProjects();
+    revalidateProyecto();
     notifyPlantillaRevalidate(id);
   }
   return res;
@@ -225,8 +220,7 @@ export async function updateProyectoPlan(id: string, plan: string) {
 export async function updateProyectoLink(id: string, link: string) {
   const res = await proyectos.update(id, { link });
   if (res.success) {
-    revalidatePath("/admin");
-    revalidateClientProjects();
+    revalidateProyecto();
     notifyPlantillaRevalidate(id);
   }
   return res;
@@ -237,8 +231,7 @@ export async function updateProyectoNombre(id: string, nombre: string) {
   if (!clean) return { success: false, error: "EL NOMBRE NO PUEDE ESTAR VACIO." };
   const res = await proyectos.update(id, { nombre: clean });
   if (res.success) {
-    revalidatePath("/admin");
-    revalidateClientProjects();
+    revalidateProyecto();
     notifyPlantillaRevalidate(id);
   }
   return res;
@@ -252,8 +245,7 @@ export async function updateProyectoNombre(id: string, nombre: string) {
 export async function toggleProyectoFreezeMode(id: string, freezeMode: boolean) {
   const res = await proyectos.update(id, { freezeMode } as any);
   if (res.success) {
-    revalidatePath("/admin");
-    revalidateClientProjects();
+    revalidateProyecto();
     notifyPlantillaRevalidate(id);
   }
   return res;
@@ -269,8 +261,7 @@ export async function publicarProyecto(id: string) {
     freezeMode: false,
   } as any);
   if (res.success) {
-    revalidatePath("/admin");
-    revalidateClientProjects();
+    revalidateProyecto();
     notifyPlantillaRevalidate(id);
   }
   return res;
@@ -302,44 +293,66 @@ export async function iniciarConstruccion(id: string, durationDays: number) {
     fechaEntrega,
   } as any);
   if (res.success) {
-    revalidatePath("/admin");
-    revalidateClientProjects();
+    revalidateProyecto();
     notifyPlantillaRevalidate(id);
     notifyEvent("onboarding.completed", prev);
   }
   return res;
 }
 
+/**
+ * Aplica un patch parcial al `onboardingData` del proyecto.
+ *
+ * El merge ocurre en el servidor leyendo el estado DB actual y mezclándolo
+ * con el `patch`. Esto evita la race de "último-que-escribe-pisa-al-otro"
+ * cuando cliente y admin editan campos distintos en simultáneo: cada uno
+ * manda sólo su delta, el server reconcilia.
+ *
+ * Efectos colaterales:
+ *  - Deriva `seoCanonicalUrl` cuando se toca `dominioUno`.
+ *  - Dispara `onboarding.started` la primera vez que se llena data.
+ *  - Auto-transición a fase `construccion` al completar el 100% (plan Estándar).
+ *  - Revalida admin + cliente y notifica a la Plantilla Web para refrescar cache.
+ */
 export async function updateProyectoOnboarding(
   id: string,
-  step: number,
-  data: any,
+  patch: Record<string, any>,
 ) {
-  // Leer estado previo para detectar "onboarding iniciado" (primer campo
-  // llenado) y evitar spam si el proyecto ya tenía datos.
   const all = await proyectos.getAll();
   const prev = (all as any[]).find((p: any) => p.id === id);
   const prevData = (prev?.onboardingData as any) ?? {};
+
+  // Merge servidor-lado: estado actual + patch. Único punto de autoridad.
+  const merged: Record<string, any> = { ...prevData, ...patch };
+
+  // Derivación: si cambió el dominio, el canonical sigue el dominio.
+  if (Object.prototype.hasOwnProperty.call(patch, "dominioUno")) {
+    merged.seoCanonicalUrl = patch.dominioUno
+      ? `https://www.${patch.dominioUno}.com`
+      : "";
+  }
+
   const prevHadData = Object.keys(prevData).some(
-    (k) => k !== "briefing" && prevData[k] != null && prevData[k] !== "",
+    (k) => prevData[k] != null && prevData[k] !== "",
   );
 
-  const res = await proyectos.update(id, { onboardingStep: step, onboardingData: data });
+  const res = await proyectos.update(id, {
+    onboardingStep: 1,
+    onboardingData: merged,
+  });
   if (!res.success) return res;
 
   // Noti: primer campo llenado del onboarding.
-  const nextHasData = Object.keys(data ?? {}).some(
-    (k) => k !== "briefing" && data[k] != null && data[k] !== "",
+  const nextHasData = Object.keys(merged).some(
+    (k) => merged[k] != null && merged[k] !== "",
   );
   if (!prevHadData && nextHasData && prev) {
     notifyEvent("onboarding.started", prev);
   }
 
-  // Auto-transición: si el cliente completó el 100% y sigue en 'onboarding',
-  // pasamos a 'construccion'. Countdown de 48h fijo para plan Estándar —
-  // fechaEntrega sirve como fuente única de verdad del deadline.
+  // Auto-transición: 100% completado → fase construccion + countdown 48h.
   try {
-    if (prev && prev.fase === "onboarding" && isOnboardingComplete(data)) {
+    if (prev && prev.fase === "onboarding" && isOnboardingComplete(merged)) {
       const now = new Date();
       const fechaEntrega = new Date(now.getTime() + 48 * 3600 * 1000);
       await proyectos.update(id, {
@@ -353,8 +366,7 @@ export async function updateProyectoOnboarding(
     // Nunca bloquear el savePatch del cliente por error en transición.
   }
 
-  revalidatePath("/admin");
-  revalidateClientProjects();
+  revalidateProyecto();
   notifyPlantillaRevalidate(id);
   return res;
 }
@@ -391,7 +403,7 @@ async function mergeProyectoOnboardingData(id: string, patch: object) {
   const res = await proyectos.update(id, {
     onboardingData: { ...currentData, ...patch },
   });
-  if (res.success) revalidatePath("/admin");
+  if (res.success) revalidateAdmin();
   return res;
 }
 
@@ -451,8 +463,7 @@ export async function uploadComprobantePago(
     } catch {
       // No bloquear si la noti falla.
     }
-    revalidatePath("/admin");
-    revalidateClientProjects();
+    revalidateProyecto();
   }
   return res;
 }
@@ -470,7 +481,7 @@ export async function approveComprobantePago(
     rejectedAt: undefined,
     rejectionReason: undefined,
   });
-  if (res.success) revalidatePath("/admin");
+  if (res.success) revalidateAdmin();
   return res;
 }
 
@@ -488,7 +499,7 @@ export async function rejectComprobantePago(
     rejectionReason: reason,
     approvedAt: undefined,
   });
-  if (res.success) revalidatePath("/admin");
+  if (res.success) revalidateAdmin();
   return res;
 }
 
@@ -496,7 +507,7 @@ export async function deleteProyecto(id: string) {
   const res = await proyectos.delete(id);
   if (res.success) {
     await purgeProyectoStorage(id);
-    revalidatePath("/admin");
+    revalidateAdmin();
   }
   return res;
 }
@@ -614,8 +625,7 @@ export async function uploadArchivo(formData: FormData) {
     });
 
     if (res.success) {
-      revalidatePath("/admin");
-      revalidateClientProjects();
+      revalidateProyecto();
       return { success: true, url: publicUrl };
     }
     return res;
@@ -636,8 +646,7 @@ export async function deleteArchivo(id: string) {
         console.error("[Storage] Error al eliminar archivo:", storageError.message);
       }
     }
-    revalidatePath("/admin");
-    revalidateClientProjects();
+    revalidateProyecto();
   }
   return res;
 }
@@ -671,8 +680,7 @@ export async function addChatMessage(
         await supabaseAdmin.storage.from("archivos").remove(paths);
       }
     }
-    revalidatePath("/admin");
-    revalidateClientProjects();
+    revalidateProyecto();
   }
   return res;
 }

@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   refetchClienteProyectos,
-  updateProyectoOnboarding,
   loginCliente,
   resumeClienteSession,
   logoutCliente,
   validateClienteSession,
 } from "@/lib/actions";
 import { useRealtimeRefresh } from "@/hooks/use-realtime-refresh";
+import { useProyectoPatcher } from "@/hooks/use-patch-proyecto";
 import { useSessionEviction } from "@/hooks/use-session-eviction";
 import { useToast } from "@/app/providers/ToastProvider";
 import { LoginScreen, ProjectSelector } from "./portal/LoginScreen";
@@ -37,9 +37,6 @@ export default function CompactProjectsPortal({
   const [error, setError] = useState("");
   const [sessionReady, setSessionReady] = useState(false);
   const [evicted, setEvicted] = useState(false);
-
-  const projectRef = useRef(selectedProject);
-  useEffect(() => { projectRef.current = selectedProject; }, [selectedProject]);
 
   // Auto-login: intenta restaurar sesión desde cookie al montar
   useEffect(() => {
@@ -75,25 +72,11 @@ export default function CompactProjectsPortal({
     setEvicted(false);
   };
 
-  const savePatch = useCallback(
-    async (patch: Record<string, any>) => {
-      const proj = projectRef.current;
-      if (!proj) return;
-      const merged = { ...(proj.onboardingData || {}), ...patch };
-      if (patch.dominioUno !== undefined) {
-        merged.seoCanonicalUrl = patch.dominioUno ? `https://www.${patch.dominioUno}.com` : "";
-      }
-      setSelectedProject((prev: any) =>
-        prev ? { ...prev, onboardingData: merged } : prev
-      );
-      try {
-        await updateProyectoOnboarding(proj.id, 1, merged);
-      } catch {
-        showToast("No se pudo guardar. Inténtalo de nuevo.", "error");
-      }
-    },
-    [showToast]
-  );
+  const savePatch = useProyectoPatcher({
+    project: selectedProject,
+    setProject: setSelectedProject,
+    onError: (msg) => showToast(msg, "error"),
+  });
 
   async function refreshPortalData() {
     if (!data) return;

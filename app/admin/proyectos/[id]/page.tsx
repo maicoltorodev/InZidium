@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   getProyectos,
@@ -11,8 +11,8 @@ import {
   deleteProyecto,
   addChatMessage,
   updateProyectoPrecioCustom,
-  updateProyectoOnboarding,
 } from "@/lib/actions";
+import { useProyectoPatcher } from "@/hooks/use-patch-proyecto";
 import { useToast } from "@/app/providers/ToastProvider";
 import {
   ChevronLeft,
@@ -139,29 +139,11 @@ export default function ProyectoDetalle() {
     }
   }
 
-  // savePatch admin: mismo contrato que el del cliente, pero usa session admin.
-  // Hace optimistic update local y llama al server action. El realtime refresh
-  // se encarga de sincronizar cualquier cambio que venga del cliente.
-  const savePatchAdmin = useCallback(
-    async (patch: Record<string, any>) => {
-      if (!project) return;
-      const merged = { ...(project.onboardingData || {}), ...patch };
-      if (patch.dominioUno !== undefined) {
-        merged.seoCanonicalUrl = patch.dominioUno
-          ? `https://www.${patch.dominioUno}.com`
-          : "";
-      }
-      setProject((prev: any) =>
-        prev ? { ...prev, onboardingData: merged } : prev,
-      );
-      try {
-        await updateProyectoOnboarding(project.id, 1, merged);
-      } catch {
-        showToast("No se pudo guardar. Inténtalo de nuevo.", "error");
-      }
-    },
-    [project, showToast],
-  );
+  const savePatchAdmin = useProyectoPatcher({
+    project,
+    setProject,
+    onError: (msg) => showToast(msg, "error"),
+  });
 
   const handleConfirmNombreChange = async () => {
     if (!project) return;
