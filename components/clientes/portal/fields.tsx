@@ -13,11 +13,18 @@ import type { HoraItem } from "./types";
 
 // ─── AutoField ───────────────────────────────────────────────────────────────
 
-// Patrón focus-aware: mientras el input está focused, el usuario es dueño
-// absoluto del valor local. El sync desde `value` (que puede cambiar por un
-// evento realtime o por un optimistic update) solo se aplica cuando el input
-// NO está focused. Así ningún refresh externo puede pisar el tipeo en curso.
-// Save on blur preserva la semántica existente.
+/**
+ * Input uncontrolled (patrón de react-hook-form): el DOM es la fuente de verdad
+ * del tipeo. React nunca re-renderiza el `<input>` en cada tecla → imposible
+ * que un cambio externo (optimistic update / realtime event) pise el caret o
+ * reordene caracteres, porque React no controla ese value.
+ *
+ * El único momento en que tocamos el DOM desde React es cuando el input NO
+ * está focused y el `value` externo cambió — ahí sí escribimos al input vía
+ * `ref.current.value = ...` de forma imperativa.
+ *
+ * Save on blur lee del ref. Opcional `format` transforma el valor al guardar.
+ */
 export function AutoField({
   value = "",
   onSave,
@@ -27,26 +34,32 @@ export function AutoField({
 }: {
   value?: string;
   onSave: (v: string) => void;
-  /** Sanitiza el input mientras el user escribe (ej: `formatPhoneDisplayCO`). */
+  /** Transforma el valor antes de guardar (ej: `formatPhoneDisplayCO`). */
   format?: (raw: string) => string;
   className?: string;
   [k: string]: any;
 }) {
-  const [local, setLocal] = useState(value);
-  const focusedRef = useRef(false);
+  const ref = useRef<HTMLInputElement>(null);
+
+  // Sync del value externo → DOM, solo si no estamos editando este input.
   useEffect(() => {
-    if (!focusedRef.current) setLocal(value);
+    const el = ref.current;
+    if (!el) return;
+    if (document.activeElement === el) return; // user tipeando — no tocar
+    if (el.value !== value) el.value = value;
   }, [value]);
+
   return (
     <input
-      value={local}
-      onChange={(e) =>
-        setLocal(format ? format(e.target.value) : e.target.value)
-      }
-      onFocus={() => { focusedRef.current = true; }}
+      ref={ref}
+      defaultValue={value}
       onBlur={() => {
-        focusedRef.current = false;
-        if (local !== value) onSave(local);
+        const el = ref.current;
+        if (!el) return;
+        const raw = el.value;
+        const next = format ? format(raw) : raw;
+        if (next !== el.value) el.value = next; // reflejar formato en el DOM
+        if (next !== value) onSave(next);
       }}
       className={className ?? inputCls}
       {...rest}
@@ -67,19 +80,23 @@ export function AutoTextarea({
   className?: string;
   [k: string]: any;
 }) {
-  const [local, setLocal] = useState(value);
-  const focusedRef = useRef(false);
+  const ref = useRef<HTMLTextAreaElement>(null);
+
   useEffect(() => {
-    if (!focusedRef.current) setLocal(value);
+    const el = ref.current;
+    if (!el) return;
+    if (document.activeElement === el) return;
+    if (el.value !== value) el.value = value;
   }, [value]);
+
   return (
     <textarea
-      value={local}
-      onChange={(e) => setLocal(e.target.value)}
-      onFocus={() => { focusedRef.current = true; }}
+      ref={ref}
+      defaultValue={value}
       onBlur={() => {
-        focusedRef.current = false;
-        if (local !== value) onSave(local);
+        const el = ref.current;
+        if (!el) return;
+        if (el.value !== value) onSave(el.value);
       }}
       className={className ?? `${inputCls} resize-none`}
       {...rest}
