@@ -9,6 +9,21 @@ import { FieldItem } from "../primitives/FieldItem";
 import { ToggleRow } from "../primitives/ToggleRow";
 import { MOTION } from "../primitives/motion";
 import { WhatsAppIcon } from "../primitives/BrandIcons";
+import {
+  formatEmail,
+  formatPhoneDigitsCO,
+  fullPhoneCO,
+} from "@/lib/input-formatters";
+
+// Formatter para mostrar teléfonos en formato CO completo mientras el user
+// escribe: "+57 300 123 45 67". Guarda el string formateado — es lo que se
+// publica en el sitio del cliente.
+const formatPhoneDisplayCO = (raw: string) =>
+  fullPhoneCO(formatPhoneDigitsCO(raw));
+
+// Formatter para fabPhone (número para wa.me URLs): solo dígitos con código
+// de país, ej: "573001234567". Sin espacios ni `+`.
+const formatWaPhone = (raw: string) => raw.replace(/\D/g, "").slice(0, 15);
 
 export function ContactoSection({
   d,
@@ -43,6 +58,7 @@ export function ContactoSection({
           <AutoField
             value={d.whatsapp}
             onSave={(v) => savePatch({ whatsapp: v })}
+            format={formatPhoneDisplayCO}
             placeholder="+57 300 000 0000"
             type="tel"
             inputMode="tel"
@@ -58,6 +74,7 @@ export function ContactoSection({
           <AutoField
             value={d.telefono}
             onSave={(v) => savePatch({ telefono: v })}
+            format={formatPhoneDisplayCO}
             placeholder="+57 300 000 0000"
             type="tel"
             inputMode="tel"
@@ -73,6 +90,7 @@ export function ContactoSection({
           <AutoField
             value={d.email}
             onSave={(v) => savePatch({ email: v })}
+            format={formatEmail}
             placeholder="hola@tuempresa.com"
             type="email"
             inputMode="email"
@@ -117,7 +135,9 @@ export function ContactoSection({
                   <AutoField
                     value={d.fabPhone}
                     onSave={(v) => savePatch({ fabPhone: v })}
+                    format={formatWaPhone}
                     placeholder="573001234567"
+                    inputMode="numeric"
                   />
                 </div>
                 <div>

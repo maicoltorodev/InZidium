@@ -120,6 +120,12 @@ export function useRealtimeRefresh(
 
   // Refresh on visibility: cuando el tab vuelve del background, ponemos al día
   // el estado por si hubo eventos durante el gap (realtime no los replaya).
+  //
+  // IMPORTANTE: usamos SOLO `visibilitychange`, no `window.focus`. `focus` se
+  // dispara en casos espurios (volver del devtools, cambios de foco internos
+  // en algunos browsers) y eso mete refetches en mitad del tipeo del usuario.
+  // `visibilitychange` solo dispara cuando el tab cambia de hidden→visible,
+  // que es exactamente el caso que queremos cubrir.
   useEffect(() => {
     if (!enabled) return;
 
@@ -130,11 +136,9 @@ export function useRealtimeRefresh(
     };
 
     document.addEventListener("visibilitychange", onVisible);
-    window.addEventListener("focus", onVisible);
 
     return () => {
       document.removeEventListener("visibilitychange", onVisible);
-      window.removeEventListener("focus", onVisible);
     };
   }, [enabled]);
 }

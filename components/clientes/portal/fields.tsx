@@ -13,24 +13,41 @@ import type { HoraItem } from "./types";
 
 // ─── AutoField ───────────────────────────────────────────────────────────────
 
+// Patrón focus-aware: mientras el input está focused, el usuario es dueño
+// absoluto del valor local. El sync desde `value` (que puede cambiar por un
+// evento realtime o por un optimistic update) solo se aplica cuando el input
+// NO está focused. Así ningún refresh externo puede pisar el tipeo en curso.
+// Save on blur preserva la semántica existente.
 export function AutoField({
   value = "",
   onSave,
+  format,
   className,
   ...rest
 }: {
   value?: string;
   onSave: (v: string) => void;
+  /** Sanitiza el input mientras el user escribe (ej: `formatPhoneDisplayCO`). */
+  format?: (raw: string) => string;
   className?: string;
   [k: string]: any;
 }) {
   const [local, setLocal] = useState(value);
-  useEffect(() => setLocal(value), [value]);
+  const focusedRef = useRef(false);
+  useEffect(() => {
+    if (!focusedRef.current) setLocal(value);
+  }, [value]);
   return (
     <input
       value={local}
-      onChange={(e) => setLocal(e.target.value)}
-      onBlur={() => local !== value && onSave(local)}
+      onChange={(e) =>
+        setLocal(format ? format(e.target.value) : e.target.value)
+      }
+      onFocus={() => { focusedRef.current = true; }}
+      onBlur={() => {
+        focusedRef.current = false;
+        if (local !== value) onSave(local);
+      }}
       className={className ?? inputCls}
       {...rest}
     />
@@ -51,12 +68,19 @@ export function AutoTextarea({
   [k: string]: any;
 }) {
   const [local, setLocal] = useState(value);
-  useEffect(() => setLocal(value), [value]);
+  const focusedRef = useRef(false);
+  useEffect(() => {
+    if (!focusedRef.current) setLocal(value);
+  }, [value]);
   return (
     <textarea
       value={local}
       onChange={(e) => setLocal(e.target.value)}
-      onBlur={() => local !== value && onSave(local)}
+      onFocus={() => { focusedRef.current = true; }}
+      onBlur={() => {
+        focusedRef.current = false;
+        if (local !== value) onSave(local);
+      }}
       className={className ?? `${inputCls} resize-none`}
       {...rest}
     />
@@ -75,6 +99,7 @@ export function DomainField({
   const [local, setLocal] = useState(value);
   const [checking, setChecking] = useState(false);
   const [availability, setAvailability] = useState<{ available: boolean; error?: string } | null>(null);
+  const focusedRef = useRef(false);
   // Auto-width del input: medimos el texto (o el placeholder si está vacío)
   // en un span oculto y aplicamos el ancho al input. Así `www.` queda pegado
   // a la izquierda del texto escrito y `.com` a la derecha, centrados juntos
@@ -82,7 +107,9 @@ export function DomainField({
   const measureRef = useRef<HTMLSpanElement>(null);
   const [inputWidth, setInputWidth] = useState(88);
 
-  useEffect(() => setLocal(value), [value]);
+  useEffect(() => {
+    if (!focusedRef.current) setLocal(value);
+  }, [value]);
 
   useEffect(() => {
     if (measureRef.current) {
@@ -142,7 +169,11 @@ export function DomainField({
           onChange={(e) =>
             setLocal(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))
           }
-          onBlur={() => local !== value && onSave(local)}
+          onFocus={() => { focusedRef.current = true; }}
+          onBlur={() => {
+            focusedRef.current = false;
+            if (local !== value) onSave(local);
+          }}
           placeholder="tuempresa"
           style={{ width: `${inputWidth}px` }}
           className="bg-transparent text-sm text-white outline-none placeholder:text-white/20"
@@ -193,8 +224,11 @@ export function ColorInput({
   hint?: string;
 }) {
   const [local, setLocal] = useState(value);
+  const focusedRef = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(() => setLocal(value), [value]);
+  useEffect(() => {
+    if (!focusedRef.current) setLocal(value);
+  }, [value]);
 
   const isValid = !local || HEX_RE.test(local);
 
@@ -224,6 +258,8 @@ export function ColorInput({
           type="text"
           value={local}
           onChange={(e) => schedule(e.target.value)}
+          onFocus={() => { focusedRef.current = true; }}
+          onBlur={() => { focusedRef.current = false; }}
           placeholder="#RRGGBB"
           maxLength={9}
           className="flex-1 bg-transparent px-4 py-3 text-sm text-white outline-none placeholder:text-white/20"

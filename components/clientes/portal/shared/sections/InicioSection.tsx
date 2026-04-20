@@ -44,26 +44,10 @@ export function InicioSection({
 
       <FieldItem>
         <label className={labelCls}>Logo</label>
-        <div className="mb-3 space-y-1">
-          <p className="text-[11px] text-white/25">
-            <span className="font-bold text-[#a855f7]">Importante:</span>{" "}
-            sube tu logo con <span className="font-bold text-white/70">fondo transparente</span>{" "}
-            (PNG o SVG). Si tiene fondo blanco o de color, se verá feo sobre
-            fondos oscuros de tu sitio.
-          </p>
-          <p className="text-[11px] text-white/25">
-            Si tu logo original tiene fondo, puedes sacarlo gratis en{" "}
-            <a
-              href="https://www.remove.bg/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-[#a855f7]"
-            >
-              remove.bg
-            </a>{" "}
-            antes de subirlo.
-          </p>
-        </div>
+        <p className="mb-3 text-[11px] text-white/25">
+          Sube tu logo como lo tengas — nosotros lo adaptamos al sitio. Solo
+          asegúrate que tenga buena calidad.
+        </p>
         <div className="flex justify-center">
           <div className="aspect-square w-52">
             <ImageField
