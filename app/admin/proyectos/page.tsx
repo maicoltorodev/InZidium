@@ -161,9 +161,6 @@ export default function ProjectsAdmin() {
                             fase={project.fase}
                             freezeMode={!!project.freezeMode}
                           />
-                          {project.fase === "construccion" && project.fechaEntrega && (
-                            <CountdownBadge fechaEntrega={project.fechaEntrega} />
-                          )}
                         </div>
                       </div>
 
@@ -192,6 +189,10 @@ export default function ProjectsAdmin() {
                           </p>
                         </div>
                       </div>
+
+                      {project.fase === "construccion" && project.fechaEntrega && (
+                        <CountdownHero fechaEntrega={project.fechaEntrega} />
+                      )}
 
                       <div className="mt-auto" />
 
@@ -582,7 +583,7 @@ function PremiumInput({
   );
 }
 
-function CountdownBadge({
+function CountdownHero({
   fechaEntrega,
 }: {
   fechaEntrega: Date | string | null;
@@ -606,16 +607,37 @@ function CountdownBadge({
   const hh = Math.floor(totalMin / 60);
   const mm = totalMin % 60;
 
+  if (done) {
+    return (
+      <div className="mt-4 rounded-3xl border border-red-500/30 bg-red-500/10 p-6 flex items-center justify-center gap-3">
+        <Clock className="w-5 h-5 text-red-400" />
+        <span className="text-[11px] font-black uppercase tracking-[0.4em] text-red-400">
+          Entrega vencida
+        </span>
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest ${
-        done
-          ? "bg-red-500/10 border-red-500/30 text-red-400"
-          : "bg-cyan-400/10 border-cyan-400/30 text-cyan-300"
-      }`}
-    >
-      <Clock className="w-3 h-3" />
-      {done ? "Vencido" : `${hh}h ${String(mm).padStart(2, "0")}m`}
+    <div className="relative mt-4 overflow-hidden rounded-3xl border border-cyan-400/20 bg-gradient-to-br from-cyan-400/[0.06] via-white/[0.02] to-[#a855f7]/[0.06] p-5 sm:p-6">
+      <div className="absolute -top-16 -right-16 w-40 h-40 bg-cyan-400/10 blur-[80px] pointer-events-none" />
+      <div className="absolute -bottom-16 -left-16 w-40 h-40 bg-[#a855f7]/10 blur-[80px] pointer-events-none" />
+      <div className="relative flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-cyan-300/80">
+          <Clock className="w-3.5 h-3.5" />
+          Tiempo restante
+        </div>
+        <div className="flex items-baseline gap-1.5">
+          <span className="bg-gradient-to-r from-cyan-300 to-[#a855f7] bg-clip-text text-transparent text-4xl sm:text-5xl font-black tracking-tighter tabular-nums">
+            {hh}
+          </span>
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300/60">h</span>
+          <span className="bg-gradient-to-r from-cyan-300 to-[#a855f7] bg-clip-text text-transparent text-4xl sm:text-5xl font-black tracking-tighter tabular-nums ml-2">
+            {String(mm).padStart(2, "0")}
+          </span>
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300/60">m</span>
+        </div>
+      </div>
     </div>
   );
 }
