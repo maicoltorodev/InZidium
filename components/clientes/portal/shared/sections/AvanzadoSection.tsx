@@ -172,7 +172,7 @@ export function AvanzadoSection({
             className="text-[13px] text-white/50"
             style={{ fontFamily: `"${previewFont}", system-ui, sans-serif` }}
           >
-            El quick brown fox jumps over the lazy dog.
+            El rápido zorro cafe salta sobre el perro perezoso.
           </p>
         </div>
       </FieldItem>
