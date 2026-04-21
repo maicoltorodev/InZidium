@@ -68,7 +68,13 @@ export function CatalogoItemEditor({
 }) {
     const reduced = usePrefersReducedMotion();
     const [uploadingImg, setUploadingImg] = useState(false);
-    const [precioOn, setPrecioOn] = useState<boolean>(!!item.precio);
+    // Si hay precio, el toggle está siempre ON (sin importar el override).
+    // El override solo aplica cuando no hay precio — cubre el caso transitorio
+    // "user acaba de prender el toggle, aún no escribió el valor". Así un
+    // cambio externo de `item.precio` (admin en paralelo) se refleja en el
+    // toggle aunque el modal esté abierto.
+    const [precioOnOverride, setPrecioOnOverride] = useState<boolean | null>(null);
+    const precioOn = item.precio ? true : precioOnOverride ?? false;
     const [showNewCat, setShowNewCat] = useState(false);
     const [newCat, setNewCat] = useState("");
     const [confirmingRemove, setConfirmingRemove] = useState(false);
@@ -90,8 +96,8 @@ export function CatalogoItemEditor({
     }, [onClose]);
 
     const togglePrecio = (next: boolean) => {
-        setPrecioOn(next);
         if (!next && item.precio) onChange({ ...item, precio: "" });
+        setPrecioOnOverride(next);
     };
 
     const handleImage = async (file: File) => {

@@ -7,49 +7,59 @@ import { updateProyectoOnboarding } from "@/lib/actions";
  * Hook compartido entre el portal cliente y el admin para aplicar cambios al
  * `onboardingData` de un proyecto.
  *
- * ## Patrón: server state + pending mutations queue
+ * ## Patrón: server state + pending mutations queue con cooldown
  *
  * El problema clásico del optimistic update es que "UI state" y "server state"
  * viven en la misma variable, y cualquier refresh que llegue del server con
  * data stale (pre-commit, pgbouncer snapshot, otra pestaña) pisa el optimistic
- * y causa flicker. Parches tipo `isPatching() + setTimeout` o "ventana de
- * protección por N segundos" atacan el síntoma, no la causa — y siempre hay
- * un timing que los rompe.
- *
- * Este hook los separa explícitamente:
+ * y causa flicker. Este hook los separa explícitamente:
  *
  * - `serverProject` (prop `project`) = lo que vino del server. Es la fuente
- *   autoritativa y puede ser stale; no importa.
- * - `pendings[]` = lista de patches que el user aplicó pero el server aún no
- *   confirmó.
- * - `displayedProject` = `serverProject` con cada pending mergeado arriba.
- *   Es lo que los componentes consumen.
+ *   autoritativa y puede ser stale.
+ * - `pendings[]` = lista de patches que el user aplicó. Cada uno tiene un
+ *   `confirmedAt?` que se marca cuando el `serverProject` llega ya con ese
+ *   patch aplicado.
+ * - `displayedProject` = `serverProject` con cada pending (confirmed o no)
+ *   mergeada arriba. Es lo que los componentes consumen.
  *
- * ### Flujo
+ * ### Por qué el cooldown (no filtrar confirmed inmediatamente)
  *
- * 1. Click → `savePatch(patch)` añade `{id, patch, at}` a `pendings`.
- *    `displayedProject` refleja el cambio inmediatamente.
- * 2. `await updateProyectoOnboarding(id, patch)` manda al server.
- * 3. Realtime event → `setServerProject(fresh)` (desde el consumidor).
- *    `displayedProject` sigue correcto: incluso si `fresh` está stale, las
- *    pendings siguen mergeadas arriba.
- * 4. Cuando `serverProject.onboardingData` ya tiene todos los values del
- *    patch aplicados (el server confirmó), el pending se limpia
- *    automáticamente. `displayedProject === serverProject` — sin flicker.
- * 5. Si el server falla (throw), la pending se descarta y disparamos
- *    `onError`.
- * 6. Safety net: pendings de más de 10s se descartan — si el server nunca
- *    converge, la UI no se queda pegada.
+ * El supabase-js va a través de pgbouncer (transaction pooling): un SELECT
+ * justo después de un COMMIT puede ir por una conexión distinta que todavía
+ * no vio el commit y devolver estado stale. Esto genera el escenario:
  *
- * Esto es el mismo patrón de TanStack Query, Redux Toolkit Query, tRPC.
+ * 1. User clickea "Cerrado" → pending agregada → UI closed ✓
+ * 2. Server commit → evento realtime → refresh #1 trae correcto → pending
+ *    se confirma ✓
+ * 3. Otro evento realtime (chat/archivo) dispara refresh #2 — pgbouncer lo
+ *    rutea por una conexión vieja que no ve el commit → setServerProject
+ *    con estado pre-commit → **UI brinca a "abierto"** ⚠️
+ * 4. Refresh #3 llega con estado correcto → UI vuelve a "cerrado"
+ *
+ * Manteniendo la pending confirmed durante 3s, el displayedProject sigue
+ * incluyendo el valor post-commit aunque el server temporalmente lo
+ * "retroceda". Pasados los 3s, el server debería estar estabilizado.
+ *
+ * ### Safety net
+ *
+ * Pendings que lleven > 10s sin confirmarse se descartan. Evita que un error
+ * del server o una race deje la UI pegada en un estado optimistic para
+ * siempre.
+ *
+ * Es el mismo patrón de TanStack Query, Redux Toolkit Query, tRPC.
  */
 
 type PendingMutation = {
   id: string;
   patch: Record<string, any>;
   at: number;
+  /** Cuando el serverProject llega con el patch aplicado, se marca este
+   *  timestamp. La pending sigue protegiendo displayedProject hasta que
+   *  pasen `CONFIRMED_COOLDOWN_MS` desde este momento. */
+  confirmedAt?: number;
 };
 
+const CONFIRMED_COOLDOWN_MS = 3_000;
 const PENDING_TIMEOUT_MS = 10_000;
 
 export function useProyectoPatcher<T extends { id: string; onboardingData?: any }>({
@@ -61,8 +71,8 @@ export function useProyectoPatcher<T extends { id: string; onboardingData?: any 
 }) {
   const [pendings, setPendings] = useState<PendingMutation[]>([]);
 
-  // displayedProject = serverProject con cada pending mergeado sobre
-  // onboardingData. Los componentes hijos consumen este valor.
+  // displayedProject = serverProject con cada pending (confirmed o no)
+  // mergeada sobre onboardingData. Los componentes hijos consumen este valor.
   const displayedProject = useMemo<T | null>(() => {
     if (!serverProject) return null;
     if (pendings.length === 0) return serverProject;
@@ -81,31 +91,47 @@ export function useProyectoPatcher<T extends { id: string; onboardingData?: any 
     return { ...serverProject, onboardingData } as T;
   }, [serverProject, pendings]);
 
-  // Cleanup: cuando cambia el serverProject, revisamos qué pendings ya están
-  // confirmados (el server tiene el mismo valor para cada key del patch) y
-  // los removemos de la queue.
+  // Cuando cambia el serverProject, marcamos pendings como confirmed (no las
+  // borramos todavía — el cooldown las mantiene protegiendo el
+  // displayedProject hasta que el server se estabilice).
   useEffect(() => {
-    if (!serverProject || pendings.length === 0) return;
+    if (!serverProject) return;
     const serverData = serverProject.onboardingData ?? {};
-    setPendings((prev) => prev.filter((p) => !patchMatchesServer(p.patch, serverData)));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setPendings((prev) => {
+      let changed = false;
+      const next = prev.map((p) => {
+        if (p.confirmedAt) return p;
+        if (patchMatchesServer(p.patch, serverData)) {
+          changed = true;
+          return { ...p, confirmedAt: Date.now() };
+        }
+        return p;
+      });
+      return changed ? next : prev;
+    });
   }, [serverProject]);
 
-  // Safety net: descartar pendings que lleven > 10s sin confirmarse. Evita
-  // que un error del server o una race deje la UI pegada en un estado
-  // optimistic para siempre.
+  // Limpieza temporal: removemos pendings ya confirmed después del cooldown
+  // y pendings no confirmed que hayan timed out (10s).
   useEffect(() => {
     if (pendings.length === 0) return;
-    const earliestAt = Math.min(...pendings.map((p) => p.at));
-    const timer = setTimeout(
-      () => {
-        const now = Date.now();
-        setPendings((prev) =>
-          prev.filter((p) => now - p.at < PENDING_TIMEOUT_MS),
-        );
-      },
-      Math.max(0, PENDING_TIMEOUT_MS - (Date.now() - earliestAt)),
+    const now = Date.now();
+    const soonestExpiry = Math.min(
+      ...pendings.map((p) => {
+        if (p.confirmedAt) return p.confirmedAt + CONFIRMED_COOLDOWN_MS;
+        return p.at + PENDING_TIMEOUT_MS;
+      }),
     );
+    const delay = Math.max(0, soonestExpiry - now);
+    const timer = setTimeout(() => {
+      const now2 = Date.now();
+      setPendings((prev) =>
+        prev.filter((p) => {
+          if (p.confirmedAt) return now2 - p.confirmedAt < CONFIRMED_COOLDOWN_MS;
+          return now2 - p.at < PENDING_TIMEOUT_MS;
+        }),
+      );
+    }, delay);
     return () => clearTimeout(timer);
   }, [pendings]);
 
@@ -116,10 +142,6 @@ export function useProyectoPatcher<T extends { id: string; onboardingData?: any 
       setPendings((prev) => [...prev, { id, patch, at: Date.now() }]);
       try {
         await updateProyectoOnboarding(serverProject.id, patch);
-        // No removemos aquí — el cleanup (useEffect de arriba) lo hace cuando
-        // el serverProject llegue con los valores confirmados. Si lo
-        // removemos acá, `displayedProject` parpadea: sin pending y sin
-        // server-refresh-aún, mostraría el valor previo.
       } catch {
         setPendings((prev) => prev.filter((p) => p.id !== id));
         onError?.("No se pudo guardar. Inténtalo de nuevo.");
@@ -133,7 +155,7 @@ export function useProyectoPatcher<T extends { id: string; onboardingData?: any 
 
 /**
  * ¿Cada key del patch tiene el mismo valor en serverData? Si sí, el server
- * ya aplicó la mutación → podemos descartar la pending.
+ * ya aplicó la mutación → la pending pasa a confirmed.
  */
 function patchMatchesServer(
   patch: Record<string, any>,
