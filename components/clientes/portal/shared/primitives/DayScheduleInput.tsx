@@ -1,9 +1,7 @@
 "use client";
 
-import { useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Clock, Plus, X } from "lucide-react";
-import { MOTION } from "./motion";
 import { BRAND_ICON_STYLE } from "./BrandDefs";
 import { TimePicker } from "./TimePicker";
 
@@ -109,13 +107,40 @@ export function DayScheduleInput({
     value: string;
     onSave: (v: string) => void;
 }) {
-    const schedule = useMemo(() => parseSchedule(value), [value]);
+    // Estado local con ventana de protección: cuando el user hace un cambio,
+    // lo guardamos localmente e ignoramos valores externos por 2s salvo que
+    // matcheen lo que acabamos de guardar (confirmación del server).
+    //
+    // Esto elimina el "brinco" cuando un refresh realtime llega con data
+    // stale (pre-commit) en medio del round-trip y pisa el optimistic.
+    // Pasados los 2s, si no llegó confirmación, aceptamos el valor externo
+    // — así un error de red no deja la UI pegada para siempre.
+    const [localValue, setLocalValue] = useState(value);
+    const pendingRef = useRef<{ value: string; at: number } | null>(null);
+
+    useEffect(() => {
+        const pending = pendingRef.current;
+        const now = Date.now();
+        if (pending && now - pending.at < 2000 && pending.value !== value) {
+            return;
+        }
+        setLocalValue(value);
+        pendingRef.current = null;
+    }, [value]);
+
+    const commit = (v: string) => {
+        pendingRef.current = { value: v, at: Date.now() };
+        setLocalValue(v);
+        onSave(v);
+    };
+
+    const schedule = useMemo(() => parseSchedule(localValue), [localValue]);
     const closed = schedule.closed;
     const split = !schedule.closed && (schedule as any).split;
 
     const setClosed = (c: boolean) => {
-        if (c) return onSave("closed");
-        onSave(
+        if (c) return commit("closed");
+        commit(
             serializeSchedule({
                 closed: false,
                 split: false,
@@ -134,7 +159,7 @@ export function DayScheduleInput({
                 open: string;
                 close: string;
             };
-            onSave(
+            commit(
                 serializeSchedule({
                     closed: false,
                     split: true,
@@ -151,7 +176,7 @@ export function DayScheduleInput({
                 openAm: string;
                 closePm: string;
             };
-            onSave(
+            commit(
                 serializeSchedule({
                     closed: false,
                     split: false,
@@ -170,7 +195,7 @@ export function DayScheduleInput({
             open: string;
             close: string;
         };
-        onSave(serializeSchedule({ ...cur, [key]: v }));
+        commit(serializeSchedule({ ...cur, [key]: v }));
     };
 
     const updateSplit = (
@@ -186,7 +211,7 @@ export function DayScheduleInput({
             openPm: string;
             closePm: string;
         };
-        onSave(serializeSchedule({ ...cur, [key]: v }));
+        commit(serializeSchedule({ ...cur, [key]: v }));
     };
 
     return (
@@ -252,94 +277,83 @@ export function DayScheduleInput({
                 </div>
             </div>
 
-            <AnimatePresence initial={false}>
-                {!closed && (
-                    <motion.div
-                        key="open"
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={MOTION.reveal}
-                        className="overflow-hidden"
-                    >
-                        <div className="pt-3 space-y-2.5">
-                            {!split ? (
+            {!closed && (
+                <div className="pt-3 space-y-2.5">
+                    {!split ? (
+                        <div className="grid grid-cols-2 gap-2">
+                            <TimePicker
+                                value={(schedule as any).open ?? ""}
+                                onChange={(v) => updateSingle("open", v)}
+                                aria-label="Hora de apertura"
+                            />
+                            <TimePicker
+                                value={(schedule as any).close ?? ""}
+                                onChange={(v) => updateSingle("close", v)}
+                                aria-label="Hora de cierre"
+                            />
+                        </div>
+                    ) : (
+                        <div className="space-y-2.5">
+                            <div>
+                                <p className="mb-1 text-[9px] font-black uppercase tracking-[0.18em] text-white/30">
+                                    Mañana
+                                </p>
                                 <div className="grid grid-cols-2 gap-2">
                                     <TimePicker
-                                        value={(schedule as any).open ?? ""}
-                                        onChange={(v) => updateSingle("open", v)}
-                                        aria-label="Hora de apertura"
+                                        value={(schedule as any).openAm ?? ""}
+                                        onChange={(v) => updateSplit("openAm", v)}
+                                        aria-label="Apertura mañana"
                                     />
                                     <TimePicker
-                                        value={(schedule as any).close ?? ""}
-                                        onChange={(v) => updateSingle("close", v)}
-                                        aria-label="Hora de cierre"
+                                        value={(schedule as any).closeAm ?? ""}
+                                        onChange={(v) => updateSplit("closeAm", v)}
+                                        aria-label="Cierre mañana"
                                     />
                                 </div>
-                            ) : (
-                                <div className="space-y-2.5">
-                                    <div>
-                                        <p className="mb-1 text-[9px] font-black uppercase tracking-[0.18em] text-white/30">
-                                            Mañana
-                                        </p>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <TimePicker
-                                                value={(schedule as any).openAm ?? ""}
-                                                onChange={(v) => updateSplit("openAm", v)}
-                                                aria-label="Apertura mañana"
-                                            />
-                                            <TimePicker
-                                                value={(schedule as any).closeAm ?? ""}
-                                                onChange={(v) => updateSplit("closeAm", v)}
-                                                aria-label="Cierre mañana"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <p className="mb-1 text-[9px] font-black uppercase tracking-[0.18em] text-white/30">
-                                            Tarde
-                                        </p>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            <TimePicker
-                                                value={(schedule as any).openPm ?? ""}
-                                                onChange={(v) => updateSplit("openPm", v)}
-                                                aria-label="Apertura tarde"
-                                            />
-                                            <TimePicker
-                                                value={(schedule as any).closePm ?? ""}
-                                                onChange={(v) => updateSplit("closePm", v)}
-                                                aria-label="Cierre tarde"
-                                            />
-                                        </div>
-                                    </div>
+                            </div>
+                            <div>
+                                <p className="mb-1 text-[9px] font-black uppercase tracking-[0.18em] text-white/30">
+                                    Tarde
+                                </p>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <TimePicker
+                                        value={(schedule as any).openPm ?? ""}
+                                        onChange={(v) => updateSplit("openPm", v)}
+                                        aria-label="Apertura tarde"
+                                    />
+                                    <TimePicker
+                                        value={(schedule as any).closePm ?? ""}
+                                        onChange={(v) => updateSplit("closePm", v)}
+                                        aria-label="Cierre tarde"
+                                    />
                                 </div>
-                            )}
-
-                            <button
-                                type="button"
-                                onClick={() => setSplit(!split)}
-                                className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.18em] transition-colors ${
-                                    split
-                                        ? "text-white/40 hover:text-red-400"
-                                        : "text-white/30 hover:text-[#a855f7]"
-                                }`}
-                            >
-                                {split ? (
-                                    <>
-                                        <X className="h-3 w-3" />
-                                        Quitar turno partido
-                                    </>
-                                ) : (
-                                    <>
-                                        <Plus className="h-3 w-3" />
-                                        Turno partido
-                                    </>
-                                )}
-                            </button>
+                            </div>
                         </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                    )}
+
+                    <button
+                        type="button"
+                        onClick={() => setSplit(!split)}
+                        className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.18em] transition-colors ${
+                            split
+                                ? "text-white/40 hover:text-red-400"
+                                : "text-white/30 hover:text-[#a855f7]"
+                        }`}
+                    >
+                        {split ? (
+                            <>
+                                <X className="h-3 w-3" />
+                                Quitar turno partido
+                            </>
+                        ) : (
+                            <>
+                                <Plus className="h-3 w-3" />
+                                Turno partido
+                            </>
+                        )}
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
