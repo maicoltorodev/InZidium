@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { inputCls, labelCls } from "./styles";
 import type { HoraItem } from "./types";
+import type { InputMask } from "@/lib/input-masks";
 
 // ─── AutoField ───────────────────────────────────────────────────────────────
 
@@ -23,42 +24,82 @@ import type { HoraItem } from "./types";
  * está focused y el `value` externo cambió — ahí sí escribimos al input vía
  * `ref.current.value = ...` de forma imperativa.
  *
- * Save on blur lee del ref. Opcional `format` transforma el valor al guardar.
+ * Opcional `mask: { parse, display }` → enmascara en vivo. La idempotencia la
+ * garantiza el mask: `parse(display(x)) === x` y `parse(parse(y)) === parse(y)`.
+ * Ver `lib/input-masks.ts`. Save on blur dispara `onSave(display(parse(raw)))`.
  */
 export function AutoField({
   value = "",
   onSave,
-  format,
+  mask,
   className,
   ...rest
 }: {
   value?: string;
   onSave: (v: string) => void;
-  /** Transforma el valor antes de guardar (ej: `formatPhoneDisplayCO`). */
-  format?: (raw: string) => string;
+  /** Mask parse/display para formateo live (ej: `phoneMaskCO`, `emailMask`). */
+  mask?: InputMask;
   className?: string;
   [k: string]: any;
 }) {
   const ref = useRef<HTMLInputElement>(null);
+  const applyMask = (raw: string) => (mask ? mask.display(mask.parse(raw)) : raw);
 
   // Sync del value externo → DOM, solo si no estamos editando este input.
+  // Aplicamos el mask al renderizar para normalizar valores legacy (ej:
+  // `fabPhone = "573001234567"` guardado antes del mask → se muestra como
+  // "+57 300 123 45 67" desde el primer render).
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     if (document.activeElement === el) return; // user tipeando — no tocar
-    if (el.value !== value) el.value = value;
-  }, [value]);
+    const displayed = applyMask(value);
+    if (el.value !== displayed) el.value = displayed;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value, mask]);
+
+  const handleInput = () => {
+    if (!mask) return;
+    const el = ref.current;
+    if (!el) return;
+    const raw = el.value;
+    const displayed = applyMask(raw);
+    if (displayed === raw) return;
+
+    // Caret preservation: walk raw y displayed en paralelo; chars no matcheados
+    // en displayed se asumen insertados por el mask y se saltan. Case-insensitive
+    // para tolerar transforms tipo lowercase (emailMask).
+    const caret = el.selectionStart ?? raw.length;
+    let fc = 0;
+    let ri = 0;
+    while (ri < caret && fc < displayed.length) {
+      if (displayed[fc].toLowerCase() === raw[ri].toLowerCase()) {
+        fc++;
+        ri++;
+      } else {
+        fc++;
+      }
+    }
+
+    el.value = displayed;
+    // setSelectionRange tira InvalidStateError en `type="email"` en algunos
+    // browsers — el display se aplica igual, el caret queda donde lo deja el
+    // browser (típicamente al final, aceptable mientras el user tipea).
+    try {
+      el.setSelectionRange(fc, fc);
+    } catch {}
+  };
 
   return (
     <input
       ref={ref}
-      defaultValue={value}
+      defaultValue={applyMask(value)}
+      onInput={handleInput}
       onBlur={() => {
         const el = ref.current;
         if (!el) return;
-        const raw = el.value;
-        const next = format ? format(raw) : raw;
-        if (next !== el.value) el.value = next; // reflejar formato en el DOM
+        const next = applyMask(el.value);
+        if (next !== el.value) el.value = next;
         if (next !== value) onSave(next);
       }}
       className={className ?? inputCls}

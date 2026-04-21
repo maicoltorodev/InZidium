@@ -32,6 +32,7 @@ import {
   formatPhoneDigitsCO,
 } from "./input-formatters";
 import { notifyPlantillaRevalidate } from "./plantilla-deploy";
+import { sanitizeOnboardingPatch } from "./onboarding-patch-schema";
 
 /**
  * Dispara push a la app InZidium vía edge function `notify-event`. Fire-and-forget:
@@ -318,7 +319,41 @@ export async function updateProyectoOnboarding(
   id: string,
   patch: Record<string, any>,
 ) {
-  const atomic = await proyectos.atomicPatchOnboarding(id, patch);
+  // Auth gate: admin del estudio O cliente dueño del proyecto. `getById` ya
+  // scope'a por estudioId del env → cross-tenant retorna null sin leak.
+  const proj = await proyectos.getById(id);
+  if (!proj) return { success: false, error: "No autorizado" };
+  const adminSession = await validateAdminSession();
+  const clienteSession = adminSession.valid ? null : await validateClienteSession();
+  if (!adminSession.valid) {
+    if (!clienteSession?.valid || clienteSession.clienteId !== proj.clienteId) {
+      return { success: false, error: "No autorizado" };
+    }
+  }
+
+  // Rate limit por identidad (admin o cliente). 60 patches / 10s cubre bursts
+  // legítimos (toggles rápidos, drags) y corta abuso sostenido. In-memory por
+  // lambda — upgrade a Upstash Redis cuando escalemos (ver lib/rate-limit.ts).
+  const rateKey = adminSession.valid
+    ? `patch:admin:${adminSession.adminId}`
+    : `patch:cliente:${clienteSession!.clienteId}`;
+  const rl = await rateLimit(rateKey, { max: 60, windowMs: 10_000 });
+  if (!rl.ok) {
+    return {
+      success: false,
+      error: `Demasiadas escrituras. Intentá en ${rl.resetInSec}s.`,
+    };
+  }
+
+  // Allowlist + type/size/URL caps. Keys fuera del schema o types inválidos
+  // se dropean silenciosamente; excesos de tamaño se truncan. Si no sobrevive
+  // nada, skip el write (típicamente significa patch malicioso o con bug).
+  const sanitized = sanitizeOnboardingPatch(patch);
+  if (Object.keys(sanitized).length === 0) {
+    return { success: true };
+  }
+
+  const atomic = await proyectos.atomicPatchOnboarding(id, sanitized);
   if (!atomic.success) {
     return { success: false, error: atomic.error };
   }
@@ -771,7 +806,9 @@ export async function logoutCliente() {
   cookieStore.delete(CLIENTE_COOKIE);
 }
 
-export async function validateClienteSession() {
+export async function validateClienteSession(): Promise<
+  { valid: true; clienteId: string } | { valid: false; clienteId?: undefined }
+> {
   const cookieStore = await cookies();
   const raw = cookieStore.get(CLIENTE_COOKIE)?.value;
   if (!raw) return { valid: false };
@@ -782,13 +819,18 @@ export async function validateClienteSession() {
       where: eq(clientesTable.id, clienteId),
       columns: { activeSessionId: true },
     });
-    return { valid: cliente?.activeSessionId === sessionId };
+    if (cliente?.activeSessionId === sessionId) {
+      return { valid: true, clienteId };
+    }
+    return { valid: false };
   } catch {
     return { valid: false };
   }
 }
 
-export async function validateAdminSession() {
+export async function validateAdminSession(): Promise<
+  { valid: true; adminId: string } | { valid: false; adminId?: undefined }
+> {
   const session = await getSession();
   if (!session?.user) return { valid: false };
 
@@ -805,9 +847,12 @@ export async function validateAdminSession() {
     const currentEnv = process.env.NODE_ENV === "production" ? "prod" : "dev";
     const dbSessionEnv = admin.activeSessionId?.split(":")[0];
     if (!admin.activeSessionId || dbSessionEnv !== currentEnv) {
-      return { valid: true };
+      return { valid: true, adminId };
     }
-    return { valid: admin.activeSessionId === sessionId };
+    if (admin.activeSessionId === sessionId) {
+      return { valid: true, adminId };
+    }
+    return { valid: false };
   } catch {
     return { valid: false };
   }

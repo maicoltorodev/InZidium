@@ -8,21 +8,7 @@ import { FieldItem } from "../primitives/FieldItem";
 import { ToggleRow } from "../primitives/ToggleRow";
 import { MOTION } from "../primitives/motion";
 import { WhatsAppIcon } from "../primitives/BrandIcons";
-import {
-  formatEmail,
-  formatPhoneDigitsCO,
-  fullPhoneCO,
-} from "@/lib/input-formatters";
-
-// Formatter para mostrar teléfonos en formato CO completo mientras el user
-// escribe: "+57 300 123 45 67". Guarda el string formateado — es lo que se
-// publica en el sitio del cliente.
-const formatPhoneDisplayCO = (raw: string) =>
-  fullPhoneCO(formatPhoneDigitsCO(raw));
-
-// Formatter para fabPhone (número para wa.me URLs): solo dígitos con código
-// de país, ej: "573001234567". Sin espacios ni `+`.
-const formatWaPhone = (raw: string) => raw.replace(/\D/g, "").slice(0, 15);
+import { phoneMaskCO, emailMask } from "@/lib/input-masks";
 
 export function ContactoSection({
   d,
@@ -60,7 +46,7 @@ export function ContactoSection({
           <AutoField
             value={d.whatsapp}
             onSave={(v) => savePatch({ whatsapp: v })}
-            format={formatPhoneDisplayCO}
+            mask={phoneMaskCO}
             placeholder="+57 300 000 0000"
             type="tel"
             inputMode="tel"
@@ -76,7 +62,7 @@ export function ContactoSection({
           <AutoField
             value={d.telefono}
             onSave={(v) => savePatch({ telefono: v })}
-            format={formatPhoneDisplayCO}
+            mask={phoneMaskCO}
             placeholder="+57 300 000 0000"
             type="tel"
             inputMode="tel"
@@ -92,7 +78,7 @@ export function ContactoSection({
           <AutoField
             value={d.email}
             onSave={(v) => savePatch({ email: v })}
-            format={formatEmail}
+            mask={emailMask}
             placeholder="hola@tuempresa.com"
             type="email"
             inputMode="email"
@@ -132,14 +118,15 @@ export function ContactoSection({
               <div className="relative mt-3 rounded-2xl border border-white/[0.05] bg-white/[0.02] p-4 space-y-3">
                 <div>
                   <label className="mb-1 block text-[9px] font-black uppercase tracking-[0.22em] text-white/30">
-                    Número (sin +)
+                    Número
                   </label>
                   <AutoField
                     value={d.fabPhone}
                     onSave={(v) => savePatch({ fabPhone: v })}
-                    format={formatWaPhone}
-                    placeholder="573001234567"
-                    inputMode="numeric"
+                    mask={phoneMaskCO}
+                    placeholder="+57 300 000 0000"
+                    type="tel"
+                    inputMode="tel"
                   />
                 </div>
                 <div>
