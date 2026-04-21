@@ -131,6 +131,54 @@ export const DrizzleProvider: IDataProvider = {
         return { success: false, error: "Error al eliminar proyecto" };
       }
     },
+    atomicPatchOnboarding: async (id, patch) => {
+      try {
+        const result = await db.transaction(async (tx) => {
+          // SELECT FOR UPDATE: toma un row lock exclusivo. Cualquier otra
+          // transacción que intente SELECT FOR UPDATE o UPDATE sobre este
+          // row espera hasta que commiteemos. Postgres serializa
+          // transacciones concurrentes — zero race posible.
+          const rows = await tx
+            .select()
+            .from(proyectos)
+            .where(and(eq(proyectos.id, id), eq(proyectos.estudioId, estudioId)))
+            .for("update");
+          if (rows.length === 0) {
+            return { notFound: true } as const;
+          }
+          const prev = rows[0];
+          const prevData = (prev.onboardingData as any) ?? {};
+          const merged: Record<string, any> = { ...prevData, ...patch };
+          // Derivación: seoCanonicalUrl sigue el dominio (se calcula dentro
+          // de la transacción para mantener la atomicidad del write).
+          if (Object.prototype.hasOwnProperty.call(patch, "dominioUno")) {
+            merged.seoCanonicalUrl = patch.dominioUno
+              ? `https://www.${patch.dominioUno}.com`
+              : "";
+          }
+          await tx
+            .update(proyectos)
+            .set({ onboardingStep: 1, onboardingData: merged })
+            .where(
+              and(eq(proyectos.id, id), eq(proyectos.estudioId, estudioId)),
+            );
+          return { notFound: false, prev, merged } as const;
+        });
+        if (result.notFound) {
+          return { success: false as const, error: "Proyecto no existe" };
+        }
+        return {
+          success: true as const,
+          prev: result.prev as any as Proyecto,
+          merged: result.merged,
+        };
+      } catch (e) {
+        return {
+          success: false as const,
+          error: "Error al actualizar proyecto",
+        };
+      }
+    },
   },
 
   auth: {

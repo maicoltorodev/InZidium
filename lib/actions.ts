@@ -303,13 +303,13 @@ export async function iniciarConstruccion(id: string, durationDays: number) {
 /**
  * Aplica un patch parcial al `onboardingData` del proyecto.
  *
- * El merge ocurre en el servidor leyendo el estado DB actual y mezclándolo
- * con el `patch`. Esto evita la race de "último-que-escribe-pisa-al-otro"
- * cuando cliente y admin editan campos distintos en simultáneo: cada uno
- * manda sólo su delta, el server reconcilia.
+ * El read + merge + write ocurre atómicamente en Postgres vía
+ * `atomicPatchOnboarding` (transacción con `SELECT FOR UPDATE`). Cualquier
+ * escritura concurrente sobre el mismo proyecto se serializa — imposible
+ * que dos patches se pisen, incluso si cliente y admin editan el mismo
+ * campo al mismo tiempo, o si un user dispara clicks rápidos.
  *
- * Efectos colaterales:
- *  - Deriva `seoCanonicalUrl` cuando se toca `dominioUno`.
+ * Efectos colaterales (fuera de la transacción, idempotentes):
  *  - Dispara `onboarding.started` la primera vez que se llena data.
  *  - Auto-transición a fase `construccion` al completar el 100% (plan Estándar).
  *  - Revalida admin + cliente y notifica a la Plantilla Web para refrescar cache.
@@ -318,41 +318,29 @@ export async function updateProyectoOnboarding(
   id: string,
   patch: Record<string, any>,
 ) {
-  const all = await proyectos.getAll();
-  const prev = (all as any[]).find((p: any) => p.id === id);
-  const prevData = (prev?.onboardingData as any) ?? {};
-
-  // Merge servidor-lado: estado actual + patch. Único punto de autoridad.
-  const merged: Record<string, any> = { ...prevData, ...patch };
-
-  // Derivación: si cambió el dominio, el canonical sigue el dominio.
-  if (Object.prototype.hasOwnProperty.call(patch, "dominioUno")) {
-    merged.seoCanonicalUrl = patch.dominioUno
-      ? `https://www.${patch.dominioUno}.com`
-      : "";
+  const atomic = await proyectos.atomicPatchOnboarding(id, patch);
+  if (!atomic.success) {
+    return { success: false, error: atomic.error };
   }
+  const { prev, merged } = atomic;
+  const prevData = (prev.onboardingData as any) ?? {};
 
+  // Noti: primer campo llenado del onboarding. Recargamos el proyecto con
+  // la relación `cliente` porque el edge function de notify-event la usa.
   const prevHadData = Object.keys(prevData).some(
     (k) => prevData[k] != null && prevData[k] !== "",
   );
-
-  const res = await proyectos.update(id, {
-    onboardingStep: 1,
-    onboardingData: merged,
-  });
-  if (!res.success) return res;
-
-  // Noti: primer campo llenado del onboarding.
   const nextHasData = Object.keys(merged).some(
     (k) => merged[k] != null && merged[k] !== "",
   );
-  if (!prevHadData && nextHasData && prev) {
-    notifyEvent("onboarding.started", prev);
+  if (!prevHadData && nextHasData) {
+    const full = await proyectos.getById(id);
+    if (full) notifyEvent("onboarding.started", full);
   }
 
   // Auto-transición: 100% completado → fase construccion + countdown 48h.
   try {
-    if (prev && prev.fase === "onboarding" && isOnboardingComplete(merged)) {
+    if (prev.fase === "onboarding" && isOnboardingComplete(merged)) {
       const now = new Date();
       const fechaEntrega = new Date(now.getTime() + 48 * 3600 * 1000);
       await proyectos.update(id, {
@@ -360,7 +348,8 @@ export async function updateProyectoOnboarding(
         buildStartedAt: now,
         fechaEntrega,
       } as any);
-      notifyEvent("onboarding.completed", prev);
+      const full = await proyectos.getById(id);
+      if (full) notifyEvent("onboarding.completed", full);
     }
   } catch {
     // Nunca bloquear el savePatch del cliente por error en transición.
@@ -368,7 +357,7 @@ export async function updateProyectoOnboarding(
 
   revalidateProyecto();
   notifyPlantillaRevalidate(id);
-  return res;
+  return { success: true };
 }
 
 /**

@@ -83,9 +83,6 @@ export default function CompactProjectsPortal({
 
   async function refreshPortalData() {
     if (!data) return;
-    // [HORARIOS] DEBUG — borrar cuando se confirme el bug
-    const callId = Math.random().toString(36).slice(2, 7);
-    console.log(`[HORARIOS] refreshPortalData start id=${callId}`);
     const result = await refetchClienteProyectos();
     if (result.status === "not_authenticated") {
       setData(null);
@@ -96,16 +93,7 @@ export default function CompactProjectsPortal({
     setData(result);
     if (selectedProject) {
       const updated = result.proyectos.find((p: any) => p.id === selectedProject.id);
-      if (updated) {
-        // [HORARIOS] DEBUG
-        const h = updated.onboardingData?.hours;
-        if (h) {
-          console.log(
-            `[HORARIOS] refreshPortalData id=${callId} setServerProject hours=${JSON.stringify(h)}`,
-          );
-        }
-        setSelectedProject(updated);
-      }
+      if (updated) setSelectedProject(updated);
       else setSelectedProject(null);
     }
   }

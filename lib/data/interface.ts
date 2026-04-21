@@ -25,6 +25,24 @@ export interface IDataProvider {
         create(data: Omit<Proyecto, 'id' | 'createdAt' | 'fechaInicio' | 'onboardingStep' | 'onboardingData'>): Promise<{ success: boolean; error?: string }>;
         update(id: string, data: Partial<Proyecto>): Promise<{ success: boolean; error?: string }>;
         delete(id: string): Promise<{ success: boolean; error?: string }>;
+        /**
+         * Aplica un patch al `onboardingData` del proyecto de forma atómica.
+         *
+         * Read + merge + write dentro de una transacción con `SELECT FOR UPDATE`.
+         * Postgres toma un row lock exclusivo, serializando cualquier otra
+         * escritura concurrente sobre el mismo proyecto. Evita el race
+         * "último-que-escribe-pisa-al-otro" cuando cliente y admin editan a
+         * la vez, o cuando un mismo user dispara varios patches rápidos que
+         * tocan la misma key (ej: horarios, catálogo).
+         *
+         * Devuelve `prev` (estado anterior) y `merged` (estado escrito), que
+         * el caller usa para disparar side-effects como notificaciones o
+         * transición de fase.
+         */
+        atomicPatchOnboarding(id: string, patch: Record<string, any>): Promise<
+            | { success: true; prev: Proyecto; merged: Record<string, any> }
+            | { success: false; error: string }
+        >;
     };
 
     // 🛡️ Auth / Admins

@@ -81,7 +81,27 @@ export const MockProvider: IDataProvider = {
             if (idx === -1) return { success: false, error: 'No encontrado' };
             MOCK_PROYECTOS.splice(idx, 1);
             return { success: true };
-        }
+        },
+        atomicPatchOnboarding: async (id, patch) => {
+            // Mock corre single-threaded en memoria — no hay race que proteger.
+            // Equivalente semántico al drizzle provider.
+            const idx = MOCK_PROYECTOS.findIndex(p => p.id === id);
+            if (idx === -1) return { success: false as const, error: 'No encontrado' };
+            const prev = { ...MOCK_PROYECTOS[idx] };
+            const prevData = (prev.onboardingData as any) ?? {};
+            const merged: Record<string, any> = { ...prevData, ...patch };
+            if (Object.prototype.hasOwnProperty.call(patch, "dominioUno")) {
+                merged.seoCanonicalUrl = patch.dominioUno
+                    ? `https://www.${patch.dominioUno}.com`
+                    : "";
+            }
+            MOCK_PROYECTOS[idx] = {
+                ...MOCK_PROYECTOS[idx],
+                onboardingData: merged,
+                onboardingStep: 1,
+            };
+            return { success: true as const, prev, merged };
+        },
     },
     auth: {
         getUserByUsername: async (username) => {

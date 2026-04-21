@@ -80,11 +80,8 @@ export function UbicacionSection({
     return patch;
   };
 
-  const updateDay = (key: DayKey, v: string) => {
-    // [HORARIOS] DEBUG — borrar cuando se confirme el bug
-    console.log(`[HORARIOS] updateDay(${key}, "${v}"), mode=${mode}, savedMode=${savedMode ?? "undef"}`);
+  const updateDay = (key: DayKey, v: string) =>
     savePatch(withMode({ hours: { ...hours, [key]: v } }));
-  };
 
   // Al editar el card agrupado "L-V", escribimos el mismo valor a los 5 keys
   // para mantener la serialización por día que consume la plantilla.

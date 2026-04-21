@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { Clock, Plus, X } from "lucide-react";
 import { BRAND_ICON_STYLE } from "./BrandDefs";
 import { TimePicker } from "./TimePicker";
@@ -107,26 +107,11 @@ export function DayScheduleInput({
     value: string;
     onSave: (v: string) => void;
 }) {
-    // [HORARIOS] DEBUG — borrar este useEffect cuando se confirme el bug
-    const prevValueRef = useRef(value);
-    useEffect(() => {
-        if (prevValueRef.current !== value) {
-            console.log(
-                `[HORARIOS] value prop changed for "${label}":`,
-                JSON.stringify(prevValueRef.current),
-                "→",
-                JSON.stringify(value),
-            );
-            prevValueRef.current = value;
-        }
-    }, [value, label]);
-
     const schedule = useMemo(() => parseSchedule(value), [value]);
     const closed = schedule.closed;
     const split = !schedule.closed && (schedule as any).split;
 
     const setClosed = (c: boolean) => {
-        console.log(`[HORARIOS] click ${c ? "Cerrado" : "Abierto"} en "${label}"`);
         if (c) return onSave("closed");
         onSave(
             serializeSchedule({

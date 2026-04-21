@@ -9,26 +9,35 @@ import { updateProyectoOnboarding } from "@/lib/actions";
  *
  * ## Patrón: server state + pending mutations queue
  *
- * El problema clásico del optimistic update es que "UI state" y "server state"
- * viven en la misma variable, y cualquier refresh que llegue del server con
- * data stale pisa el optimistic. Este hook los separa:
+ * "UI state" y "server state" están separados:
  *
  * - `serverProject` (prop `project`) = lo que vino del server. Puede ser stale.
  * - `pendings[]` = patches que el user aplicó pero el server aún no confirmó.
- * - `displayedProject` = `serverProject` con cada pending mergeada arriba. Es
- *   lo que los componentes consumen.
+ * - `displayedProject` = `serverProject` con cada pending mergeada arriba.
+ *   Es lo que los componentes consumen.
+ *
+ * ### Por qué funciona sin parches ni serialización en cliente
+ *
+ * El server action `updateProyectoOnboarding` usa
+ * `atomicPatchOnboarding` — un `read → merge → write` dentro de una
+ * transacción con `SELECT FOR UPDATE`. Postgres serializa escrituras
+ * concurrentes sobre el mismo proyecto automáticamente. Dos clientes (o un
+ * cliente con clicks rápidos) nunca pueden pisarse: cada patch se aplica
+ * sobre el estado más reciente.
+ *
+ * Con esa garantía del server, acá solo manejamos optimistic UI.
  *
  * ### Flujo
  *
- * 1. Click → `savePatch(patch)` añade a `pendings`. `displayedProject` refleja
- *    el cambio inmediatamente.
+ * 1. Click → `savePatch(patch)` añade a `pendings`. `displayedProject`
+ *    refleja el cambio inmediatamente.
  * 2. `await updateProyectoOnboarding(id, patch)` manda al server.
- * 3. Realtime event → `setServerProject(fresh)` (desde el consumidor).
- *    `displayedProject` sigue correcto: las pendings se aplican arriba aunque
- *    `fresh` esté stale.
- * 4. Cuando `serverProject.onboardingData` contiene el patch aplicado, la
- *    pending se limpia. `displayedProject === serverProject`.
- * 5. Si el server falla, la pending se descarta y disparamos `onError`.
+ * 3. Evento realtime → el consumidor llama `setServerProject(fresh)`.
+ *    `displayedProject` sigue correcto: las pendings se aplican arriba
+ *    aunque `fresh` llegue stale.
+ * 4. Cuando `serverProject.onboardingData` ya contiene el patch, la pending
+ *    se limpia automáticamente. `displayedProject === serverProject`.
+ * 5. Si el server falla, la pending se descarta y se dispara `onError`.
  * 6. Safety: pendings > 10s sin confirmarse se descartan.
  */
 
@@ -71,28 +80,9 @@ export function useProyectoPatcher<T extends { id: string; onboardingData?: any 
   useEffect(() => {
     if (!serverProject) return;
     const serverData = serverProject.onboardingData ?? {};
-    // [HORARIOS] DEBUG — borrar cuando se confirme el bug
-    if (serverData.hours) {
-      console.log(
-        `[HORARIOS] serverProject changed, serverData.hours:`,
-        JSON.stringify(serverData.hours),
-      );
-    }
-    setPendings((prev) => {
-      const next = prev.filter((p) => !patchMatchesServer(p.patch, serverData));
-      // [HORARIOS] DEBUG
-      if (prev.length !== next.length) {
-        const removed = prev.filter((p) => !next.includes(p));
-        const removedHasHours = removed.some((p) => p.patch.hours);
-        if (removedHasHours) {
-          console.log(
-            `[HORARIOS] pending(s) with hours confirmed & removed:`,
-            removed.map((p) => ({ patch_hours: p.patch.hours, patch_hoursMode: p.patch.hoursMode })),
-          );
-        }
-      }
-      return next;
-    });
+    setPendings((prev) =>
+      prev.filter((p) => !patchMatchesServer(p.patch, serverData)),
+    );
   }, [serverProject]);
 
   // Safety net: descartar pendings que lleven > 10s sin confirmarse.
@@ -115,19 +105,9 @@ export function useProyectoPatcher<T extends { id: string; onboardingData?: any 
     async (patch: Record<string, any>) => {
       if (!serverProject) return;
       const id = Math.random().toString(36).slice(2);
-      // [HORARIOS] DEBUG — borrar cuando se confirme el bug
-      if (patch.hours || patch.hoursMode !== undefined) {
-        console.log(
-          `[HORARIOS] savePatch: hours=${JSON.stringify(patch.hours)} hoursMode=${patch.hoursMode}`,
-        );
-      }
       setPendings((prev) => [...prev, { id, patch, at: Date.now() }]);
       try {
         await updateProyectoOnboarding(serverProject.id, patch);
-        // [HORARIOS] DEBUG
-        if (patch.hours || patch.hoursMode !== undefined) {
-          console.log(`[HORARIOS] server action resolved for id=${id}`);
-        }
       } catch {
         setPendings((prev) => prev.filter((p) => p.id !== id));
         onError?.("No se pudo guardar. Inténtalo de nuevo.");
