@@ -586,7 +586,7 @@ export function CatalogoItemEditor({
                         onClick={onClose}
                         className="rounded-2xl bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] px-10 py-3 text-[11px] font-black uppercase tracking-[0.24em] text-white shadow-[0_8px_28px_-6px_rgba(168,85,247,0.65)] transition-transform hover:scale-[1.02]"
                     >
-                        Guardar
+                        Cerrar
                     </button>
                 </footer>
 
@@ -791,33 +791,6 @@ function SitePreviewCard({
                         Ver detalle
                     </span>
                 </div>
-
-                {/* Features como chips discretos si hay */}
-                {item.features && item.features.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                        {item.features.slice(0, 3).map((f, i) => (
-                            <span
-                                key={i}
-                                className="rounded-full border px-2 py-0.5 text-[10px]"
-                                style={{
-                                    borderColor: `${primary}40`,
-                                    color: textMuted,
-                                    background: `${primary}08`,
-                                }}
-                            >
-                                {f}
-                            </span>
-                        ))}
-                        {item.features.length > 3 && (
-                            <span
-                                className="text-[10px]"
-                                style={{ color: textMuted }}
-                            >
-                                +{item.features.length - 3} más
-                            </span>
-                        )}
-                    </div>
-                )}
             </div>
         </div>
         </div>

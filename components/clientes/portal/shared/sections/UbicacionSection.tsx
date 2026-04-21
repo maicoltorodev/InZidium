@@ -139,10 +139,13 @@ export function UbicacionSection({
           <AutoField
             value={d.direccion}
             onSave={(v) => savePatch({ direccion: v })}
-            placeholder="Calle 123 #45-67, Ciudad"
+            placeholder="Consultar dirección"
             className="w-full rounded-2xl border border-white/[0.08] bg-white/[0.03] pl-11 pr-4 py-3.5 text-sm text-white outline-none placeholder:text-white/20 focus:border-[#a855f7]/50 transition-colors"
           />
         </div>
+        <p className="mt-1.5 text-[11px] text-white/25">
+          Si lo dejás vacío, en tu sitio aparecerá este texto.
+        </p>
       </FieldItem>
 
       <FieldItem id="ubicacion-horarios">

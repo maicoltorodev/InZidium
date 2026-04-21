@@ -36,15 +36,21 @@ export function DomainCard({
   mode = "edit",
   onLockedTap,
   displayUrl,
+  linkLocked,
 }: {
   value: string;
   onSave?: (v: string) => void;
   mode?: Mode;
   onLockedTap?: () => void;
   displayUrl?: string | null;
+  /** Si true, el modo `edit` se renderiza sin input (solo display). Decisión
+   *  del admin via TabSettings.toggleProyectoLinkLock. No se le dice al cliente
+   *  que está bloqueado — solo cambia el diseño a read-only. */
+  linkLocked?: boolean;
 }) {
   if (mode === "live") return <LiveCard domain={value} displayUrl={displayUrl} />;
   if (mode === "locked") return <LockedCard domain={value} onTap={onLockedTap} displayUrl={displayUrl} />;
+  if (linkLocked) return <EditCardReadOnly value={value} displayUrl={displayUrl} />;
   return <EditCard value={value} onSave={onSave ?? (() => {})} />;
 }
 
@@ -90,6 +96,33 @@ function EditCard({ value, onSave }: { value: string; onSave: (v: string) => voi
       </div>
 
       <DomainWarning />
+    </motion.div>
+  );
+}
+
+// Variante read-only del EditCard: mismo frame y eyebrow pero sin DomainField
+// (no permite tipear) y sin warning. Se usa cuando el admin activó lock del
+// dominio. Visualmente sutil — no decimos al cliente que está bloqueado.
+function EditCardReadOnly({ value, displayUrl }: { value: string; displayUrl?: string | null }) {
+  const url = stripProtocol(displayUrl) || (value ? `www.${value}.com` : "");
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ ...MOTION.reveal, delay: 0.04 }}
+      className="relative mb-5 overflow-hidden rounded-[2rem] border border-[#a855f7]/25 bg-[linear-gradient(135deg,rgba(232,121,249,0.06)_0%,rgba(168,85,247,0.05)_50%,rgba(34,211,238,0.06)_100%)] p-5 shadow-[0_0_32px_-12px_rgba(168,85,247,0.4)]"
+    >
+      <div className="flex flex-col items-center text-center">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-500/20">
+          <Check className="h-5 w-5 text-emerald-400" strokeWidth={3} />
+        </div>
+        <p className="mt-3 inline-block bg-[linear-gradient(90deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] bg-clip-text text-[9px] font-black uppercase tracking-[0.28em] text-transparent">
+          Tu dominio
+        </p>
+        <p className="mt-2 break-all text-[16px] font-black leading-tight text-white">
+          {url || "Sin definir"}
+        </p>
+      </div>
     </motion.div>
   );
 }

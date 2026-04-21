@@ -124,7 +124,20 @@ export async function updateCliente(id: string, data: any) {
   }
 
   const res = await clientes.update(id, data);
-  if (res.success) revalidateAdmin();
+  if (res.success) {
+    revalidateAdmin();
+    // Push al owner: cliente editado + lista de campos modificados.
+    try {
+      const updated = await clientes.getById(id);
+      if (updated) {
+        notifyEvent("cliente.updated", updated, {
+          fields: Object.keys(data).filter((k) => data[k] !== undefined),
+        });
+      }
+    } catch {
+      // notify es fire-and-forget, no bloqueamos el save por un error de push.
+    }
+  }
   return res;
 }
 
@@ -210,7 +223,27 @@ export async function createProyecto(formData: FormData) {
 }
 
 export async function updateProyectoPlan(id: string, plan: string) {
+  // Capturamos plan previo ANTES del update para poder reportar "X → Y" en la noti.
+  const prev = await proyectos.getById(id);
+  const fromPlan = prev?.plan ?? "?";
   const res = await proyectos.update(id, { plan });
+  if (res.success) {
+    revalidateProyecto();
+    notifyPlantillaRevalidate(id);
+    if (fromPlan !== plan) {
+      try {
+        const updated = await proyectos.getById(id);
+        if (updated) {
+          notifyEvent("plan.changed", updated, { from: fromPlan, to: plan });
+        }
+      } catch {}
+    }
+  }
+  return res;
+}
+
+export async function updateProyectoLink(id: string, link: string) {
+  const res = await proyectos.update(id, { link });
   if (res.success) {
     revalidateProyecto();
     notifyPlantillaRevalidate(id);
@@ -218,8 +251,29 @@ export async function updateProyectoPlan(id: string, plan: string) {
   return res;
 }
 
-export async function updateProyectoLink(id: string, link: string) {
-  const res = await proyectos.update(id, { link });
+/**
+ * Bloquea/desbloquea el dominio para edición del cliente. Solo el admin puede
+ * togglear. Cuando `linkLocked = true` el cliente no puede patchear
+ * `dominioUno`/`seoCanonicalUrl` desde su portal — el sanitizer dropea esos
+ * keys silenciosamente. Side effect: si se activa el lock y `proyectos.link`
+ * está vacío, copiamos el `dominioUno` del onboarding como link inicial para
+ * que el lock tenga un valor concreto.
+ */
+export async function toggleProyectoLinkLock(id: string, locked: boolean) {
+  const adminSession = await validateAdminSession();
+  if (!adminSession.valid) return { success: false, error: "No autorizado" };
+
+  const proj = await proyectos.getById(id);
+  if (!proj) return { success: false, error: "No autorizado" };
+
+  const patch: Record<string, any> = { linkLocked: locked };
+  // Convenience: al activar lock sin link explícito, sembrarlo desde dominioUno.
+  if (locked && !proj.link?.trim()) {
+    const dominioUno = (proj.onboardingData as any)?.dominioUno?.trim();
+    if (dominioUno) patch.link = `www.${dominioUno}.com`;
+  }
+
+  const res = await proyectos.update(id, patch);
   if (res.success) {
     revalidateProyecto();
     notifyPlantillaRevalidate(id);
@@ -264,6 +318,47 @@ export async function publicarProyecto(id: string) {
   if (res.success) {
     revalidateProyecto();
     notifyPlantillaRevalidate(id);
+  }
+  return res;
+}
+
+/**
+ * Inicia construcción para plan Estándar — disparado por el cliente desde el
+ * modal "felicidades" tras completar el 100% del onboarding. Countdown fijo
+ * 48h. Auth: cliente dueño del proyecto O admin del estudio. Requiere
+ * `isOnboardingComplete(onboardingData)` y `fase === "onboarding"`.
+ */
+export async function iniciarConstruccionEstandar(id: string) {
+  const proj = await proyectos.getById(id);
+  if (!proj) return { success: false, error: "No autorizado" };
+
+  // Auth: admin del estudio O cliente dueño.
+  const adminSession = await validateAdminSession();
+  if (!adminSession.valid) {
+    const clienteSession = await validateClienteSession();
+    if (!clienteSession.valid || clienteSession.clienteId !== proj.clienteId) {
+      return { success: false, error: "No autorizado" };
+    }
+  }
+
+  if (proj.fase !== "onboarding") {
+    return { success: false, error: "El proyecto ya no está en onboarding" };
+  }
+  if (!isOnboardingComplete(proj.onboardingData)) {
+    return { success: false, error: "Onboarding incompleto" };
+  }
+
+  const now = new Date();
+  const fechaEntrega = new Date(now.getTime() + 48 * 3600 * 1000);
+  const res = await proyectos.update(id, {
+    fase: "construccion",
+    buildStartedAt: now,
+    fechaEntrega,
+  } as any);
+  if (res.success) {
+    revalidateProyecto();
+    notifyPlantillaRevalidate(id);
+    notifyEvent("onboarding.completed", proj);
   }
   return res;
 }
@@ -349,6 +444,15 @@ export async function updateProyectoOnboarding(
   // se dropean silenciosamente; excesos de tamaño se truncan. Si no sobrevive
   // nada, skip el write (típicamente significa patch malicioso o con bug).
   const sanitized = sanitizeOnboardingPatch(patch);
+
+  // Lock del dominio: si está activo y el caller es cliente (no admin),
+  // dropeamos los keys de dominio del patch. El admin sigue pudiendo editarlos
+  // libremente (uno de los caminos para overridear es justamente el admin).
+  if ((proj as any).linkLocked && !adminSession.valid) {
+    delete sanitized.dominioUno;
+    delete sanitized.seoCanonicalUrl;
+  }
+
   if (Object.keys(sanitized).length === 0) {
     return { success: true };
   }
@@ -373,22 +477,10 @@ export async function updateProyectoOnboarding(
     if (full) notifyEvent("onboarding.started", full);
   }
 
-  // Auto-transición: 100% completado → fase construccion + countdown 48h.
-  try {
-    if (prev.fase === "onboarding" && isOnboardingComplete(merged)) {
-      const now = new Date();
-      const fechaEntrega = new Date(now.getTime() + 48 * 3600 * 1000);
-      await proyectos.update(id, {
-        fase: "construccion",
-        buildStartedAt: now,
-        fechaEntrega,
-      } as any);
-      const full = await proyectos.getById(id);
-      if (full) notifyEvent("onboarding.completed", full);
-    }
-  } catch {
-    // Nunca bloquear el savePatch del cliente por error en transición.
-  }
+  // La transición onboarding → construccion ya NO es automática al 100%.
+  // Ahora la dispara el cliente desde el hub vía `iniciarConstruccionEstandar`
+  // tras confirmar el modal "felicidades + tu dominio". Esto refuerza la
+  // importancia del dominio antes de que el countdown arranque.
 
   revalidateProyecto();
   notifyPlantillaRevalidate(id);

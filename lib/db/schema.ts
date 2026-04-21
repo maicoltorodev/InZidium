@@ -43,6 +43,7 @@ export const proyectos = pgTable("proyectos", {
     buildStartedAt: timestamp("build_started_at"),
     freezeMode: boolean("freeze_mode").default(false).notNull(),
     link: varchar("link", { length: 255 }),
+    linkLocked: boolean("link_locked").default(false).notNull(),
     fechaInicio: timestamp("fecha_inicio").defaultNow().notNull(),
     fechaEntrega: timestamp("fecha_entrega"),
     onboardingStep: integer("onboarding_step").default(0).notNull(),

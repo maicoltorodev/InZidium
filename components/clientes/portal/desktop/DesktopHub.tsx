@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Settings2, ChevronRight, CheckCircle2, ExternalLink, Sparkles } from "lucide-react";
 import { getSectionCompletion } from "../types";
@@ -10,10 +10,12 @@ import { SectionCard } from "../shared/primitives/SectionCard";
 import { DomainCard } from "../shared/primitives/DomainCard";
 import { CountdownCard } from "../shared/primitives/CountdownCard";
 import { BuildModal } from "../shared/primitives/BuildModal";
+import { OnboardingCompleteModal } from "../shared/primitives/OnboardingCompleteModal";
 import { PhaseTimeline } from "../shared/primitives/PhaseTimeline";
 import { MOTION, STAGGER, usePrefersReducedMotion } from "../shared/primitives/motion";
 import { BrandDivider } from "../shared/primitives/BrandDivider";
 import { HUB_SECTIONS, getCatalogoSubtitle, type SectionKey } from "../shared/sections/registry";
+import { iniciarConstruccionEstandar } from "@/lib/actions";
 
 export type HubKey = SectionKey;
 
@@ -33,6 +35,7 @@ function buildLiveUrl(data: any, projectLink?: string | null): string | null {
 }
 
 export function DesktopHub({
+  projectId,
   clientName,
   projectName,
   data,
@@ -47,7 +50,9 @@ export function DesktopHub({
   hasUnread,
   lastAdminMessage,
   projectLink,
+  linkLocked,
 }: {
+  projectId: string;
   clientName: string;
   projectName: string;
   data: any;
@@ -62,9 +67,11 @@ export function DesktopHub({
   hasUnread: boolean;
   lastAdminMessage?: string;
   projectLink?: string | null;
+  linkLocked?: boolean;
 }) {
   const reduced = usePrefersReducedMotion();
   const [buildModalOpen, setBuildModalOpen] = useState(false);
+  const [completeModalOpen, setCompleteModalOpen] = useState(false);
 
   const sectionsLocked = fase === "construccion";
   const isLive = fase === "publicado";
@@ -88,6 +95,23 @@ export function DesktopHub({
   const totalSteps = HUB_SECTIONS.length + 1;
   const completedCount = sectionsCompleted + (domainComplete ? 1 : 0);
   const progressPct = Math.round((completedCount / totalSteps) * 100);
+
+  // Modal "felicidades" cuando el cliente vuelve al hub habiendo completado
+  // 100% en fase onboarding. NO se puede cerrar — solo confirmar dispara la
+  // transición a construccion. Al cambiar a fase=construccion vía realtime,
+  // este efecto deja de mantenerlo abierto.
+  useEffect(() => {
+    if (isOnboarding && progressPct === 100) {
+      setCompleteModalOpen(true);
+    } else {
+      setCompleteModalOpen(false);
+    }
+  }, [isOnboarding, progressPct]);
+
+  // URL a mostrar en el modal — admin link gana, fallback a www.{dominioUno}.com
+  const completeModalDomain =
+    projectLink?.trim().replace(/^https?:\/\//i, "") ||
+    (data.dominioUno ? `www.${data.dominioUno}.com` : "");
 
   const heroCopy = isOnboarding
     ? progressPct === 100
@@ -216,6 +240,7 @@ export function DesktopHub({
               mode={isBuilding ? "locked" : isLive ? "live" : "edit"}
               onLockedTap={isBuilding ? () => setBuildModalOpen(true) : undefined}
               displayUrl={projectLink}
+              linkLocked={linkLocked}
             />
           </div>
         </div>
@@ -292,6 +317,20 @@ export function DesktopHub({
         open={buildModalOpen}
         onClose={() => setBuildModalOpen(false)}
         domain={projectLink?.trim() || data.dominioUno}
+      />
+
+      <OnboardingCompleteModal
+        open={completeModalOpen}
+        onConfirm={async () => {
+          const res = await iniciarConstruccionEstandar(projectId);
+          if (res.success) {
+            // El cambio de fase llega por realtime y el efecto del Hub cierra
+            // el modal cuando isOnboarding pasa a false.
+            setCompleteModalOpen(false);
+          }
+        }}
+        domain={completeModalDomain}
+        linkLocked={linkLocked}
       />
     </motion.main>
   );

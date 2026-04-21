@@ -140,6 +140,7 @@ export function DesktopOnboarding({
       <TipoNegocioGate data={d} clientName={clientName} savePatch={savePatch} />
       {view === "hub" && (
         <DesktopHub
+          projectId={project.id}
           clientName={clientName}
           projectName={project.nombre ?? ""}
           data={d}
@@ -162,6 +163,7 @@ export function DesktopOnboarding({
           hasUnread={chatInfo.hasUnread}
           lastAdminMessage={chatInfo.preview}
           projectLink={project.link ?? null}
+          linkLocked={(project as any).linkLocked ?? false}
         />
       )}
 

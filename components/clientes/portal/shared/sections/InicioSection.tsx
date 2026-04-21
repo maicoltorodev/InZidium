@@ -35,10 +35,11 @@ export function InicioSection({
         <AutoField
           value={d.slogan}
           onSave={(v) => savePatch({ slogan: v })}
-          placeholder="Ej. Creamos experiencias visuales"
+          placeholder="Productos y servicios de calidad"
         />
         <p className="mt-1.5 text-[11px] text-white/25">
-          Una frase corta que resuma tu negocio.
+          Una frase corta que resuma tu negocio. Si lo dejás vacío, en tu sitio
+          aparecerá este texto.
         </p>
       </FieldItem>
 

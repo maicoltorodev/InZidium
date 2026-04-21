@@ -148,6 +148,7 @@ export function mergeProyectoPayload<T extends Record<string, any>>(
     fechaEntrega: pickDate("fecha_entrega", prev.fechaEntrega),
     buildStartedAt: pickDate("build_started_at", prev.buildStartedAt),
     link: pick("link", prev.link),
+    linkLocked: pick("link_locked", prev.linkLocked),
     plan: pick("plan", prev.plan),
     nombre: pick("nombre", prev.nombre),
     freezeMode: pick("freeze_mode", prev.freezeMode),

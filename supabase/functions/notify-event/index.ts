@@ -32,9 +32,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 type EventType =
     | "cliente.created"
+    | "cliente.updated"
     | "cliente.deleted"
     | "proyecto.created"
     | "proyecto.deleted"
+    | "plan.changed"
     | "chat.message"
     | "onboarding.started"
     | "onboarding.completed"
@@ -62,12 +64,16 @@ function kindOf(event: EventType): string {
     switch (event) {
         case "cliente.created":
             return "CLIENTE";
+        case "cliente.updated":
+            return "CLIENTE_UPDATED";
         case "cliente.deleted":
             return "CLIENTE_DELETED";
         case "proyecto.created":
             return "PROYECTO";
         case "proyecto.deleted":
             return "PROYECTO_DELETED";
+        case "plan.changed":
+            return "PLAN_CHANGED";
         case "chat.message":
             return "CHAT";
         case "onboarding.started":
@@ -127,11 +133,25 @@ function compose(event: EventType, p: Payload): Message {
                 body: r.nombre ?? "Cliente sin nombre",
                 data: baseData(),
             };
+        case "cliente.updated": {
+            const fields = Array.isArray(extra.fields) ? extra.fields.join(", ") : "datos";
+            return {
+                title: "Cliente editado",
+                body: `${r.nombre ?? "Cliente"} · ${fields}`,
+                data: baseData(),
+            };
+        }
         case "cliente.deleted":
             return {
                 title: "Cliente eliminado",
                 body: r.nombre ?? "Cliente",
                 data: baseData(),
+            };
+        case "plan.changed":
+            return {
+                title: "Cambio de plan",
+                body: `${r.nombre ?? "Proyecto"} · ${extra.from ?? "?"} → ${extra.to ?? "?"}`,
+                data: baseData(r.id),
             };
         case "proyecto.created":
             return {

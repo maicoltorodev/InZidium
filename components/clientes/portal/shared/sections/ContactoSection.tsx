@@ -92,9 +92,13 @@ export function ContactoSection({
         <AutoTextarea
           value={d.textoFooter}
           onSave={(v) => savePatch({ textoFooter: v })}
-          placeholder="Un texto corto sobre el negocio para el pie de página."
+          placeholder="Te acompañamos con soluciones pensadas a tu medida."
           rows={3}
         />
+        <p className="mt-1.5 text-[11px] text-white/25">
+          Aparece en el pie de página. Si lo dejás vacío, en tu sitio aparecerá
+          este texto.
+        </p>
       </FieldItem>
 
       {/* FAB WhatsApp */}
@@ -138,6 +142,27 @@ export function ContactoSection({
                     onSave={(v) => savePatch({ fabMessage: v })}
                     placeholder="Hola, me interesa conocer más sobre tus servicios."
                   />
+                </div>
+
+                {/* Bubble que aparece automáticamente al primer click del visitante.
+                    Si está vacío no aparece — el cliente puede tener el FAB sin
+                    el bubble. */}
+                <div>
+                  <label className="mb-1 block text-[9px] font-black uppercase tracking-[0.22em] text-white/30">
+                    Saludo automático
+                    <span className="ml-1.5 font-normal normal-case tracking-normal text-white/25">
+                      — opcional
+                    </span>
+                  </label>
+                  <AutoField
+                    value={d.fabPromptMessage}
+                    onSave={(v) => savePatch({ fabPromptMessage: v })}
+                    placeholder="¡Escríbenos y te ayudamos!"
+                  />
+                  <p className="mt-1 text-[10px] leading-snug text-white/35">
+                    Aparece como burbuja saliendo del botón al primer click del
+                    visitante (una sola vez por visita).
+                  </p>
                 </div>
 
                 {/* Live preview */}

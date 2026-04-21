@@ -57,9 +57,12 @@ export function NosotrosSection({
         <AutoTextarea
           value={d.descripcion}
           onSave={(v) => savePatch({ descripcion: v })}
-          placeholder="Nuestra empresa se dedica a…"
+          placeholder="Somos un equipo apasionado por entregar resultados de calidad."
           rows={4}
         />
+        <p className="mt-1.5 text-[11px] text-white/25">
+          Si lo dejás vacío, en tu sitio aparecerá este texto.
+        </p>
       </FieldItem>
 
       <FieldItem id="nosotros-mision">
@@ -67,9 +70,12 @@ export function NosotrosSection({
         <AutoTextarea
           value={d.mision}
           onSave={(v) => savePatch({ mision: v })}
-          placeholder="Nuestro propósito es…"
+          placeholder="Ofrecer productos y servicios que superen expectativas."
           rows={3}
         />
+        <p className="mt-1.5 text-[11px] text-white/25">
+          Si lo dejás vacío, en tu sitio aparecerá este texto.
+        </p>
       </FieldItem>
 
       <FieldItem id="nosotros-diferencial">
@@ -77,9 +83,12 @@ export function NosotrosSection({
         <AutoTextarea
           value={d.diferencial}
           onSave={(v) => savePatch({ diferencial: v })}
-          placeholder="Lo que nos hace únicos es…"
+          placeholder="Atención cercana, compromiso con los tiempos y calidad consistente."
           rows={3}
         />
+        <p className="mt-1.5 text-[11px] text-white/25">
+          Si lo dejás vacío, en tu sitio aparecerá este texto.
+        </p>
       </FieldItem>
 
       <FieldItem id="nosotros-foto">

@@ -48,6 +48,7 @@ const SIMPLE: Record<string, FieldRule> = {
     fabEnabled: { kind: "boolean" },
     fabPhone: { kind: "string", max: 25 },
     fabMessage: { kind: "string", max: 500 },
+    fabPromptMessage: { kind: "string", max: 200 },
     catalogoWhatsappButton: { kind: "boolean" },
 
     // Colores (hex #RRGGBB / #RRGGBBAA, cap 10 cubre ambos)

@@ -140,6 +140,7 @@ export function TabletOnboarding({
       <TipoNegocioGate data={d} clientName={clientName} savePatch={savePatch} />
       {view === "hub" && (
         <TabletHub
+          projectId={project.id}
           clientName={clientName}
           projectName={project.nombre ?? ""}
           data={d}
@@ -162,6 +163,7 @@ export function TabletOnboarding({
           hasUnread={chatInfo.hasUnread}
           lastAdminMessage={chatInfo.preview}
           projectLink={project.link ?? null}
+          linkLocked={(project as any).linkLocked ?? false}
         />
       )}
 

@@ -8,11 +8,15 @@ import {
   Trash2,
   X,
   Loader2,
+  Lock,
+  Unlock,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PLANS_ARRAY } from "@/lib/constants";
 import { ModalConfirm } from "@/components/ui/ModalConfirm";
 import { DeployPanel } from "./DeployPanel";
+import { toggleProyectoLinkLock } from "@/lib/actions";
+import { useToast } from "@/app/providers/ToastProvider";
 
 interface TabSettingsProps {
   project: any;
@@ -161,6 +165,12 @@ export function TabSettings({
                 <Edit2 className="w-4 h-4" />
               </button>
             </div>
+
+            {/* Lock del dominio: si está activo, el cliente no puede editar el
+                campo de dominio en su portal. El admin sigue pudiendo editarlo
+                desde acá libremente. */}
+            <LinkLockRow project={project} />
+
 
             {/* Plan Editor */}
             <div className="flex items-center justify-between gap-4 p-4 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
@@ -440,5 +450,78 @@ export function TabSettings({
         </div>
       )}
     </>
+  );
+}
+
+// Toggle dominio bloqueado/desbloqueado. Self-contained — llama el server action
+// directo y se actualiza vía realtime. No deciamos al cliente "está bloqueado"
+// (decisión del owner) — solo cambia su UI a read-only.
+function LinkLockRow({ project }: { project: any }) {
+  const [saving, setSaving] = React.useState(false);
+  const { showToast } = useToast();
+  const locked = !!project.linkLocked;
+
+  const onToggle = async () => {
+    if (saving) return;
+    setSaving(true);
+    try {
+      const res = await toggleProyectoLinkLock(project.id, !locked);
+      if (res.success) {
+        showToast(locked ? "DOMINIO DESBLOQUEADO" : "DOMINIO BLOQUEADO", "success");
+      } else {
+        showToast(res.error || "ERROR", "error");
+      }
+    } catch {
+      showToast("ERROR DE CONEXIÓN", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-between gap-4 p-4 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+      <div className="flex items-center gap-3 min-w-0">
+        <div
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors ${
+            locked
+              ? "bg-amber-500/10 ring-1 ring-amber-500/30"
+              : "bg-white/[0.04] ring-1 ring-white/[0.06]"
+          }`}
+        >
+          {locked ? (
+            <Lock className="w-4 h-4 text-amber-400" />
+          ) : (
+            <Unlock className="w-4 h-4 text-white/40" />
+          )}
+        </div>
+        <div className="min-w-0">
+          <h3 className="text-xs font-black uppercase tracking-widest text-white mb-1">
+            Bloquear dominio
+          </h3>
+          <p className="text-[10px] text-gray-500 font-bold uppercase">
+            {locked
+              ? "El cliente no puede editarlo"
+              : "El cliente puede editarlo desde su portal"}
+          </p>
+        </div>
+      </div>
+      <button
+        type="button"
+        onClick={onToggle}
+        disabled={saving}
+        aria-pressed={locked}
+        className={`relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:opacity-50 ${
+          locked
+            ? "bg-[linear-gradient(135deg,#f59e0b,#d97706)] shadow-[0_0_12px_-2px_rgba(245,158,11,0.6)]"
+            : "bg-white/[0.1]"
+        }`}
+      >
+        <span
+          className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-md transition-all ${
+            locked ? "right-0.5" : "left-0.5"
+          }`}
+        />
+      </button>
+    </div>
   );
 }
