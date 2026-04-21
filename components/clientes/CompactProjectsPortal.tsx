@@ -84,6 +84,11 @@ export default function CompactProjectsPortal({
   async function refreshPortalData(event?: RealtimeEvent) {
     if (!data) return;
 
+    // [DBG-UI] — remover cuando se confirme
+    console.log(
+      `[DBG-UI] refresh called. event?`, event ? { table: event.table, type: event.eventType, id: event.new?.id, monday: event.new?.onboarding_data?.hours?.monday } : "no-event",
+    );
+
     // Fast path: evento UPDATE sobre el proyecto actual → aplicamos
     // `payload.new` directo del replication stream. Evita el SELECT full
     // que por pgbouncer puede traer snapshot stale y desincronizar la UI.
@@ -94,11 +99,13 @@ export default function CompactProjectsPortal({
       selectedProject &&
       event.new?.id === selectedProject.id
     ) {
+      console.log(`[DBG-UI] FAST PATH — merging payload.new`);
       setSelectedProject((prev: any) =>
         prev ? mergeProyectoPayload(prev, event.new) : prev,
       );
       return;
     }
+    console.log(`[DBG-UI] SLOW PATH — refetch full`);
 
     // Slow path: refetch full (chat, archivos, INSERT/DELETE de proyectos,
     // o visibility change sin evento).
