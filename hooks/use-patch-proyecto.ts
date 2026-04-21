@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import { updateProyectoOnboarding } from "@/lib/actions";
 
 /**
@@ -17,6 +17,13 @@ import { updateProyectoOnboarding } from "@/lib/actions";
  * **Por qué el server merge:** si cliente y admin editan campos distintos en
  * simultáneo, cada uno manda sólo su delta. El server reconcilia contra el
  * estado actual, así ninguno pisa cambios del otro.
+ *
+ * **Por qué `isPatching`:** los eventos realtime de otras tablas (chat,
+ * archivos, otro proyecto del mismo estudio) pueden disparar `refreshData()`
+ * mientras un `updateProyectoOnboarding` está en vuelo. El SELECT trae
+ * estado stale (antes del commit) y pisa el optimistic — causando "clickeo
+ * cerrado, se ve cerrado, vuelve a abierto, vuelve a cerrado". El consumidor
+ * debe postergar el refresh si `isPatching()` devuelve true.
  */
 export function useProyectoPatcher<T extends { id: string; onboardingData?: any }>({
   project,
@@ -27,7 +34,9 @@ export function useProyectoPatcher<T extends { id: string; onboardingData?: any 
   setProject: (updater: (prev: T | null) => T | null) => void;
   onError?: (msg: string) => void;
 }) {
-  return useCallback(
+  const inFlightRef = useRef(0);
+
+  const savePatch = useCallback(
     async (patch: Record<string, any>) => {
       if (!project) return;
 
@@ -48,12 +57,25 @@ export function useProyectoPatcher<T extends { id: string; onboardingData?: any 
         return { ...prev, onboardingData: merged } as T;
       });
 
+      inFlightRef.current += 1;
       try {
         await updateProyectoOnboarding(project.id, patch);
       } catch {
         onError?.("No se pudo guardar. Inténtalo de nuevo.");
+      } finally {
+        // Buffer de 250ms antes de liberar el flag: el evento realtime del
+        // propio commit tarda ~50-150ms en llegar, y queremos que para ese
+        // momento cualquier refresh que se haya retrasado pueda correr y ver
+        // ya el estado nuevo.
+        setTimeout(() => {
+          inFlightRef.current = Math.max(0, inFlightRef.current - 1);
+        }, 250);
       }
     },
     [project, setProject, onError],
   );
+
+  const isPatching = useCallback(() => inFlightRef.current > 0, []);
+
+  return { savePatch, isPatching };
 }

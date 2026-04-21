@@ -72,7 +72,7 @@ export default function CompactProjectsPortal({
     setEvicted(false);
   };
 
-  const savePatch = useProyectoPatcher({
+  const { savePatch, isPatching } = useProyectoPatcher({
     project: selectedProject,
     setProject: setSelectedProject,
     onError: (msg) => showToast(msg, "error"),
@@ -80,6 +80,13 @@ export default function CompactProjectsPortal({
 
   async function refreshPortalData() {
     if (!data) return;
+    // Si hay un savePatch en vuelo, el SELECT ahora trae estado stale (antes
+    // del commit) y pisa el optimistic — causando el glitch "cerré un día y
+    // volvió a abrir". Retrasamos hasta que no haya patches pendientes.
+    if (isPatching()) {
+      setTimeout(refreshPortalData, 100);
+      return;
+    }
     const result = await refetchClienteProyectos();
     // Sólo limpiamos el estado cuando la sesión está genuinamente cerrada
     // (cookie inválida / evicted). Otros estados (no_projects) no deben

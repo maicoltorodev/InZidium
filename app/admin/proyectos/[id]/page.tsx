@@ -90,8 +90,19 @@ export default function ProyectoDetalle() {
     loadProject();
   }, []);
 
-  // Realtime: recarga silenciosamente si cambia algo en el proyecto, chat o archivos
-  useRealtimeRefresh(["proyectos", "chat", "archivos"], () => loadProject(true));
+  // Realtime: recarga silenciosamente si cambia algo en el proyecto, chat o archivos.
+  // Si hay un savePatchAdmin en vuelo, retrasamos el fetch — de lo contrario
+  // podríamos traer estado stale (pre-commit) y pisar el optimistic.
+  useRealtimeRefresh(["proyectos", "chat", "archivos"], () => {
+    const runRefresh = () => {
+      if (isPatchingAdmin()) {
+        setTimeout(runRefresh, 100);
+        return;
+      }
+      loadProject(true);
+    };
+    runRefresh();
+  });
 
   // Si cambia el plan y el tab activo ya no existe (ej: "sitioweb" -> custom),
   // caer a "overview".
@@ -139,11 +150,12 @@ export default function ProyectoDetalle() {
     }
   }
 
-  const savePatchAdmin = useProyectoPatcher({
-    project,
-    setProject,
-    onError: (msg) => showToast(msg, "error"),
-  });
+  const { savePatch: savePatchAdmin, isPatching: isPatchingAdmin } =
+    useProyectoPatcher({
+      project,
+      setProject,
+      onError: (msg) => showToast(msg, "error"),
+    });
 
   const handleConfirmNombreChange = async () => {
     if (!project) return;
