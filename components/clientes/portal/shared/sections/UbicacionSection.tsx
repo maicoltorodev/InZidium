@@ -153,24 +153,6 @@ export function UbicacionSection({
           domingo cambian, usa "L a V + fin de semana".
         </p>
 
-        {/* [DBG-BANNER] — remover cuando se confirme el bug. Muestra el
-            estado actual en vivo para diagnosticar por qué la UI "brinca". */}
-        <div className="mb-3 rounded-xl border border-yellow-500/30 bg-yellow-500/[0.06] p-3 font-mono text-[10px] text-yellow-200">
-          <div>
-            <b>[DBG]</b> render at: {new Date().toISOString().slice(11, 23)}
-          </div>
-          <div>
-            Monday = <b>{JSON.stringify(hours.monday ?? "(empty)")}</b>
-          </div>
-          <div>
-            Tuesday = <b>{JSON.stringify(hours.tuesday ?? "(empty)")}</b>
-          </div>
-          <div>
-            hoursMode = <b>{JSON.stringify(d.hoursMode ?? "(auto)")}</b>, mode ={" "}
-            <b>{mode}</b>
-          </div>
-        </div>
-
         {/* Selector de modo de agrupación */}
         <div className="mb-3 grid grid-cols-3 gap-1.5 rounded-2xl border border-white/[0.06] bg-black/20 p-1">
           <GroupChip
