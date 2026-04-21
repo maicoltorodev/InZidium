@@ -23,7 +23,10 @@ function subtitleFor(completion: "empty" | "partial" | "complete") {
   return "Por iniciar";
 }
 
-function buildLiveUrl(data: any): string | null {
+function buildLiveUrl(data: any, projectLink?: string | null): string | null {
+  // Admin wins: si hay `proyectos.link` seteado, ignoramos onboardingData.
+  const link = projectLink?.trim();
+  if (link) return /^https?:\/\//i.test(link) ? link : `https://${link}`;
   if (data?.seoCanonicalUrl) return data.seoCanonicalUrl;
   if (data?.dominioUno) return `https://www.${data.dominioUno}.com`;
   return null;
@@ -43,6 +46,7 @@ export function TabletHub({
   justCompleted,
   hasUnread,
   lastAdminMessage,
+  projectLink,
 }: {
   clientName: string;
   projectName: string;
@@ -57,6 +61,7 @@ export function TabletHub({
   justCompleted: string | null;
   hasUnread: boolean;
   lastAdminMessage?: string;
+  projectLink?: string | null;
 }) {
   const reduced = usePrefersReducedMotion();
   const [buildModalOpen, setBuildModalOpen] = useState(false);
@@ -77,7 +82,7 @@ export function TabletHub({
     return { nextSection: next, sectionsCompleted: completed };
   }, [data]);
 
-  const domainComplete = !!data.dominioUno;
+  const domainComplete = !!data.dominioUno || !!projectLink?.trim();
   const totalSteps = HUB_SECTIONS.length + 1;
   const completedCount = sectionsCompleted + (domainComplete ? 1 : 0);
   const progressPct = Math.round((completedCount / totalSteps) * 100);
@@ -100,7 +105,7 @@ export function TabletHub({
       ? "Si necesitas cambiar algo, escríbenos por Mensajes."
       : "Puedes editar cualquier información y se actualiza en tu sitio.";
 
-  const liveUrl = buildLiveUrl(data);
+  const liveUrl = buildLiveUrl(data, projectLink);
   const timelineSubtitle = isOnboarding
     ? `${completedCount} de ${totalSteps} listos`
     : isBuilding
@@ -184,6 +189,7 @@ export function TabletHub({
           onSave={!isBuilding && !isLive ? (v) => onDomainChange?.(v) : undefined}
           mode={isBuilding ? "locked" : isLive ? "live" : "edit"}
           onLockedTap={isBuilding ? () => setBuildModalOpen(true) : undefined}
+          displayUrl={projectLink}
         />
 
         {/* Sections grid 2-col */}
@@ -255,7 +261,7 @@ export function TabletHub({
       <BuildModal
         open={buildModalOpen}
         onClose={() => setBuildModalOpen(false)}
-        domain={data.dominioUno}
+        domain={projectLink?.trim() || data.dominioUno}
       />
     </motion.main>
   );

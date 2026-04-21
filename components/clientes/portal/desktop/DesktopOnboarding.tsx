@@ -161,6 +161,7 @@ export function DesktopOnboarding({
           justCompleted={justCompleted}
           hasUnread={chatInfo.hasUnread}
           lastAdminMessage={chatInfo.preview}
+          projectLink={project.link ?? null}
         />
       )}
 

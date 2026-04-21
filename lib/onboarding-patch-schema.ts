@@ -48,6 +48,7 @@ const SIMPLE: Record<string, FieldRule> = {
     fabEnabled: { kind: "boolean" },
     fabPhone: { kind: "string", max: 25 },
     fabMessage: { kind: "string", max: 500 },
+    catalogoWhatsappButton: { kind: "boolean" },
 
     // Colores (hex #RRGGBB / #RRGGBBAA, cap 10 cubre ambos)
     colorFondo: { kind: "string", max: 10 },
@@ -130,7 +131,7 @@ function sanitizeCatalogoItem(item: unknown): Record<string, any> | null {
     const imagen = typeof i.imagen === "string" && (i.imagen === "" || HTTPS_RE.test(i.imagen))
         ? i.imagen.slice(0, 1000)
         : "";
-    return {
+    const out: Record<string, any> = {
         id: typeof i.id === "string" ? i.id.slice(0, 50) : "",
         titulo: typeof i.titulo === "string" ? i.titulo.slice(0, 120) : "",
         descripcion: typeof i.descripcion === "string" ? i.descripcion.slice(0, 500) : "",
@@ -144,6 +145,8 @@ function sanitizeCatalogoItem(item: unknown): Record<string, any> | null {
                   .slice(0, 20)
             : [],
     };
+    if (typeof i.disabled === "boolean") out.disabled = i.disabled;
+    return out;
 }
 
 function sanitizeCategorias(value: unknown): string[] | undefined {

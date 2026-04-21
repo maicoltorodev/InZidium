@@ -11,6 +11,7 @@ import {
     Image as ImageIcon,
     Check,
     Tag,
+    EyeOff,
 } from "lucide-react";
 import { uploadProjectFile } from "@/lib/client/upload-archivo";
 import { AutoField, AutoTextarea, StringArrayField } from "../fields";
@@ -506,6 +507,19 @@ export function CatalogoItemEditor({
                             />
                         </section>
 
+                        {/* Visibilidad — permite esconder sin perder la data.
+                            Útil para servicios temporalmente pausados o platos
+                            agotados en menús. */}
+                        <section>
+                            <ToggleRow
+                                icon={EyeOff}
+                                title="Ocultar del sitio"
+                                description={`La card queda guardada acá pero no aparece en tu sitio público. Ideal para pausar ${cfg.singular.toLowerCase()}s temporalmente.`}
+                                checked={!!item.disabled}
+                                onChange={(next) => onChange({ ...item, disabled: next })}
+                            />
+                        </section>
+
                         {/* Zona destructiva — al final y discreta para que no
                             compita con la acción principal (guardar). */}
                         <section className="border-t border-white/[0.04] pt-5">
@@ -694,8 +708,15 @@ function SitePreviewCard({
     const Icon = cfg.icon;
 
     return (
+        <div className="relative">
+            {item.disabled && (
+                <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-2 rounded-t-2xl bg-[linear-gradient(90deg,rgba(248,113,113,0.92),rgba(239,68,68,0.92))] py-1.5 text-[9px] font-black uppercase tracking-[0.24em] text-white">
+                    <EyeOff className="h-3 w-3" />
+                    Oculto del sitio
+                </div>
+            )}
         <div
-            className="overflow-hidden rounded-2xl border"
+            className={`overflow-hidden rounded-2xl border ${item.disabled ? "opacity-50" : ""}`}
             style={{ background: bg, borderColor: `${text}1a` }}
         >
             {/* Imagen con overlay y categoría */}
@@ -799,6 +820,7 @@ function SitePreviewCard({
                 )}
             </div>
         </div>
+        </div>
     );
 }
 
@@ -842,18 +864,18 @@ function SitePreviewDetail({
 }) {
     const { primary, accent, bg, text, textMuted } = theme;
     const Icon = cfg.icon;
-    const includes =
-        item.features && item.features.length > 0
-            ? item.features
-            : [
-                  "Atención personalizada",
-                  "Asesoría incluida",
-                  "Entrega a tiempo",
-              ];
+    const includes = item.features ?? [];
 
     return (
+        <div className="relative">
+            {item.disabled && (
+                <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-2 rounded-t-2xl bg-[linear-gradient(90deg,rgba(248,113,113,0.92),rgba(239,68,68,0.92))] py-1.5 text-[9px] font-black uppercase tracking-[0.24em] text-white">
+                    <EyeOff className="h-3 w-3" />
+                    Oculto del sitio
+                </div>
+            )}
         <div
-            className="overflow-hidden rounded-2xl border"
+            className={`overflow-hidden rounded-2xl border ${item.disabled ? "opacity-50" : ""}`}
             style={{ background: bg, borderColor: `${text}1a` }}
         >
             {/* Imagen con overlays (pills arriba + título abajo) */}
@@ -918,39 +940,41 @@ function SitePreviewDetail({
                             "."}
                 </p>
 
-                <div
-                    className="rounded-xl border p-3"
-                    style={{
-                        borderColor: `${text}1a`,
-                        background: `${primary}06`,
-                    }}
-                >
-                    <p
-                        className="mb-2 text-[9px] font-bold uppercase tracking-[0.24em]"
-                        style={{ color: textMuted }}
+                {includes.length > 0 && (
+                    <div
+                        className="rounded-xl border p-3"
+                        style={{
+                            borderColor: `${text}1a`,
+                            background: `${primary}06`,
+                        }}
                     >
-                        ¿Qué incluye?
-                    </p>
-                    <div className="space-y-1.5">
-                        {includes.slice(0, 4).map((line, idx) => (
-                            <div key={idx} className="flex items-start gap-2">
-                                <span
-                                    className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
-                                    style={{
-                                        background:
-                                            idx % 2 === 0 ? primary : accent,
-                                    }}
-                                />
-                                <p
-                                    className="text-[12px] leading-snug"
-                                    style={{ color: `${text}c7` }}
-                                >
-                                    {line}
-                                </p>
-                            </div>
-                        ))}
+                        <p
+                            className="mb-2 text-[9px] font-bold uppercase tracking-[0.24em]"
+                            style={{ color: textMuted }}
+                        >
+                            Detalles
+                        </p>
+                        <div className="space-y-1.5">
+                            {includes.slice(0, 4).map((line, idx) => (
+                                <div key={idx} className="flex items-start gap-2">
+                                    <span
+                                        className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
+                                        style={{
+                                            background:
+                                                idx % 2 === 0 ? primary : accent,
+                                        }}
+                                    />
+                                    <p
+                                        className="text-[12px] leading-snug"
+                                        style={{ color: `${text}c7` }}
+                                    >
+                                        {line}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Botones simulados */}
                 <div className="space-y-2 pt-1">
@@ -974,6 +998,7 @@ function SitePreviewDetail({
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     );
 }

@@ -8,6 +8,8 @@ export interface CatalogoItem {
   categoria: string;
   imagen: string;
   features: string[];
+  /** Si es true, la card queda guardada en el admin pero no se muestra en el sitio. */
+  disabled?: boolean;
 }
 
 export interface HoraItem {

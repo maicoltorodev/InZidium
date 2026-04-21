@@ -4,7 +4,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   BriefcaseBusiness, ShoppingBag, UtensilsCrossed,
-  Plus, Image as ImageIcon, Trash2, Loader2, X, Tag, Check,
+  Plus, Image as ImageIcon, Trash2, Loader2, X, Tag, Check, EyeOff,
+  MessageCircle,
 } from "lucide-react";
 import { uploadProjectFile } from "@/lib/client/upload-archivo";
 import { labelCls } from "../../styles";
@@ -211,6 +212,18 @@ export function CatalogoSection({
         )}
       </FieldItem>
 
+      {/* Toggle WhatsApp en las cards del detalle — afecta al modal que se abre
+          al clickear "Ver detalle" en el sitio. Default prendido. */}
+      <FieldItem>
+        <ToggleRow
+          icon={MessageCircle}
+          title="Botón de WhatsApp en el detalle"
+          description={`Muestra un CTA "Consultar por WhatsApp" en el modal que se abre al clickear "Ver detalle" de un ${cfg.singular.toLowerCase()}.`}
+          checked={d.catalogoWhatsappButton ?? true}
+          onChange={(next) => savePatch({ catalogoWhatsappButton: next })}
+        />
+      </FieldItem>
+
       {/* Categorías — bajo la lista porque es opcional y no es la primera acción */}
       <FieldItem>
         <label className={labelCls}>
@@ -335,8 +348,14 @@ function CatalogoCard({
       whileTap={{ scale: 0.99 }}
       whileHover={{ y: -2 }}
       transition={MOTION.tap}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] text-left transition-colors hover:border-[#a855f7]/30"
+      className={`group relative flex flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] text-left transition-colors hover:border-[#a855f7]/30 ${item.disabled ? "opacity-60" : ""}`}
     >
+      {item.disabled && (
+        <div className="absolute right-3 top-3 z-20 flex items-center gap-1 rounded-full bg-[linear-gradient(90deg,rgba(248,113,113,0.92),rgba(239,68,68,0.92))] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.2em] text-white shadow-lg backdrop-blur-sm">
+          <EyeOff className="h-3 w-3" />
+          Oculto
+        </div>
+      )}
       {/* Imagen 4:3 con overlay y categoría pill */}
       <div className="relative aspect-[4/3] w-full overflow-hidden">
         {item.imagen ? (

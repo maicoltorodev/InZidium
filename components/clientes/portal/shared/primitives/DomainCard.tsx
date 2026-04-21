@@ -9,6 +9,13 @@ import { BRAND_ICON_STYLE } from "./BrandDefs";
 
 type Mode = "edit" | "locked" | "live";
 
+/** Quita `http://` / `https://` del display y trimea. Devuelve null si vacío. */
+function stripProtocol(raw?: string | null): string | null {
+  const v = raw?.trim();
+  if (!v) return null;
+  return v.replace(/^https?:\/\//i, "");
+}
+
 /**
  * Card de dominio en el hub. Tres variantes:
  *  - edit: onboarding, DomainField inline
@@ -17,20 +24,27 @@ type Mode = "edit" | "locked" | "live";
  *
  * El layout en mobile separa el dominio a su propia fila con `break-all`
  * para que `www.lo-que-sea.com` nunca se corte; en sm+ vuelve inline.
+ *
+ * `displayUrl` (override admin): si el admin seteó `proyectos.link`, ese valor
+ * se usa tal cual en locked/live sin envolver en `www.X.com`. Permite que el
+ * admin mantenga control sobre el dominio publicado aunque el cliente haya
+ * tipeado otra cosa en el onboarding.
  */
 export function DomainCard({
   value,
   onSave,
   mode = "edit",
   onLockedTap,
+  displayUrl,
 }: {
   value: string;
   onSave?: (v: string) => void;
   mode?: Mode;
   onLockedTap?: () => void;
+  displayUrl?: string | null;
 }) {
-  if (mode === "live") return <LiveCard domain={value} />;
-  if (mode === "locked") return <LockedCard domain={value} onTap={onLockedTap} />;
+  if (mode === "live") return <LiveCard domain={value} displayUrl={displayUrl} />;
+  if (mode === "locked") return <LockedCard domain={value} onTap={onLockedTap} displayUrl={displayUrl} />;
   return <EditCard value={value} onSave={onSave ?? (() => {})} />;
 }
 
@@ -141,8 +155,16 @@ function DomainWarning() {
 
 // ─── Locked (construccion) ───────────────────────────────────────────────────
 
-function LockedCard({ domain, onTap }: { domain: string; onTap?: () => void }) {
-  const fullDomain = `www.${domain || "tudominio"}.com`;
+function LockedCard({
+  domain,
+  onTap,
+  displayUrl,
+}: {
+  domain: string;
+  onTap?: () => void;
+  displayUrl?: string | null;
+}) {
+  const fullDomain = stripProtocol(displayUrl) || `www.${domain || "tudominio"}.com`;
   const [showInfo, setShowInfo] = useState(false);
   return (
     <motion.div
@@ -207,9 +229,20 @@ function LockedCard({ domain, onTap }: { domain: string; onTap?: () => void }) {
 
 // ─── Live (publicado) ────────────────────────────────────────────────────────
 
-function LiveCard({ domain }: { domain: string }) {
-  const href = domain ? `https://www.${domain}.com` : "#";
-  const fullDomain = `www.${domain || "tudominio"}.com`;
+function LiveCard({
+  domain,
+  displayUrl,
+}: {
+  domain: string;
+  displayUrl?: string | null;
+}) {
+  const adminUrl = displayUrl?.trim();
+  const fullDomain = stripProtocol(adminUrl) || `www.${domain || "tudominio"}.com`;
+  const href = adminUrl
+    ? (/^https?:\/\//i.test(adminUrl) ? adminUrl : `https://${adminUrl}`)
+    : domain
+      ? `https://www.${domain}.com`
+      : "#";
   return (
     <motion.a
       href={href}
