@@ -2,6 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Check } from "lucide-react";
+// Nota: `useEffect` + `useState` solo se usan para `pendingTipo` (modal de
+// confirmación local) y el `useDebounced` de la preview de Google Fonts. No
+// se usan para sincronizar data del proyecto — eso vive en `d`, que ya es el
+// `displayedProject` (server + pending mutations).
 import { AutoField, ImageField } from "../../fields";
 import { labelCls } from "../../styles";
 import { FieldItem } from "../primitives/FieldItem";
@@ -64,10 +68,10 @@ export function AvanzadoSection({
   uploadingFavicon: boolean;
   onUploadFavicon: (file: File) => void;
 }) {
-  const [fontInput, setFontInput] = useState<string>(d.fontPreset ?? "");
-  useEffect(() => setFontInput(d.fontPreset ?? ""), [d.fontPreset]);
-
-  const debouncedFont = useDebounced(fontInput, 300);
+  // Debounce sobre `d.fontPreset` directo — 300ms para no bombardear Google
+  // Fonts mientras el user tipea. `d` ya incluye optimistic (queue de
+  // mutaciones), así que no necesitamos estado local intermedio.
+  const debouncedFont = useDebounced(d.fontPreset ?? "", 300);
   const previewFont = useMemo(() => toGoogleFontName(debouncedFont), [debouncedFont]);
   useGoogleFont(previewFont);
 

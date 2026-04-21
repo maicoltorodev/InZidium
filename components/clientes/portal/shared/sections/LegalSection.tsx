@@ -16,12 +16,7 @@ function formatDisplayDate(iso: string | undefined): string {
   });
 }
 
-export function LegalSection({
-  d,
-}: {
-  d: any;
-  savePatch?: (patch: any) => void; // ya no se usa, queda por compat con orquestadores
-}) {
+export function LegalSection({ d }: { d: any }) {
   const tipoNegocio = (d?.tipoNegocio ?? d?.legalTemplate) as TipoNegocio | undefined;
   const cfg = tipoNegocio ? TIPO_NEGOCIO_MAP[tipoNegocio] : null;
 

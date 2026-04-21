@@ -57,8 +57,6 @@ export function useProyectoPatcher<T extends { id: string; onboardingData?: any 
   onError,
 }: {
   project: T | null;
-  /** Kept for backwards-compat with old call sites. Not used internally. */
-  setProject?: (updater: (prev: T | null) => T | null) => void;
   onError?: (msg: string) => void;
 }) {
   const [pendings, setPendings] = useState<PendingMutation[]>([]);

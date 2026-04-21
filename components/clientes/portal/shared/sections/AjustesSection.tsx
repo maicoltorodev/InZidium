@@ -22,7 +22,7 @@ export function AjustesSection({
 }) {
   return (
     <>
-      <LegalSection d={d} savePatch={savePatch} />
+      <LegalSection d={d} />
       <AvanzadoSection
         d={d}
         savePatch={savePatch}
