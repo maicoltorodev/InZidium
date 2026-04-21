@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import { Clock, Plus, X } from "lucide-react";
 import { BRAND_ICON_STYLE } from "./BrandDefs";
 import { TimePicker } from "./TimePicker";
@@ -107,40 +107,13 @@ export function DayScheduleInput({
     value: string;
     onSave: (v: string) => void;
 }) {
-    // Estado local con ventana de protección: cuando el user hace un cambio,
-    // lo guardamos localmente e ignoramos valores externos por 2s salvo que
-    // matcheen lo que acabamos de guardar (confirmación del server).
-    //
-    // Esto elimina el "brinco" cuando un refresh realtime llega con data
-    // stale (pre-commit) en medio del round-trip y pisa el optimistic.
-    // Pasados los 2s, si no llegó confirmación, aceptamos el valor externo
-    // — así un error de red no deja la UI pegada para siempre.
-    const [localValue, setLocalValue] = useState(value);
-    const pendingRef = useRef<{ value: string; at: number } | null>(null);
-
-    useEffect(() => {
-        const pending = pendingRef.current;
-        const now = Date.now();
-        if (pending && now - pending.at < 2000 && pending.value !== value) {
-            return;
-        }
-        setLocalValue(value);
-        pendingRef.current = null;
-    }, [value]);
-
-    const commit = (v: string) => {
-        pendingRef.current = { value: v, at: Date.now() };
-        setLocalValue(v);
-        onSave(v);
-    };
-
-    const schedule = useMemo(() => parseSchedule(localValue), [localValue]);
+    const schedule = useMemo(() => parseSchedule(value), [value]);
     const closed = schedule.closed;
     const split = !schedule.closed && (schedule as any).split;
 
     const setClosed = (c: boolean) => {
-        if (c) return commit("closed");
-        commit(
+        if (c) return onSave("closed");
+        onSave(
             serializeSchedule({
                 closed: false,
                 split: false,
@@ -159,7 +132,7 @@ export function DayScheduleInput({
                 open: string;
                 close: string;
             };
-            commit(
+            onSave(
                 serializeSchedule({
                     closed: false,
                     split: true,
@@ -176,7 +149,7 @@ export function DayScheduleInput({
                 openAm: string;
                 closePm: string;
             };
-            commit(
+            onSave(
                 serializeSchedule({
                     closed: false,
                     split: false,
@@ -195,7 +168,7 @@ export function DayScheduleInput({
             open: string;
             close: string;
         };
-        commit(serializeSchedule({ ...cur, [key]: v }));
+        onSave(serializeSchedule({ ...cur, [key]: v }));
     };
 
     const updateSplit = (
@@ -211,7 +184,7 @@ export function DayScheduleInput({
             openPm: string;
             closePm: string;
         };
-        commit(serializeSchedule({ ...cur, [key]: v }));
+        onSave(serializeSchedule({ ...cur, [key]: v }));
     };
 
     return (

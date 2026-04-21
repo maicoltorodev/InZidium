@@ -1,81 +1,170 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { updateProyectoOnboarding } from "@/lib/actions";
 
 /**
  * Hook compartido entre el portal cliente y el admin para aplicar cambios al
  * `onboardingData` de un proyecto.
  *
- * Flujo:
- *  1. Optimistic update local (UI responde al toque).
- *  2. Server action recibe sólo el patch — el merge definitivo ocurre del
- *     lado del server, leyendo el estado DB y mezclándolo atómicamente.
- *  3. Cuando el DB se actualiza, Supabase realtime dispara un refresh en el
- *     otro lado (admin ↔ cliente) y la pantalla se sincroniza automáticamente.
+ * ## Patrón: server state + pending mutations queue
  *
- * **Por qué el server merge:** si cliente y admin editan campos distintos en
- * simultáneo, cada uno manda sólo su delta. El server reconcilia contra el
- * estado actual, así ninguno pisa cambios del otro.
+ * El problema clásico del optimistic update es que "UI state" y "server state"
+ * viven en la misma variable, y cualquier refresh que llegue del server con
+ * data stale (pre-commit, pgbouncer snapshot, otra pestaña) pisa el optimistic
+ * y causa flicker. Parches tipo `isPatching() + setTimeout` o "ventana de
+ * protección por N segundos" atacan el síntoma, no la causa — y siempre hay
+ * un timing que los rompe.
  *
- * **Por qué `isPatching`:** los eventos realtime de otras tablas (chat,
- * archivos, otro proyecto del mismo estudio) pueden disparar `refreshData()`
- * mientras un `updateProyectoOnboarding` está en vuelo. El SELECT trae
- * estado stale (antes del commit) y pisa el optimistic — causando "clickeo
- * cerrado, se ve cerrado, vuelve a abierto, vuelve a cerrado". El consumidor
- * debe postergar el refresh si `isPatching()` devuelve true.
+ * Este hook los separa explícitamente:
+ *
+ * - `serverProject` (prop `project`) = lo que vino del server. Es la fuente
+ *   autoritativa y puede ser stale; no importa.
+ * - `pendings[]` = lista de patches que el user aplicó pero el server aún no
+ *   confirmó.
+ * - `displayedProject` = `serverProject` con cada pending mergeado arriba.
+ *   Es lo que los componentes consumen.
+ *
+ * ### Flujo
+ *
+ * 1. Click → `savePatch(patch)` añade `{id, patch, at}` a `pendings`.
+ *    `displayedProject` refleja el cambio inmediatamente.
+ * 2. `await updateProyectoOnboarding(id, patch)` manda al server.
+ * 3. Realtime event → `setServerProject(fresh)` (desde el consumidor).
+ *    `displayedProject` sigue correcto: incluso si `fresh` está stale, las
+ *    pendings siguen mergeadas arriba.
+ * 4. Cuando `serverProject.onboardingData` ya tiene todos los values del
+ *    patch aplicados (el server confirmó), el pending se limpia
+ *    automáticamente. `displayedProject === serverProject` — sin flicker.
+ * 5. Si el server falla (throw), la pending se descarta y disparamos
+ *    `onError`.
+ * 6. Safety net: pendings de más de 10s se descartan — si el server nunca
+ *    converge, la UI no se queda pegada.
+ *
+ * Esto es el mismo patrón de TanStack Query, Redux Toolkit Query, tRPC.
  */
+
+type PendingMutation = {
+  id: string;
+  patch: Record<string, any>;
+  at: number;
+};
+
+const PENDING_TIMEOUT_MS = 10_000;
+
 export function useProyectoPatcher<T extends { id: string; onboardingData?: any }>({
-  project,
-  setProject,
+  project: serverProject,
   onError,
 }: {
   project: T | null;
-  setProject: (updater: (prev: T | null) => T | null) => void;
+  /** Kept for backwards-compat with old call sites. Not used internally. */
+  setProject?: (updater: (prev: T | null) => T | null) => void;
   onError?: (msg: string) => void;
 }) {
-  const inFlightRef = useRef(0);
+  const [pendings, setPendings] = useState<PendingMutation[]>([]);
+
+  // displayedProject = serverProject con cada pending mergeado sobre
+  // onboardingData. Los componentes hijos consumen este valor.
+  const displayedProject = useMemo<T | null>(() => {
+    if (!serverProject) return null;
+    if (pendings.length === 0) return serverProject;
+
+    let onboardingData: Record<string, any> = {
+      ...(serverProject.onboardingData || {}),
+    };
+    for (const p of pendings) {
+      onboardingData = { ...onboardingData, ...p.patch };
+      if (Object.prototype.hasOwnProperty.call(p.patch, "dominioUno")) {
+        onboardingData.seoCanonicalUrl = p.patch.dominioUno
+          ? `https://www.${p.patch.dominioUno}.com`
+          : "";
+      }
+    }
+    return { ...serverProject, onboardingData } as T;
+  }, [serverProject, pendings]);
+
+  // Cleanup: cuando cambia el serverProject, revisamos qué pendings ya están
+  // confirmados (el server tiene el mismo valor para cada key del patch) y
+  // los removemos de la queue.
+  useEffect(() => {
+    if (!serverProject || pendings.length === 0) return;
+    const serverData = serverProject.onboardingData ?? {};
+    setPendings((prev) => prev.filter((p) => !patchMatchesServer(p.patch, serverData)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [serverProject]);
+
+  // Safety net: descartar pendings que lleven > 10s sin confirmarse. Evita
+  // que un error del server o una race deje la UI pegada en un estado
+  // optimistic para siempre.
+  useEffect(() => {
+    if (pendings.length === 0) return;
+    const earliestAt = Math.min(...pendings.map((p) => p.at));
+    const timer = setTimeout(
+      () => {
+        const now = Date.now();
+        setPendings((prev) =>
+          prev.filter((p) => now - p.at < PENDING_TIMEOUT_MS),
+        );
+      },
+      Math.max(0, PENDING_TIMEOUT_MS - (Date.now() - earliestAt)),
+    );
+    return () => clearTimeout(timer);
+  }, [pendings]);
 
   const savePatch = useCallback(
     async (patch: Record<string, any>) => {
-      if (!project) return;
-
-      // 1. Optimistic: mezclamos contra `prev` (estado fresco) y no contra
-      // `project` (closure del render). Dos savePatch seguidos en el mismo
-      // tick veían el mismo closure y el segundo pisaba al primero — por eso
-      // clickear varias redes sociales seguidas generaba el efecto "se
-      // desactivan/reactivan raro". El merge server-side autoritativo sigue
-      // reconciliando en el siguiente realtime tick.
-      setProject((prev) => {
-        if (!prev) return prev;
-        const merged = { ...(prev.onboardingData || {}), ...patch };
-        if (Object.prototype.hasOwnProperty.call(patch, "dominioUno")) {
-          merged.seoCanonicalUrl = patch.dominioUno
-            ? `https://www.${patch.dominioUno}.com`
-            : "";
-        }
-        return { ...prev, onboardingData: merged } as T;
-      });
-
-      inFlightRef.current += 1;
+      if (!serverProject) return;
+      const id = Math.random().toString(36).slice(2);
+      setPendings((prev) => [...prev, { id, patch, at: Date.now() }]);
       try {
-        await updateProyectoOnboarding(project.id, patch);
+        await updateProyectoOnboarding(serverProject.id, patch);
+        // No removemos aquí — el cleanup (useEffect de arriba) lo hace cuando
+        // el serverProject llegue con los valores confirmados. Si lo
+        // removemos acá, `displayedProject` parpadea: sin pending y sin
+        // server-refresh-aún, mostraría el valor previo.
       } catch {
+        setPendings((prev) => prev.filter((p) => p.id !== id));
         onError?.("No se pudo guardar. Inténtalo de nuevo.");
-      } finally {
-        // Buffer de 250ms antes de liberar el flag: el evento realtime del
-        // propio commit tarda ~50-150ms en llegar, y queremos que para ese
-        // momento cualquier refresh que se haya retrasado pueda correr y ver
-        // ya el estado nuevo.
-        setTimeout(() => {
-          inFlightRef.current = Math.max(0, inFlightRef.current - 1);
-        }, 250);
       }
     },
-    [project, setProject, onError],
+    [serverProject, onError],
   );
 
-  const isPatching = useCallback(() => inFlightRef.current > 0, []);
+  return { savePatch, displayedProject };
+}
 
-  return { savePatch, isPatching };
+/**
+ * ¿Cada key del patch tiene el mismo valor en serverData? Si sí, el server
+ * ya aplicó la mutación → podemos descartar la pending.
+ */
+function patchMatchesServer(
+  patch: Record<string, any>,
+  serverData: Record<string, any>,
+): boolean {
+  for (const key of Object.keys(patch)) {
+    if (!deepEqual(patch[key], serverData[key])) return false;
+  }
+  return true;
+}
+
+function deepEqual(a: any, b: any): boolean {
+  if (Object.is(a, b)) return true;
+  if (typeof a !== typeof b) return false;
+  if (a === null || b === null) return false;
+  if (typeof a !== "object") return false;
+  if (Array.isArray(a)) {
+    if (!Array.isArray(b) || a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (!deepEqual(a[i], b[i])) return false;
+    }
+    return true;
+  }
+  if (Array.isArray(b)) return false;
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) return false;
+  for (const k of keysA) {
+    if (!deepEqual(a[k], b[k])) return false;
+  }
+  return true;
 }

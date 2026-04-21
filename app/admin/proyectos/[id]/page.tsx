@@ -91,18 +91,10 @@ export default function ProyectoDetalle() {
   }, []);
 
   // Realtime: recarga silenciosamente si cambia algo en el proyecto, chat o archivos.
-  // Si hay un savePatchAdmin en vuelo, retrasamos el fetch — de lo contrario
-  // podríamos traer estado stale (pre-commit) y pisar el optimistic.
-  useRealtimeRefresh(["proyectos", "chat", "archivos"], () => {
-    const runRefresh = () => {
-      if (isPatchingAdmin()) {
-        setTimeout(runRefresh, 100);
-        return;
-      }
-      loadProject(true);
-    };
-    runRefresh();
-  });
+  // El patcher maneja el optimistic via mutation queue — el refresh puede
+  // correr libremente aunque haya patches en vuelo, las pendings siguen
+  // mergeadas arriba de `displayedProject`.
+  useRealtimeRefresh(["proyectos", "chat", "archivos"], () => loadProject(true));
 
   // Si cambia el plan y el tab activo ya no existe (ej: "sitioweb" -> custom),
   // caer a "overview".
@@ -150,12 +142,15 @@ export default function ProyectoDetalle() {
     }
   }
 
-  const { savePatch: savePatchAdmin, isPatching: isPatchingAdmin } =
-    useProyectoPatcher({
+  const { savePatch: savePatchAdmin, displayedProject } = useProyectoPatcher({
       project,
-      setProject,
       onError: (msg) => showToast(msg, "error"),
     });
+
+  // A los tabs les pasamos `displayedProject` (server + pending mutations)
+  // para que reflejen cambios del admin en el acto. Cae a `project` cuando
+  // no hay pendings: son equivalentes.
+  const viewProject = displayedProject ?? project;
 
   const handleConfirmNombreChange = async () => {
     if (!project) return;
@@ -493,7 +488,7 @@ export default function ProyectoDetalle() {
             {activeTab === "sitioweb" && (
               <TabSitioWeb
                 key="sitioweb"
-                project={project}
+                project={viewProject}
                 savePatch={savePatchAdmin}
                 showToast={showToast}
               />
@@ -507,7 +502,7 @@ export default function ProyectoDetalle() {
               {activeTab === "overview" && (
                 <TabOverview
                   key="overview"
-                  project={project}
+                  project={viewProject}
                   projectPlan={projectPlan}
                   setActiveTab={setActiveTab}
                 />
@@ -516,7 +511,7 @@ export default function ProyectoDetalle() {
               {activeTab === "communication" && (
                 <TabCommunication
                   key="communication"
-                  project={project}
+                  project={viewProject}
                   replyNote={replyNote}
                   setReplyNote={setReplyNote}
                   sendingReply={sendingReply}
@@ -531,7 +526,7 @@ export default function ProyectoDetalle() {
               {activeTab === "vault" && (
                 <TabVault
                   key="vault"
-                  project={project}
+                  project={viewProject}
                   uploading={uploading}
                   isDragging={isDragging}
                   isDeletingArchivo={isDeletingArchivo}
@@ -549,7 +544,7 @@ export default function ProyectoDetalle() {
               {activeTab === "settings" && (
                 <TabSettings
                   key="settings"
-                  project={project}
+                  project={viewProject}
                   projectPlan={projectPlan}
                   isEditingPlan={isEditingPlan}
                   setIsEditingPlan={setIsEditingPlan}
@@ -586,7 +581,7 @@ export default function ProyectoDetalle() {
               {activeTab === "finance" && (
                 <TabFinance
                   key="finance"
-                  project={project}
+                  project={viewProject}
                   projectId={params.id as string}
                   onUpdatePrecio={async (precio) => {
                     await updateProyectoPrecioCustom(params.id as string, precio);

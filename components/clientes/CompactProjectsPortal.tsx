@@ -72,27 +72,18 @@ export default function CompactProjectsPortal({
     setEvicted(false);
   };
 
-  const { savePatch, isPatching } = useProyectoPatcher({
+  // `selectedProject` ahora es el SERVER STATE crudo. El hook devuelve
+  // `displayedProject`, que es server + pending mutations mergeadas — y es
+  // lo que los componentes hijos consumen. Refreshes stale ya no pueden
+  // pisar cambios recién hechos: las pendings siempre ganan arriba.
+  const { savePatch, displayedProject } = useProyectoPatcher({
     project: selectedProject,
-    setProject: setSelectedProject,
     onError: (msg) => showToast(msg, "error"),
   });
 
   async function refreshPortalData() {
     if (!data) return;
-    // Si hay un savePatch en vuelo, el SELECT ahora trae estado stale (antes
-    // del commit) y pisa el optimistic — causando el glitch "cerré un día y
-    // volvió a abrir". Retrasamos hasta que no haya patches pendientes.
-    if (isPatching()) {
-      setTimeout(refreshPortalData, 100);
-      return;
-    }
     const result = await refetchClienteProyectos();
-    // Sólo limpiamos el estado cuando la sesión está genuinamente cerrada
-    // (cookie inválida / evicted). Otros estados (no_projects) no deben
-    // suceder para un cliente que ya tenía data cargada — si pasan, el
-    // evicción-hook se encargará; aquí mantenemos el estado para no sacar al
-    // usuario por eventos transitorios.
     if (result.status === "not_authenticated") {
       setData(null);
       setSelectedProject(null);
@@ -102,14 +93,8 @@ export default function CompactProjectsPortal({
     setData(result);
     if (selectedProject) {
       const updated = result.proyectos.find((p: any) => p.id === selectedProject.id);
-      if (updated) {
-        // Aceptar onboardingData fresh del server es imprescindible para que
-        // cambios hechos por el admin (desde otro dispositivo) se reflejen en
-        // vivo en el portal del cliente. Los campos del portal tienen su propio
-        // useState local con debounce, así que esto no interrumpe tipeo
-        // en curso.
-        setSelectedProject(updated);
-      } else setSelectedProject(null);
+      if (updated) setSelectedProject(updated);
+      else setSelectedProject(null);
     }
   }
 
@@ -231,11 +216,11 @@ export default function CompactProjectsPortal({
     );
   }
 
-  if (selectedProject) {
+  if (selectedProject && displayedProject) {
     return (
       <>
         <PortalPage
-          project={selectedProject}
+          project={displayedProject}
           clientName={data.cliente.nombre}
           savePatch={savePatch}
           onReset={resetPortal}

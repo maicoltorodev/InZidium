@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Instagram, Facebook, Youtube, Music, MessageCircle,
@@ -39,8 +38,6 @@ function stripPrefix(url: string | undefined, prefix: string): string {
   return url.replace(/^@/, "");
 }
 
-const GUARD_MS = 2000;
-
 export function RedesSection({
   d,
   savePatch,
@@ -48,64 +45,21 @@ export function RedesSection({
   d: any;
   savePatch: (patch: any) => void;
 }) {
-  // Estado local por network con ventana de protección de 2s, igual que en
-  // DayScheduleInput. Cuando el user agrega/quita/edita una red, guardamos
-  // el valor localmente y lo mantenemos aunque llegue un refresh con data
-  // stale (pre-commit). Pasados los 2s, aceptamos el valor externo — así un
-  // error de red no deja la chip pegada para siempre.
-  const [localValues, setLocalValues] = useState<Record<string, string>>(() => {
-    const init: Record<string, string> = {};
-    for (const n of NETWORKS) init[n.key] = d[n.key] ?? "";
-    return init;
-  });
-  const pendingsRef = useRef<Map<string, { value: string; at: number }>>(
-    new Map(),
-  );
+  const activeNetworks = NETWORKS.filter((n) => !!d[n.key]);
+  const inactiveNetworks = NETWORKS.filter((n) => !d[n.key]);
 
-  useEffect(() => {
-    const now = Date.now();
-    const next: Record<string, string> = {};
-    for (const n of NETWORKS) {
-      const external = d[n.key] ?? "";
-      const pending = pendingsRef.current.get(n.key);
-      if (
-        pending &&
-        now - pending.at < GUARD_MS &&
-        pending.value !== external
-      ) {
-        // Seguimos dentro de la ventana y el server todavía no confirmó:
-        // mantenemos el optimistic.
-        next[n.key] = pending.value;
-      } else {
-        // Expiró o el server ya confirmó: aceptamos el valor externo y
-        // limpiamos el pending.
-        pendingsRef.current.delete(n.key);
-        next[n.key] = external;
-      }
-    }
-    setLocalValues(next);
-  }, [d]);
-
-  const commit = (key: string, value: string) => {
-    pendingsRef.current.set(key, { value, at: Date.now() });
-    setLocalValues((prev) => ({ ...prev, [key]: value }));
-    savePatch({ [key]: value });
+  const addNetwork = (n: Network) => {
+    // Save with prefix so Plantilla Web recibe URL completa.
+    savePatch({ [n.key]: n.prefix });
   };
-
-  const addNetwork = (n: Network) => commit(n.key, n.prefix);
 
   const updateNetwork = (n: Network, handle: string) => {
     const clean = handle.trim();
-    const value = clean
-      ? `${n.prefix}${clean.replace(/^@/, "")}`
-      : "";
-    commit(n.key, value);
+    if (!clean) savePatch({ [n.key]: "" });
+    else savePatch({ [n.key]: `${n.prefix}${clean.replace(/^@/, "")}` });
   };
 
-  const removeNetwork = (n: Network) => commit(n.key, "");
-
-  const activeNetworks = NETWORKS.filter((n) => !!localValues[n.key]);
-  const inactiveNetworks = NETWORKS.filter((n) => !localValues[n.key]);
+  const removeNetwork = (n: Network) => savePatch({ [n.key]: "" });
 
   return (
     <>
@@ -129,7 +83,7 @@ export function RedesSection({
                       {n.prefix.replace(/^https:\/\//, "")}
                     </span>
                     <AutoField
-                      value={stripPrefix(localValues[n.key], n.prefix)}
+                      value={stripPrefix(d[n.key], n.prefix)}
                       onSave={(v) => updateNetwork(n, v)}
                       placeholder={n.placeholder}
                       className="flex-1 min-w-0 bg-transparent border-0 px-1 py-0 text-[13px] font-bold text-white outline-none placeholder:text-white/20"
