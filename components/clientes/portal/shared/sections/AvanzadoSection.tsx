@@ -12,6 +12,7 @@ import {
   type TipoNegocio,
 } from "../primitives/TipoNegocioModal";
 import { BRAND_ICON_STYLE } from "../primitives/BrandDefs";
+import { ModalConfirm } from "@/components/ui/ModalConfirm";
 
 const PRESETS = [
   { value: "modern",  label: "Modern" },
@@ -72,15 +73,17 @@ export function AvanzadoSection({
 
   const gaValid = !d.analyticsGAId || GA_RE.test(d.analyticsGAId);
 
+  const [pendingTipo, setPendingTipo] = useState<TipoNegocio | null>(null);
+
   const handleChangeTipo = (tipo: TipoNegocio) => {
     if (tipo === d.tipoNegocio) return;
-    const ok = window.confirm(
-      "Cambiar el tipo de negocio actualizará el nombre de tu catálogo " +
-      "(servicios / productos / platillos) y regenerará tus páginas legales. " +
-      "¿Quieres continuar?"
-    );
-    if (!ok) return;
-    savePatch(buildTipoNegocioPatch(tipo, d.legalLastUpdated));
+    setPendingTipo(tipo);
+  };
+
+  const confirmChangeTipo = () => {
+    if (!pendingTipo) return;
+    savePatch(buildTipoNegocioPatch(pendingTipo, d.legalLastUpdated));
+    setPendingTipo(null);
   };
 
   return (
@@ -217,6 +220,22 @@ export function AvanzadoSection({
           </p>
         )}
       </FieldItem>
+
+      {pendingTipo && (
+        <ModalConfirm
+          title="Cambiar tipo de negocio"
+          message={
+            <>
+              Se actualizará el nombre de tu catálogo (
+              {TIPO_NEGOCIO_MAP[pendingTipo].catalogoNoun.plural}) y se
+              regenerarán tus páginas legales. ¿Quieres continuar?
+            </>
+          }
+          confirmText="Sí, cambiar"
+          onCancel={() => setPendingTipo(null)}
+          onConfirm={confirmChangeTipo}
+        />
+      )}
     </>
   );
 }

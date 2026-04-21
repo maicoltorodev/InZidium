@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Phone, Mail, MessageCircle } from "lucide-react";
 import { AutoField, AutoTextarea } from "../../fields";
@@ -37,12 +36,15 @@ export function ContactoSection({
   // sin tener que volver a escribir todo al prenderlo.
   // Backfill: proyectos viejos sin el flag se consideran activos si tienen
   // número guardado.
+  //
+  // Derivamos el estado de `d` directamente (sin useState local) para que el
+  // realtime del admin lo refleje en vivo. Antes teníamos un state local que
+  // se inicializaba una sola vez y quedaba desincronizado si el admin tocaba
+  // el flag desde otro lado.
   const hasFabData = !!(d.fabPhone || d.fabMessage);
-  const fabEnabled = d.fabEnabled ?? hasFabData;
-  const [fabOpen, setFabOpen] = useState<boolean>(fabEnabled);
+  const fabOpen = d.fabEnabled ?? hasFabData;
 
   const toggleFab = (next: boolean) => {
-    setFabOpen(next);
     savePatch({ fabEnabled: next });
   };
 

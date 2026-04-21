@@ -72,21 +72,29 @@ export function UbicacionSection({
   const autoMode = useMemo(() => detectMode(hours), [hours]);
   const mode: GroupMode = savedMode ?? autoMode;
 
+  // Al primer cambio de horarios pegamos el modo actual a onboardingData, así
+  // los cambios siguientes no hacen que `detectMode` recalcule y reemplace el
+  // layout bajo los pies (causa del "intenté cerrar un día y volvió").
+  const withMode = (patch: Record<string, any>) => {
+    if (!savedMode) patch.hoursMode = mode;
+    return patch;
+  };
+
   const updateDay = (key: DayKey, v: string) =>
-    savePatch({ hours: { ...hours, [key]: v } });
+    savePatch(withMode({ hours: { ...hours, [key]: v } }));
 
   // Al editar el card agrupado "L-V", escribimos el mismo valor a los 5 keys
   // para mantener la serialización por día que consume la plantilla.
   const updateWeekdays = (v: string) => {
     const next = { ...hours };
     for (const k of WEEKDAY_KEYS) next[k] = v;
-    savePatch({ hours: next });
+    savePatch(withMode({ hours: next }));
   };
 
   const updateAll = (v: string) => {
     const next: Record<string, string> = {};
     for (const k of ALL_KEYS) next[k] = v;
-    savePatch({ hours: next });
+    savePatch(withMode({ hours: next }));
   };
 
   const setMode = (nextMode: GroupMode) => {

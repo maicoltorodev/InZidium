@@ -33,7 +33,7 @@ import { useRealtimeRefresh } from "@/hooks/use-realtime-refresh";
 import { AdminLoading } from "@/lib/ui/AdminLoading";
 
 import { NavTab } from "./_components/NavTab";
-import { ModalConfirm } from "./_components/ModalConfirm";
+import { ModalConfirm } from "@/components/ui/ModalConfirm";
 import { TabOverview } from "./_components/TabOverview";
 import { TabCommunication } from "./_components/TabCommunication";
 import { TabVault } from "./_components/TabVault";

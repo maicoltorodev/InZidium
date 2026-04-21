@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PLANS_ARRAY } from "@/lib/constants";
-import { ModalConfirm } from "./ModalConfirm";
+import { ModalConfirm } from "@/components/ui/ModalConfirm";
 import { DeployPanel } from "./DeployPanel";
 
 interface TabSettingsProps {

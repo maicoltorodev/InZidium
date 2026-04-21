@@ -31,18 +31,22 @@ export function useProyectoPatcher<T extends { id: string; onboardingData?: any 
     async (patch: Record<string, any>) => {
       if (!project) return;
 
-      // 1. Optimistic: mezclo localmente para feedback inmediato. El server
-      // igual hará el merge autoritativo, así que cualquier desync se corrige
-      // en el próximo realtime tick.
-      const optimistic = { ...(project.onboardingData || {}), ...patch };
-      if (Object.prototype.hasOwnProperty.call(patch, "dominioUno")) {
-        optimistic.seoCanonicalUrl = patch.dominioUno
-          ? `https://www.${patch.dominioUno}.com`
-          : "";
-      }
-      setProject((prev) =>
-        prev ? ({ ...prev, onboardingData: optimistic } as T) : prev,
-      );
+      // 1. Optimistic: mezclamos contra `prev` (estado fresco) y no contra
+      // `project` (closure del render). Dos savePatch seguidos en el mismo
+      // tick veían el mismo closure y el segundo pisaba al primero — por eso
+      // clickear varias redes sociales seguidas generaba el efecto "se
+      // desactivan/reactivan raro". El merge server-side autoritativo sigue
+      // reconciliando en el siguiente realtime tick.
+      setProject((prev) => {
+        if (!prev) return prev;
+        const merged = { ...(prev.onboardingData || {}), ...patch };
+        if (Object.prototype.hasOwnProperty.call(patch, "dominioUno")) {
+          merged.seoCanonicalUrl = patch.dominioUno
+            ? `https://www.${patch.dominioUno}.com`
+            : "";
+        }
+        return { ...prev, onboardingData: merged } as T;
+      });
 
       try {
         await updateProyectoOnboarding(project.id, patch);

@@ -71,7 +71,7 @@ export function LegalSection({
             <MessageSquare className="h-4 w-4 text-white/60" />
           </span>
           <p className="flex-1 min-w-0 text-[12px] leading-relaxed text-white/55">
-            ¿Necesitas personalizar tus páginas legales, o cambiar tu tipo de negocio? Avísanos por el{" "}
+            ¿Necesitas personalizar tus páginas legales? Avísanos por el{" "}
             <span className="font-semibold text-white/85">chat</span> y te ayudamos.
           </p>
         </div>

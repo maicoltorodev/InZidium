@@ -9,7 +9,7 @@ import {
 import { uploadProjectFile } from "@/lib/client/upload-archivo";
 import { labelCls } from "../../styles";
 import { newItem, type CatalogoItem, type TipoCatalogo } from "../../types";
-import { StringArrayField } from "../../fields";
+import { AutoField, AutoTextarea, StringArrayField } from "../../fields";
 import { FieldItem } from "../primitives/FieldItem";
 import { BottomSheet } from "../primitives/BottomSheet";
 import { ToggleRow } from "../primitives/ToggleRow";
@@ -491,9 +491,9 @@ function ItemForm({
       {/* Título */}
       <div>
         <label className={subLabelCls}>Título</label>
-        <input
+        <AutoField
           value={item.titulo}
-          onChange={(e) => onChange({ ...item, titulo: e.target.value })}
+          onSave={(v) => onChange({ ...item, titulo: v })}
           placeholder={cfg.placeholders.titulo}
           className={fieldCls}
           autoFocus
@@ -503,9 +503,9 @@ function ItemForm({
       {/* Descripción */}
       <div>
         <label className={subLabelCls}>Descripción</label>
-        <textarea
+        <AutoTextarea
           value={item.descripcion}
-          onChange={(e) => onChange({ ...item, descripcion: e.target.value })}
+          onSave={(v) => onChange({ ...item, descripcion: v })}
           placeholder={cfg.placeholders.descripcion}
           rows={3}
           className={`${fieldCls} resize-none`}
@@ -620,9 +620,9 @@ function ItemForm({
               transition={MOTION.reveal}
               className="overflow-hidden"
             >
-              <input
+              <AutoField
                 value={item.precio}
-                onChange={(e) => onChange({ ...item, precio: e.target.value })}
+                onSave={(v) => onChange({ ...item, precio: v })}
                 placeholder={cfg.placeholders.precio}
                 className={`${fieldCls} mt-2.5`}
               />

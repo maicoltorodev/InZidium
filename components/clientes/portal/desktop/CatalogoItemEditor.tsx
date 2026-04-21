@@ -13,7 +13,7 @@ import {
     Tag,
 } from "lucide-react";
 import { uploadProjectFile } from "@/lib/client/upload-archivo";
-import { StringArrayField } from "../fields";
+import { AutoField, AutoTextarea, StringArrayField } from "../fields";
 import { ToggleRow } from "../shared/primitives/ToggleRow";
 import { MOTION, usePrefersReducedMotion } from "../shared/primitives/motion";
 import { BrandDivider } from "../shared/primitives/BrandDivider";
@@ -268,25 +268,19 @@ export function CatalogoItemEditor({
                         <section>
                             <p className={groupLabel}>Básicos</p>
                             <div className="space-y-3">
-                                <input
+                                <AutoField
                                     autoFocus
                                     value={item.titulo}
-                                    onChange={(e) =>
-                                        onChange({
-                                            ...item,
-                                            titulo: e.target.value,
-                                        })
+                                    onSave={(v) =>
+                                        onChange({ ...item, titulo: v })
                                     }
                                     placeholder={cfg.placeholders.titulo}
                                     className={fieldCls}
                                 />
-                                <textarea
+                                <AutoTextarea
                                     value={item.descripcion}
-                                    onChange={(e) =>
-                                        onChange({
-                                            ...item,
-                                            descripcion: e.target.value,
-                                        })
+                                    onSave={(v) =>
+                                        onChange({ ...item, descripcion: v })
                                     }
                                     placeholder={cfg.placeholders.descripcion}
                                     rows={4}
@@ -468,13 +462,12 @@ export function CatalogoItemEditor({
                                                 transition={MOTION.reveal}
                                                 className="overflow-hidden"
                                             >
-                                                <input
+                                                <AutoField
                                                     value={item.precio}
-                                                    onChange={(e) =>
+                                                    onSave={(v) =>
                                                         onChange({
                                                             ...item,
-                                                            precio:
-                                                                e.target.value,
+                                                            precio: v,
                                                         })
                                                     }
                                                     placeholder={
