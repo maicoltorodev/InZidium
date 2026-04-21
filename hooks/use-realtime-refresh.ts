@@ -4,78 +4,64 @@ import { useEffect, useRef } from "react";
 import { supabaseClient } from "@/lib/supabase/client";
 import { publicEstudioId } from "@/lib/env";
 
-type RealtimeTable =
+export type RealtimeTable =
   | "clientes"
   | "proyectos"
   | "archivos"
   | "chat"
   | "administradores";
 
+export type RealtimeEvent = {
+  table: RealtimeTable;
+  eventType: "INSERT" | "UPDATE" | "DELETE";
+  /** Row post-change. Con REPLICA IDENTITY FULL trae todas las columnas. */
+  new: Record<string, any>;
+  /** Row pre-change (solo llena con REPLICA IDENTITY FULL en UPDATE/DELETE). */
+  old: Record<string, any>;
+};
+
 /**
- * Mantiene una vista del cliente sincronizada con la DB en tiempo real.
+ * Suscribe a eventos postgres_changes en las tablas especificadas y llama al
+ * callback con el payload.
  *
  * ## Flujo end-to-end
  *
  * ```
- * [server action]
- *       │  proyectos.update() ... chat.add() ... archivos.delete() ...
- *       ▼
- * [Postgres]  ─── trigger publicación realtime ──▶  [Supabase Realtime]
- *                                                         │
- *                                                         │  postgres_changes
- *                                                         │  filter: estudio_id
- *                                                         ▼
- *                                            [useRealtimeRefresh en el cliente]
- *                                                         │
- *                                                         ▼
- *                                                  onRefresh() → recarga data
+ * [server action] → Postgres → Supabase Realtime → handler aquí → callback
  * ```
  *
- * Cada consumidor le pasa:
- *  - `tables` → qué tablas observar ("proyectos" | "chat" | "archivos" etc).
- *  - `onRefresh` → callback idempotente que recarga su data (ej. `loadProject()`).
- *  - `enabled` → habilita/deshabilita la suscripción (ej. apagar mientras no hay sesión).
+ * El callback recibe el `RealtimeEvent` con `payload.new` — el row
+ * post-commit directo del replication stream de Postgres. No pasa por
+ * pgbouncer. El consumidor puede usarlo para actualizar estado local sin
+ * necesidad de hacer un SELECT (que por transaction pooling puede traer
+ * snapshot stale).
  *
- * ## Por qué el ref del callback
- *
- * `onRefreshRef` permite cambiar el callback entre renders (closure capturando
- * state fresco) sin re-suscribir el canal. Si no usáramos ref, cada render con
- * un callback nuevo rompería y recrearía el canal → eventos duplicados / perdidos.
+ * En eventos triggereados por `visibilitychange` (volver del background) el
+ * callback se invoca SIN evento — el consumidor debe hacer refetch full en
+ * ese caso.
  *
  * ## Refresh on visibility
  *
- * Supabase realtime **no replaya eventos** que ocurrieron mientras el tab
- * estuvo offline (laptop dormido, pérdida de red, tab oculto >30s). Cuando el
- * tab vuelve a ser visible, disparamos `onRefresh()` una vez para "ponernos al
- * día" con el estado del server. Esto convierte el hook en algo robusto a
- * desconexiones cortas sin necesidad de event-replay infrastructure.
+ * Supabase realtime no replaya eventos perdidos durante desconexiones
+ * (tab oculto, red caída). Al volver la visibilidad disparamos el callback
+ * una vez sin evento para que el consumidor se ponga al día con un refetch.
  *
  * ## Strict Mode
  *
- * Nombre de canal aleatorio por montaje: si Strict Mode monta-desmonta-monta
- * el componente (en dev), los dos canales no colisionan.
- *
- * ## Limitaciones conocidas
- *
- * - Sin heartbeat custom: dependemos del reconnect automático del cliente JS.
- * - Sin debounce en cascada: N cambios rápidos generan N callbacks. Los
- *   callbacks son idempotentes y los fetches son baratos al scale actual.
- * - Filtro sólo por `estudio_id`: recibís eventos de proyectos ajenos dentro
- *   del mismo estudio. Si alguna vez hay 100+ proyectos por estudio esto
- *   puede valer la pena filtrar, pero hoy no.
+ * Canal con nombre aleatorio por montaje: Strict Mode en dev monta-desmonta-
+ * monta el componente; los dos canales no colisionan porque tienen nombres
+ * únicos.
  */
 export function useRealtimeRefresh(
   tables: RealtimeTable[],
-  onRefresh: () => void,
+  onRefresh: (event?: RealtimeEvent) => void,
   enabled = true,
 ) {
-  // Ref para siempre tener la versión más reciente de onRefresh sin re-suscribir.
   const onRefreshRef = useRef(onRefresh);
   useEffect(() => {
     onRefreshRef.current = onRefresh;
   });
 
-  // Canal Postgres → callbacks
   useEffect(() => {
     if (!enabled) return;
 
@@ -96,7 +82,12 @@ export function useRealtimeRefresh(
           if (isDev) {
             console.log(`[Realtime] Cambio en "${table}":`, payload.eventType);
           }
-          onRefreshRef.current();
+          onRefreshRef.current({
+            table,
+            eventType: payload.eventType,
+            new: payload.new ?? {},
+            old: payload.old ?? {},
+          });
         },
       );
     });
@@ -118,14 +109,6 @@ export function useRealtimeRefresh(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled]);
 
-  // Refresh on visibility: cuando el tab vuelve del background, ponemos al día
-  // el estado por si hubo eventos durante el gap (realtime no los replaya).
-  //
-  // IMPORTANTE: usamos SOLO `visibilitychange`, no `window.focus`. `focus` se
-  // dispara en casos espurios (volver del devtools, cambios de foco internos
-  // en algunos browsers) y eso mete refetches en mitad del tipeo del usuario.
-  // `visibilitychange` solo dispara cuando el tab cambia de hidden→visible,
-  // que es exactamente el caso que queremos cubrir.
   useEffect(() => {
     if (!enabled) return;
 
@@ -141,4 +124,32 @@ export function useRealtimeRefresh(
       document.removeEventListener("visibilitychange", onVisible);
     };
   }, [enabled]);
+}
+
+/**
+ * Aplica los campos de `payload.new` (Postgres row post-commit, snake_case)
+ * sobre un objeto proyecto camelCase preservando relaciones (cliente, chat,
+ * archivos). Se usa en los consumidores del fast-path realtime.
+ */
+export function mergeProyectoPayload<T extends Record<string, any>>(
+  prev: T,
+  payloadNew: Record<string, any>,
+): T {
+  const pick = <K>(snake: string, fallback: K): K =>
+    payloadNew[snake] !== undefined ? (payloadNew[snake] as K) : fallback;
+  const pickDate = (snake: string, fallback: any) =>
+    payloadNew[snake] ? new Date(payloadNew[snake]) : fallback;
+
+  return {
+    ...prev,
+    onboardingData: pick("onboarding_data", prev.onboardingData),
+    onboardingStep: pick("onboarding_step", prev.onboardingStep),
+    fase: pick("fase", prev.fase),
+    fechaEntrega: pickDate("fecha_entrega", prev.fechaEntrega),
+    buildStartedAt: pickDate("build_started_at", prev.buildStartedAt),
+    link: pick("link", prev.link),
+    plan: pick("plan", prev.plan),
+    nombre: pick("nombre", prev.nombre),
+    freezeMode: pick("freeze_mode", prev.freezeMode),
+  };
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { updateProyectoOnboarding } from "@/lib/actions";
 
 /**
@@ -49,6 +49,8 @@ type PendingMutation = {
 
 const PENDING_TIMEOUT_MS = 10_000;
 
+const GHOST_CLICK_WINDOW_MS = 150;
+
 export function useProyectoPatcher<T extends { id: string; onboardingData?: any }>({
   project: serverProject,
   onError,
@@ -57,6 +59,11 @@ export function useProyectoPatcher<T extends { id: string; onboardingData?: any 
   onError?: (msg: string) => void;
 }) {
   const [pendings, setPendings] = useState<PendingMutation[]>([]);
+  // Guarda el último patch despachado + timestamp. Usado para dedupear
+  // "ghost clicks" en touch devices (el browser sintetiza un `click` después
+  // del `touchend`, y algunos layouts disparan el handler dos veces en <150ms).
+  // Si llega el mismo patch dentro de esa ventana, se ignora.
+  const recentPatchRef = useRef<{ hash: string; at: number } | null>(null);
 
   const displayedProject = useMemo<T | null>(() => {
     if (!serverProject) return null;
@@ -104,6 +111,18 @@ export function useProyectoPatcher<T extends { id: string; onboardingData?: any 
   const savePatch = useCallback(
     async (patch: Record<string, any>) => {
       if (!serverProject) return;
+
+      // Dedup ghost click: mismo patch exacto dentro de la ventana de
+      // sintetización del browser (~150ms). El primer dispatch sigue su curso
+      // normal, el duplicado se ignora silenciosamente.
+      const hash = JSON.stringify(patch);
+      const now = Date.now();
+      const recent = recentPatchRef.current;
+      if (recent && recent.hash === hash && now - recent.at < GHOST_CLICK_WINDOW_MS) {
+        return;
+      }
+      recentPatchRef.current = { hash, at: now };
+
       const id = Math.random().toString(36).slice(2);
       setPendings((prev) => [...prev, { id, patch, at: Date.now() }]);
       try {

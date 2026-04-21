@@ -29,7 +29,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { PLANS, PLANS_ARRAY } from "@/lib/constants";
 import { uploadProjectFile } from "@/lib/client/upload-archivo";
-import { useRealtimeRefresh } from "@/hooks/use-realtime-refresh";
+import { mergeProyectoPayload, useRealtimeRefresh } from "@/hooks/use-realtime-refresh";
 import { AdminLoading } from "@/lib/ui/AdminLoading";
 
 import { NavTab } from "./_components/NavTab";
@@ -90,11 +90,24 @@ export default function ProyectoDetalle() {
     loadProject();
   }, []);
 
-  // Realtime: recarga silenciosamente si cambia algo en el proyecto, chat o archivos.
-  // El patcher maneja el optimistic via mutation queue — el refresh puede
-  // correr libremente aunque haya patches en vuelo, las pendings siguen
-  // mergeadas arriba de `displayedProject`.
-  useRealtimeRefresh(["proyectos", "chat", "archivos"], () => loadProject(true));
+  // Realtime: al recibir un UPDATE del proyecto actual, aplicamos
+  // `payload.new` directo del replication stream de Postgres. Evita el SELECT
+  // por pgbouncer que puede traer snapshot stale. Para eventos de chat/archivos
+  // o INSERT/DELETE de proyectos, hacemos refetch full porque esos cambios
+  // afectan relaciones que el payload no trae.
+  useRealtimeRefresh(["proyectos", "chat", "archivos"], (event) => {
+    if (
+      event?.table === "proyectos" &&
+      event.eventType === "UPDATE" &&
+      event.new?.id === params.id
+    ) {
+      setProject((prev: any) =>
+        prev ? mergeProyectoPayload(prev, event.new) : prev,
+      );
+      return;
+    }
+    loadProject(true);
+  });
 
   // Si cambia el plan y el tab activo ya no existe (ej: "sitioweb" -> custom),
   // caer a "overview".

@@ -112,6 +112,11 @@ export function DayScheduleInput({
     const split = !schedule.closed && (schedule as any).split;
 
     const setClosed = (c: boolean) => {
+        // No-op: si el día ya está en ese estado, no disparamos savePatch. Esto
+        // evita tráfico innecesario al server cuando el user clickea el toggle
+        // que ya está activo, y neutraliza el segundo click en caso de ghost
+        // click (touch → synthetic click duplicado).
+        if (c === closed) return;
         if (c) return onSave("closed");
         onSave(
             serializeSchedule({

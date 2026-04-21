@@ -8,7 +8,7 @@ import {
   logoutCliente,
   validateClienteSession,
 } from "@/lib/actions";
-import { useRealtimeRefresh } from "@/hooks/use-realtime-refresh";
+import { mergeProyectoPayload, useRealtimeRefresh, type RealtimeEvent } from "@/hooks/use-realtime-refresh";
 import { useProyectoPatcher } from "@/hooks/use-patch-proyecto";
 import { useSessionEviction } from "@/hooks/use-session-eviction";
 import { useToast } from "@/app/providers/ToastProvider";
@@ -81,8 +81,27 @@ export default function CompactProjectsPortal({
     onError: (msg) => showToast(msg, "error"),
   });
 
-  async function refreshPortalData() {
+  async function refreshPortalData(event?: RealtimeEvent) {
     if (!data) return;
+
+    // Fast path: evento UPDATE sobre el proyecto actual → aplicamos
+    // `payload.new` directo del replication stream. Evita el SELECT full
+    // que por pgbouncer puede traer snapshot stale y desincronizar la UI.
+    if (
+      event &&
+      event.table === "proyectos" &&
+      event.eventType === "UPDATE" &&
+      selectedProject &&
+      event.new?.id === selectedProject.id
+    ) {
+      setSelectedProject((prev: any) =>
+        prev ? mergeProyectoPayload(prev, event.new) : prev,
+      );
+      return;
+    }
+
+    // Slow path: refetch full (chat, archivos, INSERT/DELETE de proyectos,
+    // o visibility change sin evento).
     const result = await refetchClienteProyectos();
     if (result.status === "not_authenticated") {
       setData(null);
