@@ -744,10 +744,10 @@ function SitePreviewCard({
                         "Tu descripción aparecerá aquí. Se corta a 3 líneas en el grid del sitio."}
                 </p>
                 <div
-                    className="flex items-center justify-between border-t pt-3"
+                    className={`flex items-center border-t pt-3 ${item.precio ? "justify-between" : "justify-center"}`}
                     style={{ borderColor: `${text}1a` }}
                 >
-                    {item.precio ? (
+                    {item.precio && (
                         <div className="flex flex-col">
                             <span
                                 className="text-[10px] uppercase tracking-wider"
@@ -762,13 +762,6 @@ function SitePreviewCard({
                                 {item.precio}
                             </span>
                         </div>
-                    ) : (
-                        <span
-                            className="text-[10px] uppercase tracking-wider"
-                            style={{ color: textMuted }}
-                        >
-                            Sin precio
-                        </span>
                     )}
                     <span
                         className="text-[10px] font-semibold uppercase tracking-[0.22em]"
