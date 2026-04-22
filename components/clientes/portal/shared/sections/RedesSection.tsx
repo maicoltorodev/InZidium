@@ -27,9 +27,7 @@ const NETWORKS: Network[] = [
   { key: "whatsappUrl", label: "WhatsApp",    icon: MessageCircle, prefix: "https://wa.me/",          placeholder: "573001234567" },
   { key: "threads",     label: "Threads",     icon: AtSign,        prefix: "https://threads.net/@",   placeholder: "tunegocio" },
   { key: "telegram",    label: "Telegram",    icon: Send,          prefix: "https://t.me/",           placeholder: "tunegocio" },
-  // Waze usa link completo — el prefix "https://" es solo para que el usuario
-  // pegue cualquier URL (waze.com/ul?..., ul.waze.com/..., etc.) sin tipearlo.
-  { key: "waze",        label: "Waze",        icon: WazeIcon,      prefix: "https://",                placeholder: "waze.com/ul?ll=4.63,-74.09" },
+  { key: "waze",        label: "Waze",        icon: WazeIcon,      prefix: "https://waze.com/",       placeholder: "ul?ll=4.63,-74.09" },
 ];
 
 function stripPrefix(url: string | undefined, prefix: string): string {
@@ -37,8 +35,61 @@ function stripPrefix(url: string | undefined, prefix: string): string {
   const lower = url.toLowerCase();
   const prefixLower = prefix.toLowerCase();
   if (lower.startsWith(prefixLower)) return url.slice(prefix.length);
-  // Accept bare handle "@tunegocio" or "tunegocio" stored directly
+  // Accept bare handle "@tunegocio" o "tunegocio" stored directly
   return url.replace(/^@/, "");
+}
+
+/**
+ * Normaliza lo que el cliente tipea/pega para que no se duplique el prefix.
+ * Casos que maneja:
+ *   - Pega URL completa matcheando el prefix: "https://waze.com/ul?..."
+ *       → strippea prefix → guarda como relativo.
+ *   - Pega URL completa con scheme pero diferente host/subdominio:
+ *       "https://ul.waze.com/ul/abc" → respeta como absoluto, guarda tal cual.
+ *   - Pega handle con el dominio sin scheme: "waze.com/ul?..."
+ *       → detecta el host del prefix, lo strippea.
+ *   - Tipea solo el handle relativo: "ul?ll=..." → concatena con prefix.
+ *   - Tipea con @: "@mangiare" → quita el @ antes de concatenar.
+ *
+ * Sin esto el cliente que copia la URL completa de la app de Waze (o de la
+ * barra de direcciones del browser para Instagram, Facebook, etc.) pegaba
+ * y el resultado guardado era "https://waze.com/https://waze.com/ul?...".
+ */
+function normalizeHandleForSave(handle: string, prefix: string): string {
+  const trimmed = handle.trim();
+  if (!trimmed) return "";
+
+  // 1) Input absoluto matcheando el prefix completo → strippea prefix.
+  const prefixLower = prefix.toLowerCase();
+  if (trimmed.toLowerCase().startsWith(prefixLower)) {
+    const rest = trimmed.slice(prefix.length).replace(/^@/, "");
+    return `${prefix}${rest}`;
+  }
+
+  // 2) Input absoluto con scheme pero NO matchea prefix
+  //    (ej: subdominio distinto de Waze). Lo guardamos tal cual sin prepend.
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  // 3) Input sin scheme pero empieza con el host del prefix
+  //    ("waze.com/ul?..." con prefix "https://waze.com/") → strippea host.
+  try {
+    const host = new URL(prefix.endsWith("/") ? prefix : `${prefix}/`).hostname;
+    const hostPatterns = [`${host}/`, `www.${host}/`];
+    const lower = trimmed.toLowerCase();
+    for (const pat of hostPatterns) {
+      if (lower.startsWith(pat.toLowerCase())) {
+        const rest = trimmed.slice(pat.length).replace(/^@/, "");
+        return `${prefix}${rest}`;
+      }
+    }
+  } catch {
+    // Prefix no parseable como URL (raro) → fallthrough al caso simple.
+  }
+
+  // 4) Input es handle relativo normal → prepend prefix.
+  return `${prefix}${trimmed.replace(/^@/, "")}`;
 }
 
 export function RedesSection({
@@ -57,9 +108,12 @@ export function RedesSection({
   };
 
   const updateNetwork = (n: Network, handle: string) => {
-    const clean = handle.trim();
-    if (!clean) savePatch({ [n.key]: "" });
-    else savePatch({ [n.key]: `${n.prefix}${clean.replace(/^@/, "")}` });
+    const trimmed = handle.trim();
+    if (!trimmed) {
+      savePatch({ [n.key]: "" });
+      return;
+    }
+    savePatch({ [n.key]: normalizeHandleForSave(trimmed, n.prefix) });
   };
 
   const removeNetwork = (n: Network) => savePatch({ [n.key]: "" });
