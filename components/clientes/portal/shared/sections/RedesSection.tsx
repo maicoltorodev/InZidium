@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   Instagram, Facebook, Youtube, Music, MessageCircle,
@@ -9,6 +10,8 @@ import { AutoField } from "../../fields";
 import { FieldItem } from "../primitives/FieldItem";
 import { MOTION } from "../primitives/motion";
 import { XIcon, WazeIcon } from "../primitives/BrandIcons";
+import { socialHandleMask } from "@/lib/input-masks";
+import type { InputMask } from "@/lib/input-masks";
 
 type Network = {
   key: string;
@@ -39,59 +42,6 @@ function stripPrefix(url: string | undefined, prefix: string): string {
   return url.replace(/^@/, "");
 }
 
-/**
- * Normaliza lo que el cliente tipea/pega para que no se duplique el prefix.
- * Casos que maneja:
- *   - Pega URL completa matcheando el prefix: "https://waze.com/ul?..."
- *       → strippea prefix → guarda como relativo.
- *   - Pega URL completa con scheme pero diferente host/subdominio:
- *       "https://ul.waze.com/ul/abc" → respeta como absoluto, guarda tal cual.
- *   - Pega handle con el dominio sin scheme: "waze.com/ul?..."
- *       → detecta el host del prefix, lo strippea.
- *   - Tipea solo el handle relativo: "ul?ll=..." → concatena con prefix.
- *   - Tipea con @: "@mangiare" → quita el @ antes de concatenar.
- *
- * Sin esto el cliente que copia la URL completa de la app de Waze (o de la
- * barra de direcciones del browser para Instagram, Facebook, etc.) pegaba
- * y el resultado guardado era "https://waze.com/https://waze.com/ul?...".
- */
-function normalizeHandleForSave(handle: string, prefix: string): string {
-  const trimmed = handle.trim();
-  if (!trimmed) return "";
-
-  // 1) Input absoluto matcheando el prefix completo → strippea prefix.
-  const prefixLower = prefix.toLowerCase();
-  if (trimmed.toLowerCase().startsWith(prefixLower)) {
-    const rest = trimmed.slice(prefix.length).replace(/^@/, "");
-    return `${prefix}${rest}`;
-  }
-
-  // 2) Input absoluto con scheme pero NO matchea prefix
-  //    (ej: subdominio distinto de Waze). Lo guardamos tal cual sin prepend.
-  if (/^https?:\/\//i.test(trimmed)) {
-    return trimmed;
-  }
-
-  // 3) Input sin scheme pero empieza con el host del prefix
-  //    ("waze.com/ul?..." con prefix "https://waze.com/") → strippea host.
-  try {
-    const host = new URL(prefix.endsWith("/") ? prefix : `${prefix}/`).hostname;
-    const hostPatterns = [`${host}/`, `www.${host}/`];
-    const lower = trimmed.toLowerCase();
-    for (const pat of hostPatterns) {
-      if (lower.startsWith(pat.toLowerCase())) {
-        const rest = trimmed.slice(pat.length).replace(/^@/, "");
-        return `${prefix}${rest}`;
-      }
-    }
-  } catch {
-    // Prefix no parseable como URL (raro) → fallthrough al caso simple.
-  }
-
-  // 4) Input es handle relativo normal → prepend prefix.
-  return `${prefix}${trimmed.replace(/^@/, "")}`;
-}
-
 export function RedesSection({
   d,
   savePatch,
@@ -101,6 +51,16 @@ export function RedesSection({
 }) {
   const activeNetworks = NETWORKS.filter((n) => !!d[n.key]);
   const inactiveNetworks = NETWORKS.filter((n) => !d[n.key]);
+
+  // Masks memoizadas por key — una por network, estables entre re-renders
+  // para que AutoField no refire su sync effect innecesariamente.
+  const masks = useMemo(() => {
+    const map: Record<string, InputMask> = {};
+    for (const n of NETWORKS) {
+      map[n.key] = socialHandleMask(n.prefix);
+    }
+    return map;
+  }, []);
 
   const addNetwork = (n: Network) => {
     // Save with prefix so Plantilla Web recibe URL completa.
@@ -113,7 +73,14 @@ export function RedesSection({
       savePatch({ [n.key]: "" });
       return;
     }
-    savePatch({ [n.key]: normalizeHandleForSave(trimmed, n.prefix) });
+    // La mask ya normalizó el input del usuario (strippeó prefix/host/@).
+    // Solo queda decidir si es absoluto (subdominio distinto) o relativo:
+    //   - Absoluto: guardar tal cual (raro, pero válido para Waze share URLs).
+    //   - Relativo: prepend del prefix oficial.
+    const finalUrl = /^https?:\/\//i.test(trimmed)
+      ? trimmed
+      : `${n.prefix}${trimmed}`;
+    savePatch({ [n.key]: finalUrl });
   };
 
   const removeNetwork = (n: Network) => savePatch({ [n.key]: "" });
@@ -142,6 +109,7 @@ export function RedesSection({
                     <AutoField
                       value={stripPrefix(d[n.key], n.prefix)}
                       onSave={(v) => updateNetwork(n, v)}
+                      mask={masks[n.key]}
                       placeholder={n.placeholder}
                       className="flex-1 min-w-0 bg-transparent border-0 px-1 py-0 text-[13px] font-bold text-white outline-none placeholder:text-white/20"
                     />

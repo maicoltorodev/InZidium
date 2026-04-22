@@ -56,3 +56,66 @@ export const emailMask: InputMask = {
     parse: (raw) => raw.trim().toLowerCase(),
     display: (canon) => canon,
 };
+
+// ─── Social handle (factory por network) ─────────────────────────────────────
+
+/**
+ * Mask para handles de redes sociales. Dado un `prefix` fijo (ej:
+ * `https://waze.com/`), strippea en vivo al tipear/pegar:
+ *
+ *   1. Prefix completo: `https://waze.com/ul?...` → `ul?...`
+ *   2. Bare host: `waze.com/ul?...` → `ul?...`
+ *   3. Bare host con www: `www.waze.com/ul?...` → `ul?...`
+ *   4. Leading `@`: `@mangiare` → `mangiare`
+ *
+ * Edge case: URL absoluta con subdominio distinto (ej: `https://ul.waze.com/...`)
+ * NO se strippea, se devuelve la URL completa. El `updateNetwork` del caller
+ * la detecta y la guarda as-is sin prepend. Cubre el caso real del share
+ * button de la app de Waze que usa un subdominio.
+ *
+ * Why: el cliente copia la URL completa de la barra del browser o del share
+ * button. Sin la mask, al pegar veía el texto crudo mezclado con el prefix
+ * visual (`waze.com/ https://waze.com/ul?...`) → feo. Ahora strippea instant.
+ */
+export function socialHandleMask(prefix: string): InputMask {
+    let host = "";
+    try {
+        host = new URL(prefix.endsWith("/") ? prefix : `${prefix}/`).hostname;
+    } catch {
+        // Prefix no parseable → el mask queda como passthrough abajo.
+    }
+    const prefixLower = prefix.toLowerCase();
+    const hostPatterns = host
+        ? [`${host}/`.toLowerCase(), `www.${host}/`.toLowerCase()]
+        : [];
+
+    return {
+        parse: (raw) => {
+            const trimmed = raw.trim();
+            if (!trimmed) return "";
+
+            // 1) Match exacto del prefix completo (con scheme).
+            const lower = trimmed.toLowerCase();
+            if (lower.startsWith(prefixLower)) {
+                return trimmed.slice(prefix.length).replace(/^@/, "");
+            }
+
+            // 2) URL absoluta con scheme pero distinto host (ej: subdominio).
+            //    Respetar como absoluta → NO strippear prefix.
+            if (/^https?:\/\//i.test(trimmed)) {
+                return trimmed;
+            }
+
+            // 3) Sin scheme pero empieza con el host del prefix.
+            for (const pat of hostPatterns) {
+                if (lower.startsWith(pat)) {
+                    return trimmed.slice(pat.length).replace(/^@/, "");
+                }
+            }
+
+            // 4) Handle relativo normal.
+            return trimmed.replace(/^@/, "");
+        },
+        display: (canonical) => canonical,
+    };
+}
