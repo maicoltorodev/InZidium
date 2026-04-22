@@ -302,34 +302,34 @@ function LivePublishedCard({ liveUrl }: { liveUrl: string | null }) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ ...MOTION.reveal, delay: 0.08 }}
-      className="relative mb-6 overflow-hidden rounded-[2rem] border border-emerald-500/25 bg-[linear-gradient(135deg,rgba(16,185,129,0.08)_0%,rgba(16,185,129,0.04)_50%,rgba(34,211,238,0.06)_100%)] p-5 shadow-[0_0_32px_-12px_rgba(16,185,129,0.4)]"
+      className="relative mb-6 overflow-hidden rounded-[2rem] border border-emerald-500/25 bg-[linear-gradient(135deg,rgba(16,185,129,0.08)_0%,rgba(16,185,129,0.04)_50%,rgba(34,211,238,0.06)_100%)] p-6 shadow-[0_0_32px_-12px_rgba(16,185,129,0.4)]"
     >
-      <div className="flex items-center gap-4">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-500/25">
+      <div className="flex flex-col items-center text-center">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-500/25">
           <CheckCircle2 className="h-7 w-7 text-emerald-400" />
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.24em] text-emerald-400/80">
-            <Sparkles className="h-3 w-3" />
-            Publicado
-          </p>
-          <p className="mt-1 text-[18px] font-black leading-tight text-white">Tu sitio está en vivo</p>
-          <p className="mt-1 text-[11px] leading-snug text-white/45">
-            Puedes seguir editando — los cambios se actualizan solos.
-          </p>
-        </div>
+        <p className="mt-3 flex items-center justify-center gap-1.5 text-[10px] font-black uppercase tracking-[0.26em] text-emerald-400/80">
+          <Sparkles className="h-3 w-3" />
+          Publicado
+        </p>
+        <p className="mt-2 text-[19px] font-black leading-tight text-white">
+          Tu sitio está en vivo
+        </p>
+        <p className="mt-2 text-[11px] leading-relaxed text-white/45">
+          Puedes seguir editando — los cambios se actualizan solos.
+        </p>
+        {liveUrl && (
+          <a
+            href={liveUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,#10b981_0%,#3b82f6_100%)] py-3 text-[11px] font-black uppercase tracking-[0.22em] text-white shadow-[0_0_24px_-6px_rgba(16,185,129,0.7)] transition-transform active:scale-[0.98]"
+          >
+            <ExternalLink className="h-3.5 w-3.5" strokeWidth={3} />
+            Ver mi sitio
+          </a>
+        )}
       </div>
-      {liveUrl && (
-        <a
-          href={liveUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,#10b981_0%,#3b82f6_100%)] py-3 text-[11px] font-black uppercase tracking-[0.22em] text-white shadow-[0_0_24px_-6px_rgba(16,185,129,0.7)] transition-transform active:scale-[0.98]"
-        >
-          <ExternalLink className="h-3.5 w-3.5" strokeWidth={3} />
-          Ver mi sitio
-        </a>
-      )}
     </motion.div>
   );
 }

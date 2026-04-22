@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, MessageSquare, ShieldCheck } from "lucide-react";
+import { Check, ShieldCheck } from "lucide-react";
 import { FieldItem } from "../primitives/FieldItem";
 import { BRAND_ICON_STYLE } from "../primitives/BrandDefs";
 import { TIPO_NEGOCIO_MAP, type TipoNegocio } from "../primitives/TipoNegocioModal";
@@ -59,18 +59,6 @@ export function LegalSection({ d }: { d: any }) {
         </div>
       </FieldItem>
 
-      {/* Hint chat */}
-      <FieldItem>
-        <div className="flex items-start gap-3 rounded-2xl border border-white/[0.05] bg-white/[0.015] px-4 py-3.5">
-          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/[0.04]">
-            <MessageSquare className="h-4 w-4 text-white/60" />
-          </span>
-          <p className="flex-1 min-w-0 text-[12px] leading-relaxed text-white/55">
-            ¿Necesitas personalizar tus páginas legales? Avísanos por el{" "}
-            <span className="font-semibold text-white/85">chat</span> y te ayudamos.
-          </p>
-        </div>
-      </FieldItem>
     </>
   );
 }

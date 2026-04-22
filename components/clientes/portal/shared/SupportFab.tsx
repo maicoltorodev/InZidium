@@ -93,7 +93,9 @@ export function SupportFab({
                         onClick={() => setOpen((v) => !v)}
                         whileTap={{ scale: 0.92 }}
                         whileHover={{ scale: 1.05 }}
-                        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] text-white shadow-[0_8px_28px_-6px_rgba(168,85,247,0.7)] transition-shadow hover:shadow-[0_10px_36px_-6px_rgba(168,85,247,0.85)]"
+                        className={`relative flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#e879f9_0%,#a855f7_50%,#22d3ee_100%)] text-white shadow-[0_8px_28px_-6px_rgba(168,85,247,0.7)] transition-shadow hover:shadow-[0_10px_36px_-6px_rgba(168,85,247,0.85)] ${
+                            isDesktop ? "h-16 w-16" : "h-14 w-14"
+                        }`}
                         aria-label={open ? "Cerrar mensajes" : "Abrir mensajes"}
                     >
                 <AnimatePresence mode="wait" initial={false}>
@@ -105,17 +107,44 @@ export function SupportFab({
                             exit={{ rotate: 90, opacity: 0 }}
                             transition={{ duration: 0.15 }}
                         >
-                            <X className="h-6 w-6" strokeWidth={2.5} />
+                            <X className={isDesktop ? "h-7 w-7" : "h-6 w-6"} strokeWidth={2.5} />
                         </motion.span>
                     ) : (
                         <motion.span
                             key="chat"
+                            // Shake "teléfono sonando": 3 oscilaciones rápidas (~0.7s)
+                            // seguidas de una pausa de ~3.5s antes de repetir.
+                            // `repeatDelay` hace la pausa sin animar — cero costo.
+                            // Solo en !reduced y mientras el FAB está cerrado.
                             initial={{ rotate: 90, opacity: 0 }}
-                            animate={{ rotate: 0, opacity: 1 }}
+                            animate={
+                                reduced
+                                    ? { rotate: 0, opacity: 1 }
+                                    : {
+                                          rotate: [0, -15, 15, -12, 12, -6, 6, 0],
+                                          opacity: 1,
+                                      }
+                            }
                             exit={{ rotate: -90, opacity: 0 }}
-                            transition={{ duration: 0.15 }}
+                            transition={
+                                reduced
+                                    ? { duration: 0.15 }
+                                    : {
+                                          rotate: {
+                                              duration: 0.7,
+                                              repeat: Infinity,
+                                              repeatDelay: 3.5,
+                                              ease: "easeInOut",
+                                              delay: 1.2,
+                                          },
+                                          opacity: { duration: 0.15 },
+                                      }
+                            }
                         >
-                            <MessageSquare className="h-6 w-6" strokeWidth={2.5} />
+                            <MessageSquare
+                                className={isDesktop ? "h-7 w-7" : "h-6 w-6"}
+                                strokeWidth={2.5}
+                            />
                         </motion.span>
                     )}
                 </AnimatePresence>

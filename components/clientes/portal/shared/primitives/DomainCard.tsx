@@ -285,26 +285,23 @@ function LiveCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ ...MOTION.reveal, delay: 0.04 }}
       whileTap={{ scale: 0.985 }}
-      className="relative mb-5 block overflow-hidden rounded-[2rem] border border-emerald-500/25 bg-[linear-gradient(135deg,rgba(16,185,129,0.08)_0%,rgba(168,85,247,0.04)_50%,rgba(34,211,238,0.06)_100%)] p-5 shadow-[0_0_32px_-12px_rgba(16,185,129,0.4)]"
+      className="group relative mb-5 block overflow-hidden rounded-[2rem] border border-emerald-500/25 bg-[linear-gradient(135deg,rgba(16,185,129,0.08)_0%,rgba(168,85,247,0.04)_50%,rgba(34,211,238,0.06)_100%)] p-6 shadow-[0_0_32px_-12px_rgba(16,185,129,0.4)]"
     >
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-500/25">
-            <Check className="h-4 w-4 text-emerald-400" strokeWidth={3} />
-          </div>
-          <p className="text-[9px] font-black uppercase tracking-[0.28em] text-emerald-400/80">
-            En vivo
-          </p>
+      <div className="flex flex-col items-center text-center">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 ring-1 ring-emerald-500/25">
+          <Check className="h-5 w-5 text-emerald-400" strokeWidth={3} />
         </div>
-        <ExternalLink className="h-4 w-4 shrink-0 text-white/40" />
+        <p className="mt-3 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.28em] text-emerald-400/80">
+          En vivo
+          <ExternalLink className="h-3 w-3 opacity-60 transition-opacity group-hover:opacity-100" />
+        </p>
+        <p className="mt-2 break-all text-[17px] font-black leading-tight text-white">
+          {fullDomain}
+        </p>
+        <p className="mt-2 text-[11px] leading-relaxed text-white/45">
+          Toca para visitar tu sitio.
+        </p>
       </div>
-      {/* Dominio en fila propia con break-all para que no se corte. */}
-      <p className="mt-3 break-all text-[16px] font-black leading-tight text-white">
-        {fullDomain}
-      </p>
-      <p className="mt-2 text-[11px] leading-relaxed text-white/45">
-        Toca para visitar tu sitio.
-      </p>
     </motion.a>
   );
 }
