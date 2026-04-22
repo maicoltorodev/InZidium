@@ -211,13 +211,20 @@ export default function ProyectoDetalle() {
     try {
       const result = await deleteProyecto(project.id);
       if (result.success) {
+        // Cerrar modal y resetear loading ANTES del push. router.push en
+        // App Router es async — si tarda (data fetching de la ruta destino),
+        // el modal con spinner se queda colgado en pantalla. Liberamos el UI
+        // inmediato y dejamos que la navegación termine en background.
+        setShowConfirmDeleteProject(false);
+        setIsDeletingProject(false);
         showToast("PROYECTO ELIMINADO", "success");
         router.push("/admin/clientes");
       } else {
-        showToast("ERROR AL ELIMINAR", "error");
+        showToast(result.error || "ERROR AL ELIMINAR", "error");
         setIsDeletingProject(false);
       }
     } catch (error) {
+      showToast("ERROR AL ELIMINAR", "error");
       setIsDeletingProject(false);
     }
   };

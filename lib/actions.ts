@@ -72,6 +72,9 @@ async function requireAuthenticatedAdmin() {
 
 // 👥 CLIENTES
 export async function createCliente(formData: FormData) {
+  const adminSession = await validateAdminSession();
+  if (!adminSession.valid) return { error: "NO AUTORIZADO." };
+
   const nombre = (formData.get("nombre") as string ?? "").trim();
   const cedula = (formData.get("cedula") as string ?? "").trim();
   const email = (formData.get("email") as string ?? "").trim();
@@ -105,6 +108,9 @@ export async function getClienteById(id: string) {
 }
 
 export async function updateCliente(id: string, data: any) {
+  const adminSession = await validateAdminSession();
+  if (!adminSession.valid) return { success: false, error: "NO AUTORIZADO." };
+
   // Validación estructural — mismo fallback que createCliente.
   if (data.nombre !== undefined) {
     const err = validateName(String(data.nombre).trim());
@@ -166,6 +172,9 @@ async function purgeProyectoStorage(proyectoId: string) {
 }
 
 export async function deleteCliente(id: string) {
+  const adminSession = await validateAdminSession();
+  if (!adminSession.valid) return { success: false, error: "NO AUTORIZADO." };
+
   // Noti FCM de "cliente.deleted" sale del trigger SQL `notify_event_clientes_deleted`
   // (ver memory notifications_fcm.md). Acá no replicamos para evitar doble push.
   const projs = await proyectos.getByClienteId(id);
@@ -203,14 +212,25 @@ export async function getProyectoByCedula(cedula: string) {
 }
 
 export async function createProyecto(formData: FormData) {
-  const nombre = formData.get("nombre") as string;
-  const plan = formData.get("plan") as string;
-  const clienteId = formData.get("clienteId") as string;
+  const adminSession = await validateAdminSession();
+  if (!adminSession.valid) return { success: false, error: "NO AUTORIZADO." };
+
+  const nombre = ((formData.get("nombre") as string) ?? "").trim();
+  const plan = (formData.get("plan") as string) ?? "";
+  const clienteId = (formData.get("clienteId") as string) ?? "";
+
+  if (!nombre) return { success: false, error: "EL NOMBRE NO PUEDE ESTAR VACIO." };
+  if (!plan) return { success: false, error: "EL PLAN ES REQUERIDO." };
+  if (!clienteId) return { success: false, error: "EL CLIENTE ES REQUERIDO." };
 
   // fechaEntrega se setea cuando el proyecto pasa a construcción (auto para
   // Estándar vía `updateProyectoOnboarding`, manual para A la medida vía
   // `iniciarConstruccion`). Durante onboarding siempre null — evita
   // redundancia con el countdown visual.
+  // Uniqueness (nombre dentro del estudio) y cross-cliente validation las
+  // cubre la UNIQUE constraint `proyectos_estudio_id_nombre_key` de la DB:
+  // si colisiona, `proyectos.create` throw → `friendlyDbError` traduce
+  // a "YA EXISTE UN PROYECTO CON ESTE NOMBRE EN TU ESTUDIO".
   const res = await proyectos.create({
     nombre,
     plan,
@@ -223,8 +243,12 @@ export async function createProyecto(formData: FormData) {
 }
 
 export async function updateProyectoPlan(id: string, plan: string) {
+  const adminSession = await validateAdminSession();
+  if (!adminSession.valid) return { success: false, error: "NO AUTORIZADO." };
+
   // Capturamos plan previo ANTES del update para poder reportar "X → Y" en la noti.
   const prev = await proyectos.getById(id);
+  if (!prev) return { success: false, error: "PROYECTO NO ENCONTRADO." };
   const fromPlan = prev?.plan ?? "?";
   const res = await proyectos.update(id, { plan });
   if (res.success) {
@@ -243,7 +267,77 @@ export async function updateProyectoPlan(id: string, plan: string) {
 }
 
 export async function updateProyectoLink(id: string, link: string) {
-  const res = await proyectos.update(id, { link });
+  // Auth gate: solo admins autenticados.
+  const adminSession = await validateAdminSession();
+  if (!adminSession.valid) return { success: false, error: "NO AUTORIZADO." };
+
+  // Cross-tenant gate: getById filtra por estudio_id del env del admin.
+  // Si el proyecto no existe en MI estudio, retorna null → error opaco.
+  const proj = await proyectos.getById(id);
+  if (!proj) return { success: false, error: "PROYECTO NO ENCONTRADO." };
+
+  const clean = (link || "").trim();
+
+  // Permitir borrar el link (cliente aún no tiene dominio propio).
+  if (!clean) {
+    const res = await proyectos.update(id, { link: null });
+    if (res.success) {
+      revalidateProyecto();
+      notifyPlantillaRevalidate(id);
+    }
+    return res;
+  }
+
+  // Validar formato: el link debe parsearse como URL o como hostname.
+  let host = "";
+  try {
+    const asUrl = /^https?:\/\//i.test(clean) ? clean : `https://${clean}`;
+    host = new URL(asUrl).hostname.toLowerCase();
+  } catch {
+    return { success: false, error: "EL LINK NO ES UNA URL VALIDA." };
+  }
+  if (!host || !/\./.test(host)) {
+    return { success: false, error: "EL LINK DEBE SER UN DOMINIO VALIDO." };
+  }
+
+  // Rechazar hosts del wildcard (preview). El cliente no puede setear su
+  // `link` a `algo.maicoltoro.com` porque eso es el preview interno, ya
+  // asignado por UUID. Permitirlo causaría colisión y confusión.
+  const wildcard = (process.env.PLANTILLA_WILDCARD_DOMAIN ?? "maicoltoro.com")
+    .toLowerCase()
+    .replace(/^https?:\/\//, "");
+  if (host === wildcard || host.endsWith(`.${wildcard}`)) {
+    return {
+      success: false,
+      error: `NO SE PUEDE USAR UN SUBDOMINIO DE ${wildcard.toUpperCase()} — ESE ES EL PREVIEW INTERNO.`,
+    };
+  }
+
+  // Validar unicidad WITHIN current estudio (pilla 99% de casos).
+  // Para colisiones cross-estudio, la UNIQUE constraint de la DB (partial
+  // lower(link)) rechaza el insert y `proyectos.update` retorna success:false
+  // con error genérico — mensaje menos amigable pero protección hard.
+  const allInEstudio = await proyectos.getAll();
+  const normalizedInput = host.replace(/^www\./, "");
+  const conflict = (allInEstudio as any[]).find((p: any) => {
+    if (p.id === id || !p.link) return false;
+    try {
+      const pHost = new URL(
+        /^https?:\/\//i.test(p.link) ? p.link : `https://${p.link}`,
+      ).hostname.toLowerCase().replace(/^www\./, "");
+      return pHost === normalizedInput;
+    } catch {
+      return false;
+    }
+  });
+  if (conflict) {
+    return {
+      success: false,
+      error: "ESTE DOMINIO YA ESTA ASIGNADO A OTRO PROYECTO.",
+    };
+  }
+
+  const res = await proyectos.update(id, { link: clean });
   if (res.success) {
     revalidateProyecto();
     notifyPlantillaRevalidate(id);
@@ -282,8 +376,17 @@ export async function toggleProyectoLinkLock(id: string, locked: boolean) {
 }
 
 export async function updateProyectoNombre(id: string, nombre: string) {
+  const adminSession = await validateAdminSession();
+  if (!adminSession.valid) return { success: false, error: "NO AUTORIZADO." };
+
+  const proj = await proyectos.getById(id);
+  if (!proj) return { success: false, error: "PROYECTO NO ENCONTRADO." };
+
   const clean = (nombre || "").trim();
   if (!clean) return { success: false, error: "EL NOMBRE NO PUEDE ESTAR VACIO." };
+
+  // Uniqueness (estudio_id, nombre) la cubre la UNIQUE constraint de la DB.
+  // Si colisiona, el update throw → friendlyDbError traduce el mensaje.
   const res = await proyectos.update(id, { nombre: clean });
   if (res.success) {
     revalidateProyecto();
@@ -298,6 +401,12 @@ export async function updateProyectoNombre(id: string, nombre: string) {
  * (para conservar historial), pero la Plantilla respeta `freezeMode` primero.
  */
 export async function toggleProyectoFreezeMode(id: string, freezeMode: boolean) {
+  const adminSession = await validateAdminSession();
+  if (!adminSession.valid) return { success: false, error: "NO AUTORIZADO." };
+
+  const proj = await proyectos.getById(id);
+  if (!proj) return { success: false, error: "PROYECTO NO ENCONTRADO." };
+
   const res = await proyectos.update(id, { freezeMode } as any);
   if (res.success) {
     revalidateProyecto();
@@ -311,6 +420,12 @@ export async function toggleProyectoFreezeMode(id: string, freezeMode: boolean) 
  * autorizado para salir de construcción o de mantenimiento.
  */
 export async function publicarProyecto(id: string) {
+  const adminSession = await validateAdminSession();
+  if (!adminSession.valid) return { success: false, error: "NO AUTORIZADO." };
+
+  const proj = await proyectos.getById(id);
+  if (!proj) return { success: false, error: "PROYECTO NO ENCONTRADO." };
+
   const res = await proyectos.update(id, {
     fase: "publicado",
     freezeMode: false,
@@ -373,6 +488,9 @@ export async function iniciarConstruccionEstandar(id: string) {
  * para mantener una sola fuente de verdad (countdown = fechaEntrega - now).
  */
 export async function iniciarConstruccion(id: string, durationDays: number) {
+  const adminSession = await validateAdminSession();
+  if (!adminSession.valid) return { success: false, error: "NO AUTORIZADO." };
+
   if (!Number.isFinite(durationDays) || durationDays < 1 || durationDays > 365) {
     return { success: false, error: "Duración fuera de rango (1–365 días)" };
   }
@@ -504,16 +622,14 @@ export async function getProyectoUrls(projectId: string) {
   if (!project) return null;
 
   const wildcardDomain = process.env.PLANTILLA_WILDCARD_DOMAIN ?? "maicoltoro.com";
-  const slug = (project.nombre || "proyecto")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 63);
+  // Preview subdomain = UUID del proyecto. Antes usábamos slug(nombre) pero
+  // dos proyectos con el mismo nombre colisionaban en el mismo preview URL.
+  // El UUID garantiza unicidad total. Es un preview interno que solo el admin
+  // comparte temporal hasta que el cliente configure dominio propio → la
+  // "fealdad" del UUID no afecta UX del cliente final.
 
   return {
-    preview: `https://${slug}.${wildcardDomain}`,
+    preview: `https://${project.id}.${wildcardDomain}`,
     custom: project.link ? `https://${project.link.replace(/^https?:\/\//, "")}` : null,
   };
 }
@@ -530,6 +646,9 @@ async function mergeProyectoOnboardingData(id: string, patch: object) {
 }
 
 export async function updateProyectoPrecioCustom(id: string, precio: number) {
+  const adminSession = await validateAdminSession();
+  if (!adminSession.valid) return { success: false, error: "NO AUTORIZADO." };
+
   return mergeProyectoOnboardingData(id, { precioCustom: precio });
 }
 
@@ -626,6 +745,15 @@ export async function rejectComprobantePago(
 }
 
 export async function deleteProyecto(id: string) {
+  const adminSession = await validateAdminSession();
+  if (!adminSession.valid) return { success: false, error: "NO AUTORIZADO." };
+
+  // Cross-tenant gate: getById filtra por estudio_id. Sin esto, el delete
+  // silenciosamente no hace nada (data layer filter) pero retorna success.
+  // Validar explícito evita UX confuso si se pasa un id ajeno.
+  const proj = await proyectos.getById(id);
+  if (!proj) return { success: false, error: "PROYECTO NO ENCONTRADO." };
+
   const res = await proyectos.delete(id);
   if (res.success) {
     await purgeProyectoStorage(id);
@@ -758,6 +886,16 @@ export async function uploadArchivo(formData: FormData) {
 }
 
 export async function deleteArchivo(id: string) {
+  // Archivos pueden borrarlo tanto admin como cliente (el cliente desde su
+  // portal en proyectos custom via SharedVault). Gate dual: al menos uno
+  // de los dos debe estar autenticado. La data layer (archivos.delete)
+  // internamente valida ownership por proyecto_id/estudio_id.
+  const adminSession = await validateAdminSession();
+  const clienteSession = adminSession.valid ? null : await validateClienteSession();
+  if (!adminSession.valid && !clienteSession?.valid) {
+    return { success: false, error: "NO AUTORIZADO." };
+  }
+
   const res = await archivos.delete(id);
   if (res.success) {
     if (res.storagePath) {

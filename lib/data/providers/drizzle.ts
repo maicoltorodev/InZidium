@@ -12,6 +12,26 @@ import { supabaseAdmin } from "@/lib/supabase/server";
  * conocido. Cada INSERT setea `estudioId` implícito desde el env var.
  */
 
+/**
+ * Traduce errores de Postgres a mensajes amigables en UPPERCASE (el UI del
+ * admin los usa como toasts). Code 23505 = unique_violation. Matcheamos por
+ * el nombre del constraint para dar feedback específico al admin.
+ */
+function friendlyDbError(fallback: string, e: any): string {
+  const code = e?.code || e?.cause?.code;
+  const constraint: string = e?.constraint_name || e?.constraint || e?.cause?.constraint_name || "";
+  if (code === "23505") {
+    const c = constraint.toLowerCase();
+    if (c.includes("link")) return "ESTE DOMINIO YA ESTA ASIGNADO A OTRO PROYECTO.";
+    if (c.includes("cedula")) return "YA EXISTE UN CLIENTE CON ESTA CEDULA EN TU ESTUDIO.";
+    if (c.includes("email")) return "YA EXISTE UN CLIENTE CON ESTE EMAIL EN TU ESTUDIO.";
+    if (c.includes("username")) return "YA EXISTE UN ADMINISTRADOR CON ESTE USUARIO.";
+    if (c.includes("nombre")) return "YA EXISTE UN PROYECTO CON ESTE NOMBRE EN TU ESTUDIO.";
+    return "YA EXISTE UN REGISTRO CON ESTOS DATOS.";
+  }
+  return fallback;
+}
+
 export const DrizzleProvider: IDataProvider = {
   clientes: {
     getAll: async () => {
@@ -43,7 +63,7 @@ export const DrizzleProvider: IDataProvider = {
         await db.insert(clientes).values({ ...data, estudioId });
         return { success: true };
       } catch (e) {
-        return { success: false, error: "Error al crear cliente" };
+        return { success: false, error: friendlyDbError("Error al crear cliente", e) };
       }
     },
     update: async (id, data) => {
@@ -54,7 +74,7 @@ export const DrizzleProvider: IDataProvider = {
           .where(and(eq(clientes.id, id), eq(clientes.estudioId, estudioId)));
         return { success: true };
       } catch (e) {
-        return { success: false, error: "Error al actualizar cliente" };
+        return { success: false, error: friendlyDbError("Error al actualizar cliente", e) };
       }
     },
     delete: async (id) => {
@@ -107,7 +127,7 @@ export const DrizzleProvider: IDataProvider = {
         await db.insert(proyectos).values({ ...data, estudioId });
         return { success: true };
       } catch (e) {
-        return { success: false, error: "Error al crear proyecto" };
+        return { success: false, error: friendlyDbError("Error al crear proyecto", e) };
       }
     },
     update: async (id, data: any) => {
@@ -118,7 +138,7 @@ export const DrizzleProvider: IDataProvider = {
           .where(and(eq(proyectos.id, id), eq(proyectos.estudioId, estudioId)));
         return { success: true };
       } catch (e) {
-        return { success: false, error: "Error al actualizar proyecto" };
+        return { success: false, error: friendlyDbError("Error al actualizar proyecto", e) };
       }
     },
     delete: async (id) => {
@@ -175,7 +195,7 @@ export const DrizzleProvider: IDataProvider = {
       } catch (e) {
         return {
           success: false as const,
-          error: "Error al actualizar proyecto",
+          error: friendlyDbError("Error al actualizar proyecto", e),
         };
       }
     },
@@ -223,7 +243,7 @@ export const DrizzleProvider: IDataProvider = {
         await db.insert(administradores).values({ ...data, estudioId });
         return { success: true };
       } catch (e) {
-        return { success: false, error: "Error al crear admin" };
+        return { success: false, error: friendlyDbError("Error al crear admin", e) };
       }
     },
     deleteAdmin: async (id) => {
