@@ -67,7 +67,7 @@ export function getSectionCompletion(key: string, d: any): Completion {
       return n === 2 ? "complete" : n > 0 ? "partial" : "empty";
     }
     case "social": {
-      const n = [d.instagram, d.facebook, d.tiktok, d.twitter, d.youtube, d.whatsappUrl, d.threads, d.telegram].filter(Boolean).length;
+      const n = [d.instagram, d.facebook, d.tiktok, d.twitter, d.youtube, d.whatsappUrl, d.threads, d.telegram, d.waze].filter(Boolean).length;
       return n > 1 ? "complete" : n > 0 ? "partial" : "empty";
     }
     case "colores": {

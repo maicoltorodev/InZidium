@@ -218,7 +218,7 @@ export function CatalogoSection({
         <ToggleRow
           icon={MessageCircle}
           title="Botón de WhatsApp en el detalle"
-          description={`Muestra un CTA "Consultar por WhatsApp" en el modal que se abre al clickear "Ver detalle" de un ${cfg.singular.toLowerCase()}.`}
+          description={`Muestra un boton "Consultar por WhatsApp" en el modal que se abre al clickear "Ver detalle" de un ${cfg.singular.toLowerCase()}.`}
           checked={d.catalogoWhatsappButton ?? true}
           onChange={(next) => savePatch({ catalogoWhatsappButton: next })}
         />

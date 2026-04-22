@@ -67,6 +67,7 @@ const SIMPLE: Record<string, FieldRule> = {
     whatsappUrl: { kind: "url", max: 300 },
     threads: { kind: "url", max: 300 },
     telegram: { kind: "url", max: 300 },
+    waze: { kind: "url", max: 500 },
 
     // Avanzado / negocio
     fontPreset: { kind: "string", max: 30 },

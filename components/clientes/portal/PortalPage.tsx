@@ -47,11 +47,21 @@ export function PortalPage({
     onDone: (url: string) => void,
     setLoading: (v: boolean) => void,
     oldUrl?: string,
+    /**
+     * `preserveFormat: true` salta la conversión a WebP. Obligatorio para
+     * favicons: next/og (Satori) no decodea WebP de forma confiable — si el
+     * favicon queda en WebP, el route `/icon` tira 500.
+     */
+    options?: { preserveFormat?: boolean },
   ) => {
     setLoading(true);
     try {
       const result = await uploadProjectFile({
-        file, proyectoId: project.id, subidoPor: uploadedBy, oldUrl,
+        file,
+        proyectoId: project.id,
+        subidoPor: uploadedBy,
+        oldUrl,
+        preserveFormat: options?.preserveFormat,
       });
       if (result.success && result.url) onDone(result.url);
       else showToast(result.error || "Error al subir la imagen", "error");

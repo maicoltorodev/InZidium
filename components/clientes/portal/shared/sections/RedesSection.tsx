@@ -8,7 +8,7 @@ import {
 import { AutoField } from "../../fields";
 import { FieldItem } from "../primitives/FieldItem";
 import { MOTION } from "../primitives/motion";
-import { XIcon } from "../primitives/BrandIcons";
+import { XIcon, WazeIcon } from "../primitives/BrandIcons";
 
 type Network = {
   key: string;
@@ -27,6 +27,9 @@ const NETWORKS: Network[] = [
   { key: "whatsappUrl", label: "WhatsApp",    icon: MessageCircle, prefix: "https://wa.me/",          placeholder: "573001234567" },
   { key: "threads",     label: "Threads",     icon: AtSign,        prefix: "https://threads.net/@",   placeholder: "tunegocio" },
   { key: "telegram",    label: "Telegram",    icon: Send,          prefix: "https://t.me/",           placeholder: "tunegocio" },
+  // Waze usa link completo — el prefix "https://" es solo para que el usuario
+  // pegue cualquier URL (waze.com/ul?..., ul.waze.com/..., etc.) sin tipearlo.
+  { key: "waze",        label: "Waze",        icon: WazeIcon,      prefix: "https://",                placeholder: "waze.com/ul?ll=4.63,-74.09" },
 ];
 
 function stripPrefix(url: string | undefined, prefix: string): string {

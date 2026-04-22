@@ -148,8 +148,15 @@ export function createProjectFileUploader(deps: UploadDeps = {}) {
     proyectoId: string;
     subidoPor: UploadActor;
     oldUrl?: string;
+    /**
+     * Si `true`, salta la conversión a WebP y sube el archivo tal cual.
+     * Se usa para FAVICONS: next/og (Satori) no decodea todas las variantes
+     * de WebP y tira 500 en el route del favicon. Manteniendo PNG/JPEG
+     * originales, el endpoint renderiza sin errores.
+     */
+    preserveFormat?: boolean;
   }): Promise<UploadResult> {
-    const { file, proyectoId, subidoPor, oldUrl } = input;
+    const { file, proyectoId, subidoPor, oldUrl, preserveFormat } = input;
 
     if (!ALLOWED_UPLOAD_TYPES.has(file.type)) {
       return {
@@ -158,21 +165,23 @@ export function createProjectFileUploader(deps: UploadDeps = {}) {
       };
     }
 
-    if (shouldOptimizeImage(file) && file.size > MAX_IMAGE_INPUT_SIZE) {
+    const willOptimize = shouldOptimizeImage(file) && !preserveFormat;
+
+    if (willOptimize && file.size > MAX_IMAGE_INPUT_SIZE) {
       return {
         success: false,
         error: "LA IMAGEN ORIGINAL ES DEMASIADO GRANDE (>15MB).",
       };
     }
 
-    if (!shouldOptimizeImage(file) && file.size > MAX_UPLOAD_SIZE) {
+    if (!willOptimize && file.size > MAX_UPLOAD_SIZE) {
       return {
         success: false,
         error: "EL ARCHIVO ES DEMASIADO GRANDE (>4.5MB).",
       };
     }
 
-    const preparedFile = shouldOptimizeImage(file)
+    const preparedFile = willOptimize
       ? await optimize(file)
       : file;
     if (preparedFile.size > MAX_UPLOAD_SIZE) {

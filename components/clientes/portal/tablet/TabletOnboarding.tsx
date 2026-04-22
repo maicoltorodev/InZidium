@@ -49,6 +49,7 @@ export function TabletOnboarding({
     onDone: (url: string) => void,
     setLoading: (v: boolean) => void,
     oldUrl?: string,
+    options?: { preserveFormat?: boolean },
   ) => Promise<void>;
   uploadingLogo: boolean;
   setUploadingLogo: (v: boolean) => void;
@@ -114,7 +115,7 @@ export function TabletOnboarding({
   );
   const handleUploadFavicon = useCallback(
     (file: File) => {
-      uploadImage(file, (url) => savePatch({ favicon: url }), setUploadingFavicon, d.favicon);
+      uploadImage(file, (url) => savePatch({ favicon: url }), setUploadingFavicon, d.favicon, { preserveFormat: true });
     },
     [uploadImage, savePatch, setUploadingFavicon, d.favicon]
   );
