@@ -426,10 +426,14 @@ export async function publicarProyecto(id: string) {
   const proj = await proyectos.getById(id);
   if (!proj) return { success: false, error: "PROYECTO NO ENCONTRADO." };
 
-  const res = await proyectos.update(id, {
-    fase: "publicado",
-    freezeMode: false,
-  } as any);
+  // fechaPublicacion se setea solo la PRIMERA vez que el proyecto entra a
+  // publicado. Si el admin baja a construcción y vuelve a publicar, NO se
+  // sobrescribe → se preserva el "día 1" real (base para pagos mensuales,
+  // aniversarios, etc. en el futuro).
+  const patch: Record<string, any> = { fase: "publicado", freezeMode: false };
+  if (!proj.fechaPublicacion) patch.fechaPublicacion = new Date();
+
+  const res = await proyectos.update(id, patch);
   if (res.success) {
     revalidateProyecto();
     notifyPlantillaRevalidate(id);

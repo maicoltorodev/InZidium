@@ -27,6 +27,8 @@ export interface Proyecto {
     link?: string | null;
     fechaInicio: Date;
     fechaEntrega?: Date | null;
+    /** Timestamp del primer paso a fase `publicado`. NULL si nunca se publicó. */
+    fechaPublicacion?: Date | null;
     onboardingStep: number;
     onboardingData: Record<string, any>;
     createdAt: Date;

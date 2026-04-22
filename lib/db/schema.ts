@@ -46,6 +46,11 @@ export const proyectos = pgTable("proyectos", {
     linkLocked: boolean("link_locked").default(false).notNull(),
     fechaInicio: timestamp("fecha_inicio").defaultNow().notNull(),
     fechaEntrega: timestamp("fecha_entrega"),
+    // Fecha en la que el proyecto entró a fase `publicado`. Se setea UNA sola
+    // vez (la primera) y no se actualiza aunque el admin mueva la fase de
+    // publicado ↔ construccion → preserva el "día 1" real para cálculos de
+    // pagos mensuales, tiempo de vida, etc.
+    fechaPublicacion: timestamp("fecha_publicacion"),
     onboardingStep: integer("onboarding_step").default(0).notNull(),
     onboardingData: json("onboarding_data").$type<Record<string, any>>().default({}),
     createdAt: timestamp("created_at").defaultNow().notNull(),

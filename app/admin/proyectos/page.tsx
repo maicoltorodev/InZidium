@@ -164,28 +164,13 @@ export default function ProjectsAdmin() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4 sm:gap-8 mb-6 p-4 sm:p-6 rounded-3xl bg-white/[0.02] border border-white/5 group-hover:bg-white/[0.04] transition-all duration-500">
+                      <div className="mb-6 p-4 sm:p-6 rounded-3xl bg-white/[0.02] border border-white/5 group-hover:bg-white/[0.04] transition-all duration-500">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-widest text-gray-500">
                             <User className="w-3 h-3" /> Cliente
                           </div>
                           <p className="text-sm font-bold text-gray-100 truncate">
                             {project.cliente?.nombre}
-                          </p>
-                        </div>
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2 text-[8px] font-black uppercase tracking-widest text-gray-500">
-                            <Calendar className="w-3 h-3" /> Fecha estimada
-                          </div>
-                          <p className="text-sm font-bold text-gray-100">
-                            {project.fechaEntrega
-                              ? new Date(project.fechaEntrega)
-                                  .toLocaleDateString("es-ES", {
-                                    day: "2-digit",
-                                    month: "short",
-                                  })
-                                  .toUpperCase()
-                              : "POR ASIGNAR"}
                           </p>
                         </div>
                       </div>
