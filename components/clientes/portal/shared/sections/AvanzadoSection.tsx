@@ -6,7 +6,7 @@ import { Check } from "lucide-react";
 // confirmación local) y el `useDebounced` de la preview de Google Fonts. No
 // se usan para sincronizar data del proyecto — eso vive en `d`, que ya es el
 // `displayedProject` (server + pending mutations).
-import { AutoField, ImageField } from "../../fields";
+import { AutoField, AutoTextarea, ImageField } from "../../fields";
 import { labelCls } from "../../styles";
 import { FieldItem } from "../primitives/FieldItem";
 import { ChipSelector } from "../primitives/ChipSelector";
@@ -194,6 +194,27 @@ export function AvanzadoSection({
             />
           </div>
         </div>
+      </FieldItem>
+
+      <FieldItem>
+        <label className={labelCls}>Descripción SEO</label>
+        <p className="mb-2 text-[11px] text-white/25">
+          El texto que Google muestra debajo del título en los resultados de
+          búsqueda. Entre 120 y 160 caracteres, claro y con las keywords de tu
+          negocio. Si lo dejas vacío, se genera automático con el nombre y el
+          slogan.
+        </p>
+        <AutoTextarea
+          value={d.seoDescripcion ?? ""}
+          onSave={(v) => savePatch({ seoDescripcion: v })}
+          placeholder="Pizzería artesanal y enoteca en Bogotá. Masa madre de larga maduración, vinos seleccionados, ambiente acogedor."
+          maxLength={200}
+          rows={3}
+          className="w-full rounded-2xl border border-white/[0.08] bg-white/[0.03] px-4 py-3.5 text-sm text-white outline-none placeholder:text-white/20 focus:border-[#a855f7]/50 transition-colors resize-none"
+        />
+        <p className="mt-1.5 text-[10px] text-white/25 text-right">
+          {(d.seoDescripcion ?? "").length} / 160 recomendado
+        </p>
       </FieldItem>
 
       <FieldItem>

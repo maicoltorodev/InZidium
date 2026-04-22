@@ -81,6 +81,10 @@ const SIMPLE: Record<string, FieldRule> = {
     // Dominio
     dominioUno: { kind: "string", max: 50 },
     seoCanonicalUrl: { kind: "url", max: 500 },
+    // Meta description SEO opcional (override de la computada). Cap 200 chars
+    // porque Google corta en ~160 pero damos margen; si se pasa, layout.tsx
+    // trunca visualmente al emitir el meta tag.
+    seoDescripcion: { kind: "string", max: 200 },
 };
 
 function sanitizeSimple(key: string, value: unknown): unknown {
