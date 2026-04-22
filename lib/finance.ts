@@ -5,17 +5,21 @@
  *   - Cliente le paga al estudio offline (no se trackea).
  *   - Estudio registra el cliente/proyecto en la plataforma cuando ya tiene la
  *     plata. La existencia del proyecto implica que hay cobro.
- *   - Estudio gira a InZidium el % correspondiente (80%) para habilitar compra
- *     de dominio, infra, etc.
- *   - Plan estándar: 1 solo pago (80% del total).
- *   - Plan a la medida: 2 pagos del 80%, partidos 50/50. El de arranque se
- *     pide al crear el proyecto; el de entrega se habilita cuando
- *     `project.fase === "publicado"`.
+ *   - Estudio gira a InZidium su parte para habilitar compra de dominio,
+ *     infra, etc.
+ *   - Plan estándar: comisión FIJA del estudio = 104.000 COP. InZidium recibe
+ *     el resto (total − 104.000). 1 solo pago.
+ *   - Plan a la medida: split 80/20 sobre precio custom. 2 pagos del 80%,
+ *     partidos 50/50. El de arranque se pide al crear el proyecto; el de
+ *     entrega se habilita cuando `project.fase === "publicado"`.
  *
  * Se guarda como `onboardingData.pagos: Pago[]` — sin tocar schema.
  */
 
 export const PRECIO_TOTAL_ESTANDAR = 499_000;
+/** Plan Estándar: monto fijo que se queda el estudio. */
+export const COMISION_ESTUDIO_ESTANDAR = 104_000;
+/** Plan A la medida: split porcentual InZidium/estudio. */
 export const PCT_INZIDIUM = 0.8;
 export const PCT_ESTUDIO = 0.2;
 
@@ -56,6 +60,42 @@ export function getPrecioTotal(project: {
 }
 
 /**
+ * Monto total que va a InZidium según el plan.
+ *  - Estándar: total − comisión fija del estudio (104k).
+ *  - A la medida: 80% del precio custom.
+ */
+export function getMontoInzidiumTotal(project: {
+    plan: string;
+    onboardingData?: any;
+}): number | null {
+    const total = getPrecioTotal(project);
+    if (!total) return null;
+    if (project.plan === PLAN_ESTANDAR_TITLE) {
+        return Math.max(0, total - COMISION_ESTUDIO_ESTANDAR);
+    }
+    if (project.plan === PLAN_ALA_MEDIDA_TITLE) {
+        return Math.round(total * PCT_INZIDIUM);
+    }
+    return null;
+}
+
+/** Monto que se queda el estudio según el plan. */
+export function getMontoEstudioTotal(project: {
+    plan: string;
+    onboardingData?: any;
+}): number | null {
+    const total = getPrecioTotal(project);
+    if (!total) return null;
+    if (project.plan === PLAN_ESTANDAR_TITLE) {
+        return Math.min(total, COMISION_ESTUDIO_ESTANDAR);
+    }
+    if (project.plan === PLAN_ALA_MEDIDA_TITLE) {
+        return Math.round(total * PCT_ESTUDIO);
+    }
+    return null;
+}
+
+/**
  * Devuelve la lista ESPERADA de cuotas según el plan (con montos calculados).
  * No lee `onboardingData.pagos` — eso lo hace `getPagos` que mergea ambos.
  */
@@ -63,9 +103,8 @@ export function getExpectedPagos(project: {
     plan: string;
     onboardingData?: any;
 }): Pago[] {
-    const total = getPrecioTotal(project);
-    if (!total) return [];
-    const montoInzidium = Math.round(total * PCT_INZIDIUM);
+    const montoInzidium = getMontoInzidiumTotal(project);
+    if (montoInzidium == null) return [];
 
     if (project.plan === PLAN_ESTANDAR_TITLE) {
         return [{ tipo: "arranque", monto: montoInzidium }];

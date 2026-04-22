@@ -354,6 +354,9 @@ export async function iniciarConstruccionEstandar(id: string) {
     fase: "construccion",
     buildStartedAt: now,
     fechaEntrega,
+    // Auto-lock del dominio al pasar a construccion: a partir de acá solo el
+    // admin tiene control. Persiste en publicado. Idempotente si ya estaba locked.
+    linkLocked: true,
   } as any);
   if (res.success) {
     revalidateProyecto();
@@ -387,6 +390,9 @@ export async function iniciarConstruccion(id: string, durationDays: number) {
     fase: "construccion",
     buildStartedAt: now,
     fechaEntrega,
+    // Auto-lock del dominio al pasar a construccion: a partir de acá solo el
+    // admin tiene control. Persiste en publicado. Idempotente si ya estaba locked.
+    linkLocked: true,
   } as any);
   if (res.success) {
     revalidateProyecto();

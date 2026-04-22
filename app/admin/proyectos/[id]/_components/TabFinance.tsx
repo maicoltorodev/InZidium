@@ -34,7 +34,10 @@ import {
   getPagos,
   getPagoStatus,
   getPrecioTotal,
+  getMontoInzidiumTotal,
+  getMontoEstudioTotal,
   isPagoUnlocked,
+  COMISION_ESTUDIO_ESTANDAR,
   PCT_ESTUDIO,
   PCT_INZIDIUM,
   PLAN_ALA_MEDIDA_TITLE,
@@ -64,12 +67,8 @@ export function TabFinance({
   const isAlaMedida = project.plan === PLAN_ALA_MEDIDA_TITLE;
 
   const precioTotal = getPrecioTotal(project);
-  const montoInzidiumTotal = precioTotal
-    ? Math.round(precioTotal * PCT_INZIDIUM)
-    : null;
-  const montoEstudioTotal = precioTotal
-    ? Math.round(precioTotal * PCT_ESTUDIO)
-    : null;
+  const montoInzidiumTotal = getMontoInzidiumTotal(project);
+  const montoEstudioTotal = getMontoEstudioTotal(project);
   const pagos = getPagos(project);
 
   return (
@@ -94,7 +93,9 @@ export function TabFinance({
                 </span>
                 {precioTotal && (
                   <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mt-2">
-                    80% de {COP(precioTotal)} · {project.plan}
+                    {isEstandar
+                      ? `${COP(precioTotal)} − ${COP(COMISION_ESTUDIO_ESTANDAR)} comisión estudio`
+                      : `80% de ${COP(precioTotal)}`} · {project.plan}
                   </p>
                 )}
               </>
@@ -149,7 +150,7 @@ export function TabFinance({
         </div>
       )}
 
-      {/* DESGLOSE 80/20 */}
+      {/* DESGLOSE — Estándar usa monto fijo, A la medida usa 80/20 */}
       {precioTotal && (
         <div className="bg-white/[0.04] backdrop-blur-xl border border-white/8 rounded-3xl p-6 sm:p-8">
           <p className="text-[10px] font-black uppercase tracking-[0.35em] text-gray-500 mb-6">
@@ -158,7 +159,7 @@ export function TabFinance({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="p-5 sm:p-6 rounded-2xl bg-[#FFD700]/5 border border-[#FFD700]/20 space-y-1">
               <p className="text-[9px] font-black uppercase tracking-widest text-[#FFD700]/60">
-                InZidium · 80%
+                InZidium {isAlaMedida ? "· 80%" : ""}
               </p>
               <p className="text-2xl font-black text-[#FFD700]">
                 {COP(montoInzidiumTotal!)}
@@ -169,7 +170,7 @@ export function TabFinance({
             </div>
             <div className="p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5 space-y-1">
               <p className="text-[9px] font-black uppercase tracking-widest text-gray-500">
-                Estudio · 20%
+                Estudio {isAlaMedida ? "· 20%" : "· monto fijo"}
               </p>
               <p className="text-2xl font-black text-white">
                 {COP(montoEstudioTotal!)}
@@ -185,8 +186,8 @@ export function TabFinance({
             <p className="text-[10px] text-gray-500 leading-relaxed">
               Si el cliente pagó mediante pasarela de pago, la comisión
               {" "}<span className="text-amber-400/80 font-black">(3–4%)</span>{" "}
-              se descuenta del 20% del estudio. La transferencia a InZidium es
-              siempre fija.
+              se descuenta de la parte del estudio. La transferencia a InZidium
+              es siempre fija.
             </p>
           </div>
         </div>
