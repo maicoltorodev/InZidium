@@ -28,10 +28,11 @@ const SIMPLE: Record<string, FieldRule> = {
     slogan: { kind: "string", max: 160 },
     logo: { kind: "url", max: 1000 },
 
-    // Nosotros
-    descripcion: { kind: "string", max: 2000 },
-    mision: { kind: "string", max: 1000 },
-    diferencial: { kind: "string", max: 1000 },
+    // Nosotros — textos cortos (150 chars) para que la Plantilla no se vea
+    // cargada. El UI también usa maxLength={150}.
+    descripcion: { kind: "string", max: 150 },
+    mision: { kind: "string", max: 150 },
+    diferencial: { kind: "string", max: 150 },
     imagenNosotros: { kind: "url", max: 1000 },
 
     // Ubicación

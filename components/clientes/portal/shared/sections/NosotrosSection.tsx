@@ -1,9 +1,25 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AutoField, AutoTextarea, ImageField } from "../../fields";
 import { labelCls } from "../../styles";
 import { FieldItem } from "../primitives/FieldItem";
+
+// Counter vivo para textareas con maxLength — sube/baja mientras el cliente
+// tipea sin esperar al blur. AutoTextarea es uncontrolled, así que nos
+// suscribimos al input con un onInput y mantenemos un state local.
+function CharCounter({ count, max }: { count: number; max: number }) {
+  const near = count >= max - 10;
+  return (
+    <span
+      className={`shrink-0 text-[11px] tabular-nums ${
+        near ? "text-amber-400/80" : "text-white/30"
+      }`}
+    >
+      {count}/{max}
+    </span>
+  );
+}
 
 // Stats de ejemplo que arrancan prellenados. El cliente los puede editar o
 // borrar. Si nunca los toca, aparecen tal cual en el sitio final.
@@ -34,6 +50,16 @@ export function NosotrosSection({
 }) {
   const stats: { value: string; label: string }[] = d.stats ?? EMPTY_STATS;
 
+  // Contadores locales para los textareas (AutoTextarea es uncontrolled, así
+  // que necesitamos este state para feedback en vivo mientras el cliente tipea).
+  // Se sincronizan con `d.*` cuando cambia externamente (ej: realtime del admin).
+  const [descCount, setDescCount] = useState((d.descripcion ?? "").length);
+  const [misionCount, setMisionCount] = useState((d.mision ?? "").length);
+  const [difCount, setDifCount] = useState((d.diferencial ?? "").length);
+  useEffect(() => setDescCount((d.descripcion ?? "").length), [d.descripcion]);
+  useEffect(() => setMisionCount((d.mision ?? "").length), [d.mision]);
+  useEffect(() => setDifCount((d.diferencial ?? "").length), [d.diferencial]);
+
   // Si el cliente entra por primera vez y no hay stats guardados, sembramos
   // los defaults. Una vez guardados, `d.stats` queda definido y no se vuelve
   // a sembrar aunque el cliente borre todo (respeta su edición explícita).
@@ -57,12 +83,17 @@ export function NosotrosSection({
         <AutoTextarea
           value={d.descripcion}
           onSave={(v) => savePatch({ descripcion: v })}
+          onInput={(e: React.FormEvent<HTMLTextAreaElement>) =>
+            setDescCount(e.currentTarget.value.length)
+          }
           placeholder="Somos un equipo apasionado por entregar resultados de calidad."
           rows={4}
+          maxLength={150}
         />
-        <p className="mt-1.5 text-[11px] text-white/25">
-          Si lo dejás vacío, en tu sitio aparecerá este texto.
-        </p>
+        <div className="mt-1.5 flex items-center justify-between gap-3 text-[11px] text-white/25">
+          <span>Si lo dejás vacío, en tu sitio aparecerá este texto.</span>
+          <CharCounter count={descCount} max={150} />
+        </div>
       </FieldItem>
 
       <FieldItem id="nosotros-mision">
@@ -70,12 +101,17 @@ export function NosotrosSection({
         <AutoTextarea
           value={d.mision}
           onSave={(v) => savePatch({ mision: v })}
+          onInput={(e: React.FormEvent<HTMLTextAreaElement>) =>
+            setMisionCount(e.currentTarget.value.length)
+          }
           placeholder="Ofrecer productos y servicios que superen expectativas."
           rows={3}
+          maxLength={150}
         />
-        <p className="mt-1.5 text-[11px] text-white/25">
-          Si lo dejás vacío, en tu sitio aparecerá este texto.
-        </p>
+        <div className="mt-1.5 flex items-center justify-between gap-3 text-[11px] text-white/25">
+          <span>Si lo dejás vacío, en tu sitio aparecerá este texto.</span>
+          <CharCounter count={misionCount} max={150} />
+        </div>
       </FieldItem>
 
       <FieldItem id="nosotros-diferencial">
@@ -83,12 +119,17 @@ export function NosotrosSection({
         <AutoTextarea
           value={d.diferencial}
           onSave={(v) => savePatch({ diferencial: v })}
+          onInput={(e: React.FormEvent<HTMLTextAreaElement>) =>
+            setDifCount(e.currentTarget.value.length)
+          }
           placeholder="Atención cercana, compromiso con los tiempos y calidad consistente."
           rows={3}
+          maxLength={150}
         />
-        <p className="mt-1.5 text-[11px] text-white/25">
-          Si lo dejás vacío, en tu sitio aparecerá este texto.
-        </p>
+        <div className="mt-1.5 flex items-center justify-between gap-3 text-[11px] text-white/25">
+          <span>Si lo dejás vacío, en tu sitio aparecerá este texto.</span>
+          <CharCounter count={difCount} max={150} />
+        </div>
       </FieldItem>
 
       <FieldItem id="nosotros-foto">
