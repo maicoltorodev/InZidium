@@ -1,124 +1,51 @@
 "use client"
 
-import { useRef } from "react"
-import { motion } from "framer-motion"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
+import { ArrowRight } from "lucide-react"
 import { SectionHeader } from "@/components/section-header"
 import { PageSection } from "@/components/ui/page-section"
-import { cn } from "@/lib/utils"
-
-import { HighlightText } from "@/components/ui/highlight-text"
-
-type Solution = {
-  id: string
-  title: string
-  description: string
-  highlight?: string
-  features: string[]
-  icon: string
-}
-
-const solutions: Solution[] = [
-  {
-    id: "1",
-    title: "Aplicaciones Móviles",
-    description: "Desarrollamos aplicaciones móviles disponibles en Play Store y App Store que permiten a tus clientes acceder a tus servicios desde sus celulares.",
-    highlight: "Play Store y App Store",
-    features: ["Android", "iPhone", "Play Store", "App Store"],
-    icon: "📱",
-  },
-  {
-    id: "2",
-    title: "Sistemas Personalizados",
-    description: "Creamos sistemas personalizados que automatizan tareas, optimizan procesos y mejoran la eficiencia de tu negocio según tus necesidades específicas.",
-    highlight: "automatizan tareas",
-    features: ["Automatización", "Personalización", "Optimización", "Escalabilidad"],
-    icon: "⚙️",
-  },
-  {
-    id: "3",
-    title: "Tiendas Online",
-    description: "Desarrollamos tiendas virtuales completas donde tus clientes pueden ver productos, agregar al carrito y comprar de forma segura.",
-    highlight: "comprar de forma segura",
-    features: ["Ventas online", "Pagos integrados", "Gestión de inventario", "Panel de control"],
-    icon: "🛒",
-  },
-  {
-    id: "4",
-    title: "Sistemas de Reservas",
-    description: "Creamos sistemas de reservas para restaurantes, salones, clínicas o cualquier negocio que necesite gestionar citas y reservas online.",
-    highlight: "gestionar citas y reservas online",
-    features: ["Reservas automáticas", "Confirmaciones", "Gestión de horarios", "Recordatorios"],
-    icon: "📅",
-  },
-]
-
-
-function SolutionCard({ solution, index }: { solution: Solution; index: number }) {
-  return (
-    <motion.div
-      className="glass-panel glass-card rounded-3xl p-8 relative overflow-hidden group will-change-transform translate-z-0 backface-hidden"
-      style={{
-        animationDelay: `${0.2 + index * 0.1}s`,
-        "--active-border": index % 2 === 0 ? "rgba(168,85,247,0.5)" : "rgba(34,211,238,0.5)",
-        "--active-glow": index % 2 === 0 ? "rgba(168,85,247,0.2)" : "rgba(34,211,238,0.2)",
-        "--neon-glow": index % 2 === 0 ? "rgba(168,85,247,0.15)" : "rgba(34,211,238,0.15)"
-      } as React.CSSProperties}
-    >
-      <div className={`absolute top-0 right-0 p-8 opacity-20 transition-opacity transform duration-200 md:group-hover:opacity-40 md:group-hover:scale-110`}>
-        <span className="text-6xl filter blur-[2px]">{solution.icon}</span>
-      </div>
-
-      <div className="relative z-10">
-        <div className="text-4xl mb-6 bg-white/10 w-16 h-16 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/5 shadow-inner">
-          {solution.icon}
-        </div>
-
-        <h3 className="text-xl sm:text-2xl font-orbitron text-white mb-4 md:group-hover:text-neon-cyan transition-colors duration-200">
-          {solution.title}
-        </h3>
-
-        <p className="text-muted-foreground leading-relaxed mb-6">
-          <HighlightText text={solution.description} highlight={solution.highlight || ""} />
-        </p>
-
-        <div className="flex flex-wrap gap-2">
-          {solution.features.map((feature) => (
-            <span
-              key={feature}
-              className="text-xs font-medium px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/80 md:group-hover:border-neon-cyan/30 transition-colors duration-200"
-            >
-              {feature}
-            </span>
-          ))}
-        </div>
-      </div>
-    </motion.div>
-  )
-}
+import { ServicioCard } from "@/components/servicios/servicio-card"
+import { getServiciosDestacados } from "@/lib/data/servicios"
 
 export function OtherSolutions() {
+  const destacados = getServiciosDestacados()
+
   return (
     <PageSection id="otras-soluciones" containerSize="xl" withBackground={false}>
       <div className="relative z-10">
-        <div className="text-center mb-20 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-down">
+        <div className="text-center mb-16 sm:mb-20 lg:mb-24 animate-on-mount" data-animation="fade-down">
           <SectionHeader
-            titleLeft="Otras"
+            titleLeft="Nuestras"
             titleHighlight="Soluciones"
-            subtitle="Tecnología que se adapta a las necesidades específicas de tu crecimiento"
+            subtitle="Tecnología con IA que se adapta a tu negocio — bots, automatización, e-commerce, apps y más."
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-          {solutions.map((solution, index) => (
-            <div key={solution.id} className="animate-on-mount" data-animation="fade-up" style={{ animationDelay: `${0.2 + index * 0.1}s` }}>
-              <SolutionCard
-                solution={solution}
-                index={index}
-              />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+          {destacados.map((servicio, index) => (
+            <div
+              key={servicio.slug}
+              className="animate-on-mount"
+              data-animation="fade-up"
+              style={{ animationDelay: `${0.1 + index * 0.05}s` }}
+            >
+              <ServicioCard servicio={servicio} index={index} />
             </div>
           ))}
+        </div>
+
+        <div className="mt-12 sm:mt-16 text-center animate-on-mount" data-animation="fade-up">
+          <Link
+            href="/servicios"
+            prefetch={false}
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-orbitron font-bold tracking-[0.2em] text-[11px] sm:text-[12px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.2)] uppercase transition-all duration-200 hover:bg-cyan-500/20 hover:scale-105 active:scale-95"
+          >
+            Ver los 16 servicios
+            <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
+          </Link>
+          <p className="mt-4 text-xs text-muted-foreground">
+            Casos específicos por industria, detalles técnicos y FAQ en cada uno.
+          </p>
         </div>
       </div>
     </PageSection>

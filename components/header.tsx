@@ -8,12 +8,19 @@ import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { scrollToId } from "@/lib/utils"
 
-const NAV_ITEMS = [
-  { id: "sobre-mi",        label: "Nosotros",  highlight: false },
-  { id: "otras-soluciones", label: "Soluciones", highlight: false },
-  { id: "portal",          label: "Portal",    highlight: true  },
-  { id: "valores",         label: "Valores",   highlight: false },
-] as const
+type NavItem = {
+  id: string
+  label: string
+  highlight: boolean
+  href?: string
+}
+
+const NAV_ITEMS: readonly NavItem[] = [
+  { id: "sobre-mi",         label: "Nosotros",  highlight: false },
+  { id: "servicios",        label: "Servicios", highlight: false, href: "/servicios" },
+  { id: "portal",           label: "Portal",    highlight: true  },
+  { id: "casos",            label: "Casos",     highlight: false },
+]
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -22,19 +29,25 @@ export function Header() {
   const pathname = usePathname()
   const router = useRouter()
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, item: { id: string; href?: string }) => {
+    // Si es link a pagina completa, dejamos al navegador navegar normal
+    if (item.href) {
+      setIsMobileMenuOpen(false)
+      return
+    }
+
     e.preventDefault()
     setIsMobileMenuOpen(false)
 
     // Si no estamos en la página de inicio, navegamos a la de inicio con el hash
     if (pathname !== "/") {
-      router.push(`/#${id}`)
+      router.push(`/#${item.id}`)
       return
     }
 
     // Small timeout to allow state updates and potential body unlock to process
     setTimeout(() => {
-      scrollToId(id)
+      scrollToId(item.id)
     }, 10)
   }
   useEffect(() => {
@@ -92,7 +105,7 @@ export function Header() {
       <div className="container mx-auto px-4 sm:px-6 h-20 sm:h-24 flex items-center justify-between relative">
         <a
           href={pathname === "/" ? "#inicio" : "/#inicio"}
-          onClick={(e) => handleNavClick(e, "inicio")}
+          onClick={(e) => handleNavClick(e, { id: "inicio" })}
           className="relative transition-transform duration-300 hover:scale-105 z-20 group flex items-center select-none cursor-pointer"
           aria-label="Ir al inicio"
         >
@@ -117,7 +130,7 @@ export function Header() {
         <div className="md:hidden absolute left-1/2 -translate-x-1/2 z-10">
           <a
             href={pathname === "/" ? "#contacto" : "/#contacto"}
-            onClick={(e) => handleNavClick(e, "contacto")}
+            onClick={(e) => handleNavClick(e, { id: "contacto" })}
             className="inline-block px-5 py-2.5 rounded-full font-orbitron font-bold tracking-[0.1em] text-[9px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_15px_rgba(34,211,238,0.2)] uppercase active:scale-95 whitespace-nowrap cursor-pointer"
           >
             Trabajemos Juntos
@@ -128,8 +141,8 @@ export function Header() {
           {NAV_ITEMS.map((item) => (
             <a
               key={item.id}
-              href={pathname === "/" ? `#${item.id}` : `/#${item.id}`}
-              onClick={(e) => handleNavClick(e, item.id)}
+              href={item.href ?? (pathname === "/" ? `#${item.id}` : `/#${item.id}`)}
+              onClick={(e) => handleNavClick(e, item)}
               className={`text-[11px] font-medium transition-all duration-200 relative group px-2 py-1 uppercase tracking-[0.2em] font-orbitron md:hover:scale-110 active:scale-95 cursor-pointer ${
                 item.highlight
                   ? "text-neon-cyan/60 md:hover:text-neon-cyan"
@@ -154,7 +167,7 @@ export function Header() {
         <div className="hidden md:flex items-center gap-4">
           <a
             href={pathname === "/" ? "#contacto" : "/#contacto"}
-            onClick={(e) => handleNavClick(e, "contacto")}
+            onClick={(e) => handleNavClick(e, { id: "contacto" })}
             className="px-8 py-3 rounded-full font-orbitron font-bold tracking-[0.2em] text-[11px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.2)] uppercase transition-all duration-200 md:hover:bg-cyan-500/20 md:hover:scale-105 active:scale-95 cursor-pointer"
           >
             Trabajemos Juntos
@@ -209,8 +222,8 @@ export function Header() {
                   className="w-full flex flex-col items-center"
                 >
                   <a
-                    href={pathname === "/" ? `#${item.id}` : `/#${item.id}`}
-                    onClick={(e) => handleNavClick(e, item.id)}
+                    href={item.href ?? (pathname === "/" ? `#${item.id}` : `/#${item.id}`)}
+                    onClick={(e) => handleNavClick(e, item)}
                     className={`group w-full py-7 flex items-center justify-center text-center text-[13px] font-orbitron font-medium tracking-[0.4em] transition-all duration-300 active:scale-[0.98] cursor-pointer relative z-[101] ${
                       item.highlight
                         ? "text-neon-cyan/60 hover:text-neon-cyan"

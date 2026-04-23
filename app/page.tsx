@@ -4,7 +4,7 @@ import { Hero } from "@/components/hero"
 import { AboutSection } from "@/components/about-section"
 import { OtherSolutions } from "@/components/other-solutions"
 import { PortalSection } from "@/components/portal-section"
-import { ValuesSection } from "@/components/values-section"
+import { CasesSection } from "@/components/cases-section"
 import { ContactSection } from "@/components/contact-section"
 import { Footer } from "@/components/footer"
 
@@ -35,7 +35,7 @@ export default function Home() {
       <AboutSection />
       <OtherSolutions />
       <PortalSection />
-      <ValuesSection />
+      <CasesSection />
       <ContactSection />
       <Footer />
       <WhatsAppFAB />

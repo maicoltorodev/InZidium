@@ -2,7 +2,7 @@ import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 
 const NAV = [
-  { href: "/#servicios", label: "Servicios" },
+  { href: "/servicios", label: "Servicios" },
   { href: "/#planes", label: "Planes" },
   { href: "/#portal", label: "Portal cliente" },
   { href: "/portal", label: "Portal" },
