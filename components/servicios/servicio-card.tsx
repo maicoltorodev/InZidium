@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import type { Servicio } from "@/lib/data/servicios"
+import { SERVICIO_ICONS } from "@/components/servicios/icon-map"
 
 type Props = {
   servicio: Servicio
@@ -10,7 +11,7 @@ type Props = {
 }
 
 export function ServicioCard({ servicio, index = 0 }: Props) {
-  const Icon = servicio.icono
+  const Icon = SERVICIO_ICONS[servicio.icono]
   const isCyan = servicio.color === "cyan"
 
   return (

@@ -6,6 +6,7 @@ import { ArrowRight, CheckCircle2, ChevronRight } from "lucide-react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { ServicioCard } from "@/components/servicios/servicio-card"
+import { SERVICIO_ICONS } from "@/components/servicios/icon-map"
 import {
   servicios,
   getServicioBySlug,
@@ -56,7 +57,7 @@ export default async function ServicioDetallePage({ params }: Props) {
   if (!servicio) notFound()
 
   const relacionados = getServiciosRelacionados(slug)
-  const Icon = servicio.icono
+  const Icon = SERVICIO_ICONS[servicio.icono]
   const isCyan = servicio.color === "cyan"
 
   const url = `https://www.inzidium.com/servicios/${servicio.slug}`

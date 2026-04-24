@@ -2,8 +2,8 @@
 
 import Link from "next/link"
 import { ArrowRight, Clock } from "lucide-react"
-import type { Post } from "@/lib/data/blog"
-import { CATEGORIAS, formatPostDate } from "@/lib/data/blog"
+import type { Post } from "@/lib/data/blog-meta"
+import { CATEGORIAS, formatPostDate } from "@/lib/data/blog-meta"
 
 type Props = {
   post: Post
