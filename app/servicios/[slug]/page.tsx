@@ -295,7 +295,7 @@ export default async function ServicioDetallePage({ params }: Props) {
                   ¿Listo para implementar {servicio.titulo.toLowerCase()}?
                 </h2>
                 <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-                  Contame sobre tu negocio y te armo una propuesta concreta con alcance, tiempo y costo.
+                  Cuéntanos sobre tu negocio y nuestro equipo prepara una propuesta concreta con alcance, tiempo y costo.
                 </p>
                 <Link
                   href={`/#contacto`}

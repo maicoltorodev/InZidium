@@ -12,31 +12,31 @@ export const CATEGORIAS: Record<
   "desarrollo-web": {
     label: "Desarrollo Web",
     slug: "desarrollo-web",
-    descripcion: "Next.js, React, arquitectura web moderna y buenas prácticas de desarrollo.",
+    descripcion: "Páginas, plataformas y tecnología web moderna para impulsar tu negocio.",
     color: "cyan",
   },
   ia: {
     label: "Inteligencia Artificial",
     slug: "ia",
-    descripcion: "Bots, agentes, automatización con IA y casos reales para negocios.",
+    descripcion: "Asistentes virtuales, automatización con IA y casos reales aplicados a empresas.",
     color: "purple",
   },
   seo: {
     label: "SEO y Marketing",
     slug: "seo",
-    descripcion: "Posicionamiento en Google, estrategias de contenido y marketing digital.",
+    descripcion: "Posicionamiento en Google, estrategias de contenido y mercadeo digital.",
     color: "cyan",
   },
   negocios: {
     label: "Negocios",
     slug: "negocios",
-    descripcion: "Decisiones comerciales, precios, procesos y estrategia para emprendedores.",
+    descripcion: "Decisiones comerciales, precios, procesos y estrategia para empresarios.",
     color: "purple",
   },
   tutoriales: {
     label: "Tutoriales",
     slug: "tutoriales",
-    descripcion: "Guías paso a paso, code snippets y tips técnicos.",
+    descripcion: "Guías paso a paso y recomendaciones prácticas para aplicar hoy.",
     color: "cyan",
   },
 }

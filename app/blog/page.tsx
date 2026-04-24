@@ -103,16 +103,16 @@ export default async function BlogPage() {
                 prefetch={false}
               >
                 <Rss className="w-3.5 h-3.5" strokeWidth={2} />
-                Suscribite al RSS
+                Suscríbete al RSS
               </Link>
             </div>
           </div>
 
           {posts.length === 0 && (
             <div className="glass-panel rounded-3xl p-12 text-center border border-white/10 max-w-2xl mx-auto">
-              <h2 className="text-2xl font-orbitron text-white mb-3">Pronto acá</h2>
+              <h2 className="text-2xl font-orbitron text-white mb-3">Pronto aquí</h2>
               <p className="text-muted-foreground">
-                Estamos preparando el primer batch de artículos. Volvé pronto o suscribite al RSS para avisarte.
+                Nuestro equipo está preparando el primer grupo de artículos. Vuelve pronto o suscríbete al RSS para recibir las novedades.
               </p>
             </div>
           )}

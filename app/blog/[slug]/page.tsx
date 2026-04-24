@@ -223,10 +223,10 @@ export default async function BlogPostPage({ params }: Props) {
               />
               <div className="relative z-10">
                 <h2 className="text-2xl sm:text-3xl font-orbitron text-white mb-4">
-                  ¿Querés aplicar esto en tu negocio?
+                  ¿Quieres aplicar esto en tu negocio?
                 </h2>
                 <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-                  Armamos una propuesta concreta a la medida. Hablemos sobre qué necesitás y cómo lo resolvemos.
+                  Nuestro equipo prepara una propuesta a la medida. Conversemos sobre lo que necesitas y cómo lo resolvemos.
                 </p>
                 <Link
                   href="/#contacto"
@@ -236,7 +236,7 @@ export default async function BlogPostPage({ params }: Props) {
                       : "border-purple-500/50 bg-purple-500/10 hover:bg-purple-500/20"
                   }`}
                 >
-                  Hablar con InZidium
+                  Habla con nuestro equipo
                   <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
                 </Link>
               </div>

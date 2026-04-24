@@ -164,16 +164,16 @@ export default function ServiciosPage() {
               <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5 pointer-events-none" />
               <div className="relative z-10">
                 <h3 className="text-2xl sm:text-3xl font-orbitron text-white mb-4">
-                  ¿No sabés cuál se ajusta a tu negocio?
+                  ¿No sabes cuál se ajusta a tu negocio?
                 </h3>
                 <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-                  Contame qué hacés y qué problema querés resolver. En 15 minutos te digo qué servicio o combinación tiene más sentido para vos.
+                  Cuéntanos qué haces y qué problema quieres resolver. En 15 minutos nuestro equipo te orienta sobre el servicio o la combinación que tiene más sentido para ti.
                 </p>
                 <Link
                   href="/#contacto"
                   className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-orbitron font-bold tracking-[0.2em] text-[12px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.2)] uppercase transition-all duration-200 hover:bg-cyan-500/20 hover:scale-105 active:scale-95"
                 >
-                  Hablar con InZidium
+                  Habla con nuestro equipo
                   <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
                 </Link>
               </div>
