@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next'
 import { servicios } from '@/lib/data/servicios'
+import { getAllPosts } from '@/lib/data/blog'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.inzidium.com'
   const now = new Date()
 
@@ -10,6 +11,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: now,
     changeFrequency: 'monthly',
     priority: 0.9,
+  }))
+
+  const posts = await getAllPosts()
+  const blogPages: MetadataRoute.Sitemap = posts.map((p) => ({
+    url: `${baseUrl}/blog/${p.slug}`,
+    lastModified: new Date(`${p.frontmatter.date}T00:00:00Z`),
+    changeFrequency: 'monthly',
+    priority: 0.8,
   }))
 
   return [
@@ -25,7 +34,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.95,
     },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: now,
+      changeFrequency: 'daily',
+      priority: 0.9,
+    },
     ...serviciosPages,
+    ...blogPages,
     {
       url: `${baseUrl}/politica-de-privacidad`,
       lastModified: now,

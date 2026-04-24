@@ -1,0 +1,179 @@
+---
+title: "Next.js vs WordPress: cuál elegir para tu negocio en 2026"
+description: "Comparación honesta entre Next.js y WordPress para páginas web de empresa. Performance, SEO, costos, escalabilidad y cuándo tiene sentido cada uno."
+date: "2026-04-18"
+author: "Maicol Toro"
+category: "desarrollo-web"
+tags: ["nextjs", "wordpress", "comparativa", "decisión técnica"]
+featured: true
+---
+
+Si estás evaluando hacer una página web nueva, te vas a topar con esta decisión: ¿WordPress (la opción tradicional, 40% de la web) o Next.js (lo que usan Vercel, Notion, TikTok y lo más moderno)?
+
+No hay una respuesta correcta para todos los casos — pero sí para el tuyo. Vamos al grano.
+
+## TL;DR
+
+**Elegí WordPress si:**
+- Vas a publicar mucho contenido y querés que personas no técnicas lo editen sin tocar código
+- Necesitás un sitio corporativo estándar con blog y tu prioridad es costo bajo inicial
+- Ya tenés equipo familiarizado con WordPress
+
+**Elegí Next.js si:**
+- Tu sitio necesita funcionalidad custom más allá de "páginas con contenido"
+- Performance y SEO técnico importan (e-commerce, landings de alta conversión, SaaS)
+- Pensás escalar a volumen alto de tráfico o lógica compleja
+
+## Performance — la diferencia que Google castiga
+
+Google mide Core Web Vitals como factor de ranking desde 2021. Acá la diferencia es drástica.
+
+**Next.js (out of the box):**
+- Renderizado en el servidor (SSR) o estático (SSG)
+- Bundle optimizado automáticamente (tree-shaking, code-splitting)
+- Imágenes optimizadas (AVIF/WebP, lazy loading, responsive)
+- PageSpeed típico: **90-100**
+
+**WordPress (con un tema decente):**
+- HTML pesado generado en PHP
+- Plugins apilados que cargan CSS/JS redundante
+- Sin optimización de imágenes nativa (necesitás plugin adicional)
+- PageSpeed típico: **40-70**
+
+Puedo hacer que WordPress cargue rápido con Cloudflare, WP Rocket, Imagify, Elementor Pro Lite, etc. Pero es combate constante contra la naturaleza de la plataforma. Next.js está optimizado por defecto.
+
+**Impacto real:** sitios más rápidos convierten más. Amazon calculó que 100ms más de latencia = 1% menos de ventas.
+
+## SEO técnico
+
+| Capacidad | Next.js | WordPress |
+|---|---|---|
+| Control total de meta tags | Sí | Con plugin (Yoast/RankMath) |
+| Schema.org custom | Sí, nativo | Con plugin |
+| Sitemap dinámico | Sí, nativo | Con plugin |
+| Canonical tags | Sí | Con plugin |
+| Server-side rendering | Sí, nativo | Sí |
+| Core Web Vitals 95+ | Fácil | Difícil |
+
+WordPress puede hacer SEO bien, pero siempre con plugins. Cada plugin es una dependencia más, un potencial conflicto y una superficie más grande de vulnerabilidad.
+
+## Edición de contenido (la fortaleza real de WordPress)
+
+Acá WordPress gana, sin discusión.
+
+**WordPress:**
+- Panel intuitivo, pensado para editores no técnicos
+- Gutenberg permite armar páginas arrastrando bloques
+- Equipo de marketing puede publicar sin developer
+- 20 años de plugins para cualquier caso
+
+**Next.js:**
+- Para blogs simples: MDX (archivos de código) — requiere developer para publicar
+- Para equipos no técnicos: CMS headless (Sanity, Contentful, Payload) — más setup inicial
+- Tiene más curva de aprendizaje para no programadores
+
+**Si tu negocio depende de publicar contenido constantemente con personas que no saben programar, WordPress te simplifica la vida.** Si sos técnico o tenés developer dedicado, Next.js no es impedimento.
+
+## Costo real a 3 años
+
+Analicemos costos honestamente.
+
+### WordPress (sitio corporativo promedio)
+
+| Concepto | Costo año 1 | Costo años 2-3 |
+|---|---|---|
+| Desarrollo inicial | 4-8M COP | - |
+| Hosting (SiteGround, Kinsta) | 1.5-3M/año | 1.5-3M/año |
+| Plugins premium (Elementor, Yoast, WP Rocket) | 500k-1M/año | 500k-1M/año |
+| Mantenimiento (updates, backups) | 1-2M/año | 1-2M/año |
+| **Total 3 años** | **~6-14M** | **+6-12M** |
+
+### Next.js (sitio corporativo promedio)
+
+| Concepto | Costo año 1 | Costo años 2-3 |
+|---|---|---|
+| Desarrollo inicial | 6-12M COP | - |
+| Hosting (Vercel Hobby/Pro) | 0-2M/año | 0-2M/año |
+| Dependencias | Casi nada | Casi nada |
+| Mantenimiento | 0.5-1M/año | 0.5-1M/año |
+| **Total 3 años** | **~7-15M** | **+1-6M** |
+
+Al año 3, Next.js suele salir más barato total, aunque la inversión inicial sea mayor. Menos piezas móviles, menos cosas que romper.
+
+## Seguridad
+
+**WordPress:**
+- 40% de la web → blanco principal de ataques
+- Cualquier plugin desactualizado es una vulnerabilidad
+- Requiere mantenimiento constante de updates
+- Hackeos frecuentes si no se mantiene (millones de sitios zombificados)
+
+**Next.js:**
+- Sin CMS ni panel admin expuesto por defecto
+- Sin plugins de terceros a mantener
+- Actualización por código (developer controlado)
+- Superficie de ataque mucho menor
+
+Si tu sitio WordPress se hackea y no tenés backup, perdés contenido, reputación y tráfico SEO. He visto clientes perder 6 meses de trabajo así.
+
+## Escalabilidad
+
+**WordPress escala hasta cierto punto.** Sitios como TechCrunch y The New Yorker usan WordPress de forma exitosa — con infraestructura dedicada, CDN agresivo y equipos técnicos. Para el negocio promedio colombiano, si empezás a tener más de 100k visitas/mes, el hosting compartido colapsa.
+
+**Next.js escala automáticamente.** Vercel, Cloudflare Pages o Netlify manejan picos de tráfico sin configuración adicional. El mismo sitio que sirve 1000 visitas/mes sirve 1 millón sin cambiar nada.
+
+## Ecosistema y talento
+
+**WordPress:**
+- Cualquier desarrollador básico sabe WordPress
+- Fácil encontrar freelancer barato
+- Miles de temas y plugins listos
+- Mercado maduro pero saturado
+
+**Next.js:**
+- Talento más especializado (más escaso → más caro)
+- Ecosistema moderno (React, TypeScript, tooling actual)
+- Comunidad muy activa en 2026
+- Empresas top del mundo usan esta stack (OpenAI, Vercel, Notion)
+
+## Para qué casos específicos
+
+**Blog de autoridad que publica 3x/semana con editor no técnico →** WordPress.
+
+**Landing page de alta conversión →** Next.js, sin duda.
+
+**E-commerce simple con 50 productos →** Shopify o WooCommerce (WordPress).
+
+**E-commerce custom con 5000 productos y lógica de negocio propia →** Next.js.
+
+**Sitio corporativo de servicios profesionales →** Next.js si querés performance premium, WordPress si necesitás que marketing edite sin developer.
+
+**Web app con login, dashboard y pagos →** Next.js, siempre.
+
+**Medio de noticias o revista →** WordPress (por el ecosistema editorial).
+
+**Proyecto que va a iterar rápido con features nuevas →** Next.js.
+
+## Mitos que hay que desarmar
+
+**"WordPress es gratis"** — El software es gratis. El hosting, los plugins premium, el mantenimiento y el developer no. El costo total de ownership (TCO) a 3 años suele ser similar o mayor a Next.js en sitios corporativos.
+
+**"Next.js es solo para tech startups"** — Falso. McDonald's, Ticketmaster, Peloton y Hulu corren sobre Next.js. El stack escala desde landing chiquita hasta producto masivo.
+
+**"WordPress tiene mejor SEO porque hay plugins"** — Tener plugins no es ventaja. Next.js hace SEO técnico por defecto sin plugins. Google premia performance, y ahí Next.js gana.
+
+**"Next.js requiere más desarrollo constante"** — No. Un sitio Next.js bien hecho puede vivir 2-3 años sin mantenimiento. WordPress requiere updates mensuales de seguridad mínimo.
+
+## Cómo decidir para tu caso
+
+Preguntas clave:
+
+1. ¿Quién va a editar el contenido? Si son no técnicos publicando semanalmente, pesa hacia WordPress (o Next.js con CMS headless).
+2. ¿Performance y SEO son críticos para tu negocio? Pesa hacia Next.js.
+3. ¿Necesitás funcionalidad custom que no sea CRUD básico? Pesa hacia Next.js.
+4. ¿Tu presupuesto inicial es bajo y necesitás algo ya? WordPress probablemente sale antes.
+5. ¿Proyectás tener mucho tráfico o lógica compleja? Next.js escala sin dolor.
+
+---
+
+En InZidium trabajamos principalmente en Next.js porque creemos que el costo total y la calidad terminan siendo mejores para la mayoría de nuestros clientes — pero no por dogma. Si tu caso es claramente WordPress, te vamos a decir que vayas con WordPress. [Hablá con nosotros](/#contacto) y te orientamos con honestidad según tu situación.
