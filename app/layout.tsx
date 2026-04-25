@@ -38,17 +38,22 @@ const orbitron = Orbitron({
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.inzidium.com'),
   title: {
-    default: "InZidium · Diseño y Desarrollo de sistemas de software conectado",
+    default: "InZidium · Desarrollo web, apps e IA para empresas en Colombia",
     template: "%s | InZidium",
   },
   description: "Impulsa tu negocio con InZidium. Especialistas en diseño web profesional, desarrollo de apps y automatizaciones inteligentes para resultados excepcionales.",
   applicationName: "InZidium",
   keywords: [
-    "diseño web profesional",
-    "desarrollo de software bogota",
-    "páginas web de alto impacto",
-    "automatización de procesos",
-    "agencia de desarrollo web",
+    "desarrollo web bogota",
+    "agencia desarrollo web colombia",
+    "aplicaciones moviles colombia",
+    "bot whatsapp colombia empresas",
+    "automatizacion procesos empresariales",
+    "software a la medida colombia",
+    "diseño web profesional colombia",
+    "desarrollo web a medida bogota",
+    "inteligencia artificial empresas colombia",
+    "agencia digital bogota",
   ],
   authors: [{ name: "InZidium" }],
   creator: "InZidium",
@@ -70,20 +75,20 @@ export const metadata: Metadata = {
     locale: "es_CO",
     url: 'https://www.inzidium.com',
     siteName: "InZidium",
-    title: "InZidium · Diseño y Desarrollo de sistemas de software conectado",
+    title: "InZidium · Desarrollo web, apps e IA para empresas en Colombia",
     description: "Impulsa tu negocio con InZidium. Especialistas en diseño web profesional, desarrollo de apps y automatizaciones inteligentes para resultados excepcionales.",
     images: [
       {
         url: 'https://www.inzidium.com/opengraph-image',
         width: 1200,
         height: 630,
-        alt: "InZidium · Diseño y Desarrollo de sistemas de software conectado",
+        alt: "InZidium · Desarrollo web, apps e IA para empresas en Colombia",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "InZidium · Diseño y Desarrollo de sistemas de software conectado",
+    title: "InZidium · Desarrollo web, apps e IA para empresas en Colombia",
     description: "Impulsa tu negocio con InZidium. Especialistas en diseño web profesional, desarrollo de apps y automatizaciones inteligentes para resultados excepcionales.",
     images: ['https://www.inzidium.com/twitter-image'],
     creator: "@inzidium",
@@ -127,7 +132,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" translate="no" className="dark scroll-smooth">
+    <html lang="es-CO" translate="no" className="dark scroll-smooth">
       <head>
         {/* Desactivar traducción automática de Google Chrome/Safari */}
         <meta name="google" content="notranslate" />

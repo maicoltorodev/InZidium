@@ -18,6 +18,7 @@ type NavItem = {
 const NAV_ITEMS: readonly NavItem[] = [
   { id: "sobre-mi",         label: "Nosotros",  highlight: false },
   { id: "servicios",        label: "Servicios", highlight: false, href: "/servicios" },
+  { id: "bot-ia",           label: "Bot IA",    highlight: true,  href: "/bots-whatsapp-ia" },
   { id: "blog",             label: "Blog",      highlight: false, href: "/blog" },
   { id: "portal",           label: "Portal",    highlight: true  },
   { id: "casos",            label: "Casos",     highlight: false },

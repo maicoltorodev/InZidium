@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react"
 
 const NAV = [
   { href: "/servicios", label: "Servicios" },
+  { href: "/bots-whatsapp-ia", label: "Bot WhatsApp IA" },
   { href: "/blog", label: "Blog" },
   { href: "/#planes", label: "Planes" },
   { href: "/portal", label: "Portal" },
@@ -73,7 +74,7 @@ export function Footer() {
               <ul className="space-y-2.5">
                 {LEGAL.map(({ href, label }) => (
                   <li key={href}>
-                    <Link href={href} className="text-[12px] text-white/25 hover:text-white transition-colors duration-200">
+                    <Link href={href} rel="nofollow" className="text-[12px] text-white/25 hover:text-white transition-colors duration-200">
                       {label}
                     </Link>
                   </li>

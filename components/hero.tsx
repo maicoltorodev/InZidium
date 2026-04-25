@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
-import { ArrowDown } from "lucide-react"
+import Link from "next/link"
+import { ArrowDown, ArrowRight } from "lucide-react"
 import { motion } from "framer-motion"
 import { useRouter } from "next/navigation"
 import { scrollToId } from "@/lib/utils"
@@ -150,38 +151,39 @@ export function Hero() {
         <div className="text-center space-y-4 will-change-transform">
           <motion.h1
             initial={{ opacity: 0, y: 10 }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              scale: isHovered ? 1.05 : 1,
-              color: isHovered ? "transparent" : "#ffffff",
-              filter: isHovered
-                ? "drop-shadow(0 0 20px rgba(34,211,238,0.4)) drop-shadow(0 0 40px rgba(168,85,247,0.2))"
-                : isMobile ? "none" : "drop-shadow(0 0 0px rgba(255,255,255,0))"
-            }}
-            transition={{
-              opacity: { duration: 0.3 },
-              y: { duration: 0.3 },
-              default: { duration: 0.3, ease: "easeOut" }
-            }}
-            className="font-orbitron text-5xl sm:text-7xl md:text-8xl font-medium tracking-[0.15em] sm:tracking-[0.2em] bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-cyan-400 pb-2 energy-flow-css bg-[length:200%_auto]"
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ opacity: { duration: 0.3 }, y: { duration: 0.3 } }}
+            className="font-orbitron text-5xl sm:text-7xl md:text-8xl font-medium tracking-[0.15em] sm:tracking-[0.2em] bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-purple-500 to-cyan-400 pb-2 energy-flow-css bg-[length:200%_auto]"
           >
             InZidium
           </motion.h1>
-          <motion.p
-            animate={{
-              opacity: isHovered ? 1 : 0.8,
-              scale: isHovered ? 1.05 : 1,
-              color: isHovered ? "#ffffff" : "var(--muted-foreground)",
-              textShadow: isHovered ? "0 0 10px rgba(34,211,238,0.5)" : "none"
-            }}
-            className="text-sm sm:text-base tracking-widest will-change-[opacity,transform,color]"
+          <motion.h2
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.8 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="text-sm sm:text-base tracking-widest font-normal text-muted-foreground"
           >
-            Resultados impulsados por calidad y tecnología
-          </motion.p>
+            Desarrollo web, apps e inteligencia artificial para empresas en Colombia
+          </motion.h2>
         </div>
+        {/* CTA → /servicios (link equity a la página más importante) */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.5 }}
+          className="mt-8"
+        >
+          <Link
+            href="/servicios"
+            className="inline-flex items-center gap-2 text-[13px] text-white/50 hover:text-white border border-white/10 hover:border-white/25 px-5 py-2.5 rounded-full transition-all duration-200"
+          >
+            Ver servicios
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </motion.div>
+
         {/* Scroll Indicator */}
-        <div className="mt-16 sm:mt-24 animate-bounce">
+        <div className="mt-10 sm:mt-16 animate-bounce">
           <button
             onClick={() => scrollToId("sobre-mi")}
             className="p-2 opacity-60 hover:opacity-100 transition-opacity"

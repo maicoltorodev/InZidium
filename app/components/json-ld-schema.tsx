@@ -1,5 +1,5 @@
 export function JSONLDSchema() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://inzidium.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.inzidium.com'
 
   const organizationSchema = {
     "@context": "https://schema.org",
@@ -33,8 +33,8 @@ export function JSONLDSchema() {
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "addressLocality": "Bogotá",
-      "addressCountry": "CO"
+      "latitude": 4.7110,
+      "longitude": -74.0721
     },
     "telephone": "+57-314-385-5079",
     "priceRange": "$$",

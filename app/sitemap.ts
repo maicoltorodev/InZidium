@@ -43,6 +43,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...serviciosPages,
     ...blogPages,
     {
+      url: `${baseUrl}/bots-whatsapp-ia`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/politica-de-privacidad`,
       lastModified: now,
       changeFrequency: 'monthly',

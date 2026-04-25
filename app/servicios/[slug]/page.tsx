@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${servicio.titulo} · InZidium`,
       description: servicio.descripcion_meta,
       url,
-      type: "article",
+      type: "website",
     },
     twitter: {
       card: "summary_large_image",

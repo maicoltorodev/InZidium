@@ -4,7 +4,12 @@
       "Bash(npx tsc *)",
       "Bash(echo \"exit: $?\")",
       "Bash(npm install *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(grep -E \"\\\\.ts$|\\\\.tsx$\")",
+      "Read(//c/Users/aguir/OneDrive/Escritorio/TODO/**)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "mcp__Claude_in_Chrome__navigate",
+      "mcp__Claude_in_Chrome__computer"
     ]
   }
 }
