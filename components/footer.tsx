@@ -2,11 +2,12 @@ import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 
 const NAV = [
+  { href: "/#sobre-mi", label: "Nosotros" },
   { href: "/servicios", label: "Servicios" },
-  { href: "/bots-whatsapp-ia", label: "Bot WhatsApp IA" },
+  { href: "/bots-whatsapp-ia", label: "Bot IA" },
   { href: "/blog", label: "Blog" },
-  { href: "/#planes", label: "Planes" },
-  { href: "/portal", label: "Portal" },
+  { href: "/#portal", label: "Portal" },
+  { href: "/#casos", label: "Casos" },
 ]
 
 const LEGAL = [

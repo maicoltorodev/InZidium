@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import dynamic from "next/dynamic"
 import Link from "next/link"
-import { ArrowRight, Sparkles, Layers, Code2 } from "lucide-react"
+import { ArrowRight, Sparkles, Code2 } from "lucide-react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { SectionHeader } from "@/components/section-header"
@@ -11,24 +11,23 @@ import { servicios, getServiciosPorCategoria } from "@/lib/data/servicios"
 const WhatsAppFAB = dynamic(() => import("@/components/whatsapp-fab").then((mod) => mod.WhatsAppFAB))
 
 export const metadata: Metadata = {
-  title: "Servicios · IA, desarrollo a la medida, apps y automatización",
+  title: "Servicios · Desarrollo web, apps, bots WhatsApp e IA para empresas en Colombia",
   description:
-    "16 servicios especializados en desarrollo con IA: bots de WhatsApp, CRM inteligente, automatización, tiendas online, apps móviles, historia clínica por voz y más. InZidium Colombia.",
+    "6 servicios especializados: página web que vende, atención automática por WhatsApp, CRM con IA, automatización de procesos, apps móviles y sistemas conectados. InZidium Colombia.",
   alternates: {
     canonical: "https://www.inzidium.com/servicios",
   },
   openGraph: {
     title: "Servicios · InZidium",
     description:
-      "16 servicios especializados: bots de WhatsApp con IA, CRM inteligente, automatización, e-commerce con IA, apps móviles, landing pages y más.",
+      "6 servicios reales: página web que vende, bot WhatsApp con IA, CRM inteligente, automatización de procesos, apps móviles y sistemas conectados.",
     url: "https://www.inzidium.com/servicios",
     type: "website",
   },
 }
 
-const bloqueIA = getServiciosPorCategoria("ia")
-const bloqueSistema = getServiciosPorCategoria("sistema")
 const bloqueInfra = getServiciosPorCategoria("infra")
+const bloqueIA = getServiciosPorCategoria("ia")
 
 export default function ServiciosPage() {
   const itemListSchema = {
@@ -100,11 +99,11 @@ export default function ServiciosPage() {
             <SectionHeader
               titleLeft="Nuestros"
               titleHighlight="Servicios"
-              subtitle="16 soluciones listas para impulsar tu negocio — desde IA conversacional hasta apps móviles y automatización de procesos."
+              subtitle="6 servicios reales para impulsar tu negocio — desarrollo web, bots WhatsApp con IA, apps móviles y automatización."
             />
           </div>
 
-          {/* Bloque 1: Web, Apps e Integraciones — flagship primero */}
+          {/* Bloque 1: Web, Apps e Integraciones */}
           <div className="mb-20">
             <div className="flex items-center gap-3 mb-8 sm:mb-10">
               <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center">
@@ -112,47 +111,29 @@ export default function ServiciosPage() {
               </div>
               <div>
                 <h2 className="text-xl sm:text-2xl font-orbitron text-white">Web, Apps e Integraciones</h2>
-                <p className="text-xs sm:text-sm text-muted-foreground">La base — presencia digital, móvil y sistemas conectados</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Presencia digital, móvil y sistemas conectados</p>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
               {bloqueInfra.map((s, i) => (
                 <ServicioCard key={s.slug} servicio={s} index={i} />
               ))}
             </div>
           </div>
 
-          {/* Bloque 2: IA */}
-          <div className="mb-20">
+          {/* Bloque 2: IA y Automatización */}
+          <div className="mb-16">
             <div className="flex items-center gap-3 mb-8 sm:mb-10">
               <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-400/20 flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-purple-300" strokeWidth={1.75} />
               </div>
               <div>
-                <h2 className="text-xl sm:text-2xl font-orbitron text-white">Inteligencia Artificial</h2>
-                <p className="text-xs sm:text-sm text-muted-foreground">El gancho moderno · atención y operación automatizada</p>
+                <h2 className="text-xl sm:text-2xl font-orbitron text-white">IA y Automatización</h2>
+                <p className="text-xs sm:text-sm text-muted-foreground">Atención y operación en piloto automático</p>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
               {bloqueIA.map((s, i) => (
-                <ServicioCard key={s.slug} servicio={s} index={i} />
-              ))}
-            </div>
-          </div>
-
-          {/* Bloque 3: Sistemas de Negocio */}
-          <div className="mb-16">
-            <div className="flex items-center gap-3 mb-8 sm:mb-10">
-              <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-400/20 flex items-center justify-center">
-                <Layers className="w-5 h-5 text-cyan-300" strokeWidth={1.75} />
-              </div>
-              <div>
-                <h2 className="text-xl sm:text-2xl font-orbitron text-white">Sistemas de Negocio</h2>
-                <p className="text-xs sm:text-sm text-muted-foreground">Lo que todos necesitan, hecho mejor · e-commerce, reservas, salud, retención</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-              {bloqueSistema.map((s, i) => (
                 <ServicioCard key={s.slug} servicio={s} index={i} />
               ))}
             </div>

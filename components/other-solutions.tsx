@@ -21,7 +21,7 @@ export function OtherSolutions() {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
           {destacados.map((servicio, index) => (
             <div
               key={servicio.slug}
@@ -40,7 +40,7 @@ export function OtherSolutions() {
             prefetch={false}
             className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-orbitron font-bold tracking-[0.2em] text-[11px] sm:text-[12px] text-white border border-cyan-500/50 bg-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.2)] uppercase transition-all duration-200 hover:bg-cyan-500/20 hover:scale-105 active:scale-95"
           >
-            Ver los 16 servicios
+            Ver todos los servicios
             <ArrowRight className="w-4 h-4" strokeWidth={2.5} />
           </Link>
           <p className="mt-4 text-xs text-muted-foreground">
