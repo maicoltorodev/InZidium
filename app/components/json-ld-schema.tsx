@@ -97,8 +97,11 @@ export function JSONLDSchema() {
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
+    "@id": `${baseUrl}#website`,
     "name": "InZidium",
+    "alternateName": "InZidium - Desarrollo Web e IA",
     "url": baseUrl,
+    "inLanguage": "es-CO",
     "description": "Desarrollo web profesional, apps e inteligencia artificial para empresas en Colombia.",
     "publisher": { "@id": `${baseUrl}#organization` },
     "potentialAction": {
