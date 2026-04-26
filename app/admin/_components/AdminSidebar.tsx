@@ -8,7 +8,7 @@ import { LogOut } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { adminNavItems } from './adminNav';
+import { adminNavSections, type AdminNavItem, type AdminNavLeaf } from './adminNav';
 
 export default function AdminSidebar() {
     const pathname = usePathname();
@@ -40,12 +40,11 @@ export default function AdminSidebar() {
                     <div className={`absolute inset-0 pointer-events-none transition-all duration-500 ${isAdminHover ? 'shadow-[0_0_20px_rgba(34,211,238,0.8)]' : 'shadow-[0_0_10px_rgba(34,211,238,0.4)]'}`} />
                 </div>
 
-                <div className="relative z-10 p-8">
+                <div className="relative z-10 flex-1 overflow-y-auto px-8 pb-6 pt-8 flex flex-col">
                     <Link
-                        href="/admin/dashboard"
-                        className="group relative mb-12 block"
+                        href="/admin/chats"
+                        className="group relative mb-10 block"
                     >
-                        {/* Logo InZidium */}
                         <div className="flex justify-center mb-5">
                             <div className="relative">
                                 <div className="absolute inset-0 bg-gradient-to-br from-[#e879f9] to-[#22d3ee] blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-500 rounded-full" />
@@ -59,13 +58,12 @@ export default function AdminSidebar() {
                                         width={48}
                                         height={48}
                                         className="object-contain relative z-10 transition-all duration-500"
-                                    style={{ filter: 'drop-shadow(0 0 10px rgba(34,211,238,0.35)) drop-shadow(0 0 6px rgba(168,85,247,0.3))' }}
+                                        style={{ filter: 'drop-shadow(0 0 10px rgba(34,211,238,0.35)) drop-shadow(0 0 6px rgba(168,85,247,0.3))' }}
                                     />
                                 </motion.div>
                             </div>
                         </div>
 
-                        {/* Título ADMIN */}
                         <div className="relative">
                             <h2
                                 className="relative z-10 text-center text-4xl font-black tracking-tighter text-transparent bg-clip-text bg-[length:200%_auto] transition-transform duration-500 group-hover:scale-105 font-[family-name:var(--font-orbitron)]"
@@ -83,23 +81,26 @@ export default function AdminSidebar() {
                         </div>
                     </Link>
 
-                    <nav className="mt-4 space-y-2">
-                        {adminNavItems.map((item) => (
-                            <SidebarLink
-                                key={item.href}
-                                {...item}
-                                active={item.match(pathname)}
-                            />
-                        ))}
-                    </nav>
+                    {adminNavSections.map((section, idx) => (
+                        <div key={section.label} className={idx === 0 ? '' : 'mt-7'}>
+                            <SectionHeader label={section.label} />
+                            <nav className="mt-3 space-y-1.5">
+                                {section.items.map((item) => (
+                                    <SidebarItem key={item.href} item={item} pathname={pathname} />
+                                ))}
+                            </nav>
+                        </div>
+                    ))}
+
+                    <div className="flex-1" />
                 </div>
 
-                <div className="mt-auto border-t border-white/5 p-8">
+                <div className="relative z-10 border-t border-white/5 px-6 py-5">
                     <button
                         onClick={() => setShowLogoutConfirm(true)}
-                        className="group flex w-full items-center gap-4 rounded-2xl border border-transparent px-6 py-4 text-gray-400 transition-all duration-300 hover:border-red-500/10 hover:bg-red-500/5 hover:text-red-400"
+                        className="group relative flex w-full items-center justify-center rounded-2xl border border-transparent px-5 py-3.5 text-gray-400 transition-all duration-300 hover:border-red-500/10 hover:bg-red-500/5 hover:text-red-400"
                     >
-                        <div className="rounded-xl bg-white/5 p-2 transition-all group-hover:rotate-12 group-hover:bg-red-500/10">
+                        <div className="absolute left-5 rounded-xl bg-white/5 p-2 transition-all group-hover:rotate-12 group-hover:bg-red-500/10">
                             <LogOut className="h-5 w-5" />
                         </div>
                         <span className="text-sm font-bold tracking-wide">Cerrar Sesión</span>
@@ -154,18 +155,62 @@ export default function AdminSidebar() {
                                 </div>
                             )}
                         </AnimatePresence>,
-                        document.body
+                        document.body,
                     )}
             </aside>
         </>
     );
 }
 
-function SidebarLink({ icon: Icon, label, href, active }: any) {
+function SectionHeader({ label }: { label: string }) {
+    return (
+        <div className="flex items-center gap-3 px-2">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-600">{label}</span>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        </div>
+    );
+}
+
+function SidebarItem({ item, pathname }: { item: AdminNavItem; pathname: string }) {
+    const active = item.match(pathname);
+    return (
+        <>
+            <SidebarLink icon={item.icon} label={item.label} href={item.href} active={active} />
+            <AnimatePresence initial={false}>
+                {item.children && active && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
+                    >
+                        <div className="mt-1.5 space-y-1 pl-4">
+                            {item.children.map((child) => (
+                                <SidebarSubLink
+                                    key={child.href}
+                                    icon={child.icon}
+                                    label={child.label}
+                                    href={child.href}
+                                    active={child.match(pathname)}
+                                />
+                            ))}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </>
+    );
+}
+
+type LinkProps = Pick<AdminNavLeaf, 'icon' | 'label' | 'href'> & { active: boolean };
+
+function SidebarLink({ icon: Icon, label, href, active }: LinkProps) {
     return (
         <Link
             href={href}
-            className={`group relative flex items-center gap-4 overflow-hidden rounded-2xl px-6 py-4 transition-all duration-500 ${active ? 'text-white' : 'text-gray-500 hover:text-gray-200'}`}
+            className={`group relative flex items-center gap-4 overflow-hidden rounded-2xl px-5 py-3 transition-all duration-500 ${active ? 'text-white' : 'text-gray-500 hover:text-gray-200'}`}
         >
             <AnimatePresence>
                 {active && (
@@ -187,7 +232,7 @@ function SidebarLink({ icon: Icon, label, href, active }: any) {
 
             {active && (
                 <div
-                    className="absolute left-[-10px] top-1/2 h-12 w-4 -translate-y-1/2 px-4 opacity-20 blur-xl"
+                    className="absolute left-[-10px] top-1/2 h-10 w-4 -translate-y-1/2 px-4 opacity-20 blur-xl"
                     style={{ background: 'linear-gradient(to bottom, #22d3ee, #a855f7)' }}
                 />
             )}
@@ -216,6 +261,31 @@ function SidebarLink({ icon: Icon, label, href, active }: any) {
                     animate={{ scale: 1 }}
                 />
             )}
+        </Link>
+    );
+}
+
+function SidebarSubLink({ icon: Icon, label, href, active }: LinkProps) {
+    return (
+        <Link
+            href={href}
+            className={`group relative flex items-center gap-3 overflow-hidden rounded-xl px-4 py-2 transition-all duration-300 ${
+                active
+                    ? 'bg-white/[0.04] text-white'
+                    : 'text-gray-500 hover:bg-white/[0.02] hover:text-gray-300'
+            }`}
+        >
+            {active && (
+                <div className="absolute inset-y-1 left-0 w-[2px] rounded-full bg-gradient-to-b from-[#22d3ee] to-[#a855f7]" />
+            )}
+            <Icon
+                className="h-4 w-4 transition-transform duration-300 group-hover:scale-110"
+                style={{
+                    color: active ? '#22d3ee' : undefined,
+                    filter: active ? 'drop-shadow(0 0 4px rgba(34,211,238,0.4))' : undefined,
+                }}
+            />
+            <span className="text-xs font-semibold tracking-wide">{label}</span>
         </Link>
     );
 }

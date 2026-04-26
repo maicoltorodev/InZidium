@@ -9,7 +9,7 @@ import { Menu, X, LogOut } from 'lucide-react';
 import { Drawer } from 'vaul';
 import { signOut } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { adminNavItems } from './adminNav';
+import { adminNavSections, type AdminNavItem, type AdminNavLeaf } from './adminNav';
 
 export default function AdminMobileNav() {
     const pathname = usePathname();
@@ -26,6 +26,8 @@ export default function AdminMobileNav() {
         setTimeout(() => setShowLogoutConfirm(true), 260);
     };
 
+    const closeDrawer = () => setOpen(false);
+
     return (
         <>
             <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-white/5 bg-[#060214]/90 px-4 backdrop-blur-xl lg:hidden">
@@ -37,7 +39,7 @@ export default function AdminMobileNav() {
                     <Menu className="h-5 w-5" />
                 </button>
 
-                <Link href="/admin/dashboard" className="flex items-center gap-2">
+                <Link href="/admin/chats" className="flex items-center gap-2">
                     <Image
                         src="/logo.webp"
                         alt="InZidium"
@@ -67,7 +69,7 @@ export default function AdminMobileNav() {
                         <Drawer.Description className="sr-only">Navegación del panel de administración</Drawer.Description>
 
                         <div className="flex items-center justify-between p-6">
-                            <Link href="/admin/dashboard" onClick={() => setOpen(false)} className="flex items-center gap-3">
+                            <Link href="/admin/chats" onClick={closeDrawer} className="flex items-center gap-3">
                                 <Image
                                     src="/logo.webp"
                                     alt="InZidium"
@@ -86,7 +88,7 @@ export default function AdminMobileNav() {
                                 </span>
                             </Link>
                             <button
-                                onClick={() => setOpen(false)}
+                                onClick={closeDrawer}
                                 aria-label="Cerrar menú"
                                 className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white transition hover:bg-white/10"
                             >
@@ -94,36 +96,27 @@ export default function AdminMobileNav() {
                             </button>
                         </div>
 
-                        <nav className="flex-1 space-y-1 px-4">
-                            {adminNavItems.map((item) => {
-                                const active = item.match(pathname);
-                                const Icon = item.icon;
-                                return (
-                                    <Link
-                                        key={item.href}
-                                        href={item.href}
-                                        onClick={() => setOpen(false)}
-                                        className={`relative flex items-center gap-4 overflow-hidden rounded-2xl px-5 py-4 transition ${
-                                            active
-                                                ? 'bg-gradient-to-r from-[#22d3ee]/10 via-[#a855f7]/5 to-transparent text-white'
-                                                : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                                        }`}
-                                    >
-                                        {active && (
-                                            <div className="absolute inset-y-0 left-0 w-[2px] bg-gradient-to-b from-[#22d3ee] to-[#a855f7]" />
-                                        )}
-                                        <Icon
-                                            className="h-5 w-5"
-                                            style={{
-                                                color: active ? '#22d3ee' : undefined,
-                                                filter: active ? 'drop-shadow(0 0 6px rgba(34,211,238,0.5))' : undefined,
-                                            }}
-                                        />
-                                        <span className="text-sm font-bold tracking-wide">{item.label}</span>
-                                    </Link>
-                                );
-                            })}
-                        </nav>
+                        <div className="flex-1 overflow-y-auto px-4 pb-4">
+                            {adminNavSections.map((section, idx) => (
+                                <div key={section.label} className={idx === 0 ? '' : 'mt-6'}>
+                                    <div className="flex items-center gap-3 px-2">
+                                        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                                        <span className="text-[10px] font-black uppercase tracking-[0.25em] text-gray-600">{section.label}</span>
+                                        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                                    </div>
+                                    <nav className="mt-3 space-y-1">
+                                        {section.items.map((item) => (
+                                            <MobileNavItem
+                                                key={item.href}
+                                                item={item}
+                                                pathname={pathname}
+                                                onNavigate={closeDrawer}
+                                            />
+                                        ))}
+                                    </nav>
+                                </div>
+                            ))}
+                        </div>
 
                         <div className="border-t border-white/5 p-6">
                             <button
@@ -191,5 +184,106 @@ export default function AdminMobileNav() {
                     document.body,
                 )}
         </>
+    );
+}
+
+function MobileNavItem({
+    item,
+    pathname,
+    onNavigate,
+}: {
+    item: AdminNavItem;
+    pathname: string;
+    onNavigate: () => void;
+}) {
+    const active = item.match(pathname);
+    return (
+        <>
+            <MobileLink
+                icon={item.icon}
+                label={item.label}
+                href={item.href}
+                active={active}
+                onNavigate={onNavigate}
+            />
+            <AnimatePresence initial={false}>
+                {item.children && active && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
+                    >
+                        <div className="mt-1 space-y-1 pl-4">
+                            {item.children.map((child) => (
+                                <MobileSubLink
+                                    key={child.href}
+                                    icon={child.icon}
+                                    label={child.label}
+                                    href={child.href}
+                                    active={child.match(pathname)}
+                                    onNavigate={onNavigate}
+                                />
+                            ))}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </>
+    );
+}
+
+type MobileLinkProps = Pick<AdminNavLeaf, 'icon' | 'label' | 'href'> & {
+    active: boolean;
+    onNavigate: () => void;
+};
+
+function MobileLink({ icon: Icon, label, href, active, onNavigate }: MobileLinkProps) {
+    return (
+        <Link
+            href={href}
+            onClick={onNavigate}
+            className={`relative flex items-center gap-4 overflow-hidden rounded-2xl px-5 py-3.5 transition ${
+                active
+                    ? 'bg-gradient-to-r from-[#22d3ee]/10 via-[#a855f7]/5 to-transparent text-white'
+                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
+            }`}
+        >
+            {active && (
+                <div className="absolute inset-y-0 left-0 w-[2px] bg-gradient-to-b from-[#22d3ee] to-[#a855f7]" />
+            )}
+            <Icon
+                className="h-5 w-5"
+                style={{
+                    color: active ? '#22d3ee' : undefined,
+                    filter: active ? 'drop-shadow(0 0 6px rgba(34,211,238,0.5))' : undefined,
+                }}
+            />
+            <span className="text-sm font-bold tracking-wide">{label}</span>
+        </Link>
+    );
+}
+
+function MobileSubLink({ icon: Icon, label, href, active, onNavigate }: MobileLinkProps) {
+    return (
+        <Link
+            href={href}
+            onClick={onNavigate}
+            className={`relative flex items-center gap-3 overflow-hidden rounded-xl px-4 py-2.5 transition ${
+                active
+                    ? 'bg-white/[0.04] text-white'
+                    : 'text-gray-500 hover:bg-white/[0.02] hover:text-gray-300'
+            }`}
+        >
+            {active && (
+                <div className="absolute inset-y-1.5 left-0 w-[2px] rounded-full bg-gradient-to-b from-[#22d3ee] to-[#a855f7]" />
+            )}
+            <Icon
+                className="h-4 w-4"
+                style={{ color: active ? '#22d3ee' : undefined }}
+            />
+            <span className="text-xs font-semibold tracking-wide">{label}</span>
+        </Link>
     );
 }
