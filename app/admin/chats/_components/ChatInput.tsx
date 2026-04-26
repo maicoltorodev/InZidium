@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Send } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 
 type Props = {
     onSend: (text: string) => Promise<{ error?: string }>;
@@ -45,31 +45,59 @@ export function ChatInput({ onSend }: Props) {
         }
     }
 
+    const canSend = !sending && !!text.trim();
+
     return (
         <div className="space-y-2">
-            <div className="flex items-end gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 focus-within:border-[#FFD700]/35 transition-colors">
+            <div
+                className="group flex items-end gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.025] px-4 py-3 transition-all focus-within:border-[#22d3ee]/40 focus-within:bg-white/[0.04] focus-within:shadow-[0_0_30px_rgba(34,211,238,0.08)]"
+                style={{ backdropFilter: "blur(8px)" }}
+            >
                 <textarea
                     ref={textareaRef}
                     value={text}
-                    onChange={(e) => { setText(e.target.value); autoResize(); }}
+                    onChange={(e) => {
+                        setText(e.target.value);
+                        autoResize();
+                    }}
                     onKeyDown={handleKeyDown}
                     placeholder="Escribe tu respuesta…"
                     rows={1}
                     className="flex-1 resize-none bg-transparent text-sm text-white placeholder:text-gray-600 focus:outline-none leading-relaxed"
-                    style={{ minHeight: "36px", maxHeight: "160px" }}
+                    style={{ minHeight: "32px", maxHeight: "160px" }}
                 />
                 <button
                     onClick={handleSend}
-                    disabled={sending || !text.trim()}
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FFD700] text-black transition hover:bg-[#FFD700]/90 disabled:cursor-not-allowed disabled:opacity-40"
+                    disabled={!canSend}
+                    className="relative h-9 w-9 shrink-0 overflow-hidden rounded-xl transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                    <Send className="h-4 w-4" />
+                    {/* Gradient background */}
+                    <div
+                        className="absolute inset-0"
+                        style={{
+                            background:
+                                "linear-gradient(135deg, #e879f9, #a855f7, #22d3ee)",
+                        }}
+                    />
+                    {/* Shine on hover */}
+                    {canSend && (
+                        <div className="absolute inset-0 bg-white/0 transition-colors group-focus-within:bg-white/10" />
+                    )}
+                    <div className="relative flex h-full w-full items-center justify-center text-white">
+                        {sending ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <Send className="h-4 w-4" strokeWidth={2.5} />
+                        )}
+                    </div>
                 </button>
             </div>
             {error && (
-                <p className="px-1 text-xs font-bold uppercase tracking-widest text-red-400">{error}</p>
+                <p className="px-1 text-[10px] font-black uppercase tracking-widest text-red-400">
+                    {error}
+                </p>
             )}
-            <p className="px-1 text-xs text-gray-600">
+            <p className="px-1 text-[10px] text-gray-600 font-mono">
                 Enter para enviar · Shift+Enter para nueva línea
             </p>
         </div>

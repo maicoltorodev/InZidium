@@ -17,59 +17,111 @@ export function ConversationItem({ conversation, selected, onClick }: Props) {
     return (
         <button
             onClick={onClick}
-            className={`group relative flex w-full items-start gap-3.5 overflow-hidden px-4 py-4 text-left transition-all duration-150 ${
+            className={`group relative flex w-full items-start gap-3 overflow-hidden rounded-2xl px-3 py-3 text-left transition-all duration-200 ${
                 selected
-                    ? "bg-[#FFD700]/[0.07] border-y border-[#FFD700]/20"
-                    : "border-y border-transparent hover:bg-white/[0.03]"
+                    ? "bg-gradient-to-r from-[#a855f7]/[0.08] via-[#22d3ee]/[0.04] to-transparent"
+                    : "hover:bg-white/[0.025]"
             }`}
         >
+            {/* Indicador izquierdo selected */}
             {selected && (
-                <div className="absolute inset-y-0 right-0 w-[2px] bg-[#FFD700]" />
+                <div
+                    className="absolute inset-y-2 left-0 w-[3px] rounded-r-full"
+                    style={{
+                        background:
+                            "linear-gradient(to bottom, #e879f9, #a855f7, #22d3ee)",
+                        boxShadow: "0 0 12px rgba(168,85,247,0.6)",
+                    }}
+                />
             )}
 
             {/* Avatar */}
             <div className="relative shrink-0">
+                {/* Glow ring cuando seleccionado o hover */}
                 <div
-                    className={`flex h-11 w-11 items-center justify-center rounded-full text-sm font-black ${
-                        contact.ai_enabled
-                            ? "bg-white/[0.05] border border-white/[0.08] text-gray-300"
-                            : "bg-[#FFD700]/10 border border-[#FFD700]/25 text-[#FFD700]"
+                    className={`absolute inset-0 rounded-full blur-md transition-opacity duration-300 ${
+                        selected ? "opacity-60" : "opacity-0 group-hover:opacity-30"
                     }`}
+                    style={{
+                        background: contact.ai_enabled
+                            ? "linear-gradient(135deg, #22d3ee, #a855f7)"
+                            : "linear-gradient(135deg, #e879f9, #f59e0b)",
+                    }}
+                />
+                <div
+                    className={`relative flex h-11 w-11 items-center justify-center rounded-full text-sm font-black transition-transform group-hover:scale-105 ${
+                        contact.ai_enabled
+                            ? "border border-white/[0.1] bg-white/[0.04] text-gray-100"
+                            : "border border-amber-500/30 bg-amber-500/[0.08] text-amber-300"
+                    }`}
+                    style={{
+                        backdropFilter: "blur(8px)",
+                    }}
                 >
                     {initial}
                 </div>
+
+                {/* Status badge */}
                 <div
-                    className={`absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border-2 ${
-                        selected ? "border-[#0a0a0a]" : "border-[#0a0a0a]"
-                    } ${contact.ai_enabled ? "bg-[#FFD700]" : "bg-amber-500"}`}
+                    className={`absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-[#0a0518] ${
+                        contact.ai_enabled
+                            ? "bg-gradient-to-br from-[#22d3ee] to-[#a855f7]"
+                            : "bg-amber-500"
+                    }`}
+                    title={contact.ai_enabled ? "IA activa" : "Control manual"}
                 >
-                    {contact.ai_enabled
-                        ? <Bot className="h-2 w-2 text-black" />
-                        : <BotOff className="h-2 w-2 text-black" />
-                    }
+                    {contact.ai_enabled ? (
+                        <Bot className="h-2 w-2 text-white" strokeWidth={3} />
+                    ) : (
+                        <BotOff className="h-2 w-2 text-[#0a0518]" strokeWidth={3} />
+                    )}
                 </div>
             </div>
 
             {/* Contenido */}
             <div className="min-w-0 flex-1">
                 <div className="flex items-baseline justify-between gap-2 mb-0.5">
-                    <h3 className={`truncate text-sm font-bold leading-snug ${selected ? "text-white" : "text-gray-200"}`}>
+                    <h3
+                        className={`truncate text-sm font-bold leading-snug transition-colors ${
+                            selected ? "text-white" : "text-gray-200 group-hover:text-white"
+                        }`}
+                    >
                         {displayName}
                     </h3>
                     {last_message_at && (
-                        <span className="shrink-0 font-mono text-xs text-gray-600">
+                        <span
+                            className={`shrink-0 font-mono text-[10px] tabular-nums transition-colors ${
+                                selected ? "text-gray-300" : "text-gray-600"
+                            }`}
+                        >
                             {formatRelativeShort(new Date(last_message_at))}
                         </span>
                     )}
                 </div>
                 {contact.name && (
-                    <p className="truncate font-mono text-xs text-gray-600 mb-1">{contact.phone}</p>
+                    <p className="truncate font-mono text-[10px] text-gray-600 mb-1">
+                        {contact.phone}
+                    </p>
                 )}
                 {last_message_preview && (
-                    <p className={`truncate text-sm leading-relaxed ${selected ? "text-gray-400" : "text-gray-500"}`}>
-                        <span className={`font-semibold ${last_message_role === "ai" ? "text-[#FFD700]/70" : last_message_role === "human" ? "text-gray-400" : ""}`}>
-                            {rolePrefix(last_message_role)}
-                        </span>
+                    <p
+                        className={`truncate text-xs leading-relaxed ${
+                            selected ? "text-gray-300" : "text-gray-500"
+                        }`}
+                    >
+                        {last_message_role && (
+                            <span
+                                className={`font-semibold mr-1 ${
+                                    last_message_role === "ai"
+                                        ? "text-[#22d3ee]"
+                                        : last_message_role === "human"
+                                            ? "text-[#e879f9]"
+                                            : "text-gray-600"
+                                }`}
+                            >
+                                {rolePrefix(last_message_role)}
+                            </span>
+                        )}
                         {last_message_preview}
                     </p>
                 )}
@@ -79,8 +131,8 @@ export function ConversationItem({ conversation, selected, onClick }: Props) {
 }
 
 function rolePrefix(role: "user" | "ai" | "human" | null): string {
-    if (role === "ai") return "IA: ";
-    if (role === "human") return "Tú: ";
+    if (role === "ai") return "Izzy:";
+    if (role === "human") return "Tú:";
     return "";
 }
 
