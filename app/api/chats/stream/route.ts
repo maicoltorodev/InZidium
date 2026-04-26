@@ -41,13 +41,13 @@ export async function GET(request: NextRequest) {
 
             const channel = supabase
                 .channel(`sse-${channelId}`)
-                .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, (payload) => {
+                .on("postgres_changes", { event: "INSERT", schema: "inzidium_crm", table: "messages" }, (payload) => {
                     send("message", payload.new);
                 })
-                .on("postgres_changes", { event: "UPDATE", schema: "public", table: "conversations" }, (payload) => {
+                .on("postgres_changes", { event: "UPDATE", schema: "inzidium_crm", table: "conversations" }, (payload) => {
                     send("conversation", payload.new);
                 })
-                .on("postgres_changes", { event: "UPDATE", schema: "public", table: "contacts" }, (payload) => {
+                .on("postgres_changes", { event: "UPDATE", schema: "inzidium_crm", table: "contacts" }, (payload) => {
                     send("contact", payload.new);
                 })
                 .subscribe();
