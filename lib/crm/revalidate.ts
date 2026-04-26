@@ -2,7 +2,7 @@
 // Fire-and-forget: si el bot está caído o no configurado, el cambio en DB se persiste igual;
 // el bot rehidrata su cache en el próximo `/revalidate` o al reiniciar.
 
-type RevalidateTarget = "catalog" | "ai_config";
+type RevalidateTarget = "catalog";
 
 export async function revalidateBotCache(target: RevalidateTarget): Promise<void> {
     const url = process.env.BOT_URL;

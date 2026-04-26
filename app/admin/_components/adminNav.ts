@@ -1,8 +1,6 @@
 import {
     MessageSquare,
     ShoppingBag,
-    Package,
-    Bot,
     Globe,
     LayoutDashboard,
     Users,
@@ -46,8 +44,6 @@ export const adminNavSections: AdminNavSection[] = [
     {
         label: 'Settings',
         items: [
-            { icon: Package, label: 'Servicios', href: '/admin/servicios', match: (p) => p.startsWith('/admin/servicios') },
-            { icon: Bot, label: 'Config IA', href: '/admin/config-ia', match: (p) => p.startsWith('/admin/config-ia') },
             { icon: ShieldCheck, label: 'Administradores', href: '/admin/administradores', match: (p) => p.startsWith('/admin/administradores') },
         ],
     },
