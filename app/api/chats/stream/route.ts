@@ -44,6 +44,17 @@ export async function GET(request: NextRequest) {
                 .on("postgres_changes", { event: "INSERT", schema: "inzidium_crm", table: "messages" }, (payload) => {
                     send("message", payload.new);
                 })
+                .on("postgres_changes", { event: "UPDATE", schema: "inzidium_crm", table: "messages" }, (payload) => {
+                    // Status changes, reactions, media_id attached
+                    send("message_update", payload.new);
+                })
+                .on("postgres_changes", { event: "DELETE", schema: "inzidium_crm", table: "messages" }, (payload) => {
+                    // Cap 500 trigger eliminó un mensaje viejo
+                    send("message_delete", payload.old);
+                })
+                .on("postgres_changes", { event: "INSERT", schema: "inzidium_crm", table: "contact_media" }, (payload) => {
+                    send("media_ready", payload.new);
+                })
                 .on("postgres_changes", { event: "UPDATE", schema: "inzidium_crm", table: "conversations" }, (payload) => {
                     send("conversation", payload.new);
                 })

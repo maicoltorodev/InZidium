@@ -2,13 +2,21 @@
 
 import { useRef, useState } from "react";
 import { Send, Loader2 } from "lucide-react";
+import type { Message } from "@/lib/crm/types";
+import { AttachButton } from "./input/AttachButton";
+import { FilePreview } from "./input/FilePreview";
+import { ReplyPreview } from "./input/ReplyPreview";
 
 type Props = {
     onSend: (text: string) => Promise<{ error?: string }>;
+    onSendMedia?: (file: File, caption: string) => Promise<{ error?: string }>;
+    replyingTo?: Message | null;
+    onCancelReply?: () => void;
 };
 
-export function ChatInput({ onSend }: Props) {
+export function ChatInput({ onSend, onSendMedia, replyingTo, onCancelReply }: Props) {
     const [text, setText] = useState("");
+    const [file, setFile] = useState<File | null>(null);
     const [sending, setSending] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -23,19 +31,30 @@ export function ChatInput({ onSend }: Props) {
     async function handleSend() {
         if (sending) return;
         const trimmed = text.trim();
-        if (!trimmed) return;
+        if (!file && !trimmed) return;
         setSending(true);
         setError(null);
-        const res = await onSend(trimmed);
+
+        let res: { error?: string };
+        if (file) {
+            if (!onSendMedia) {
+                setError("Envío de archivos no disponible.");
+                setSending(false);
+                return;
+            }
+            res = await onSendMedia(file, trimmed);
+        } else {
+            res = await onSend(trimmed);
+        }
+
         setSending(false);
         if (res.error) {
             setError(res.error);
             return;
         }
         setText("");
-        if (textareaRef.current) {
-            textareaRef.current.style.height = "auto";
-        }
+        setFile(null);
+        if (textareaRef.current) textareaRef.current.style.height = "auto";
     }
 
     function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -45,14 +64,24 @@ export function ChatInput({ onSend }: Props) {
         }
     }
 
-    const canSend = !sending && !!text.trim();
+    const canSend = !sending && (!!file || !!text.trim());
+    const placeholder = file ? "Caption opcional…" : "Escribe tu respuesta…";
 
     return (
         <div className="space-y-2">
+            {replyingTo && onCancelReply && (
+                <ReplyPreview message={replyingTo} onCancel={onCancelReply} />
+            )}
+            {file && (
+                <FilePreview file={file} onRemove={() => setFile(null)} sending={sending} />
+            )}
+
             <div
-                className="group flex items-end gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.025] px-4 py-3 transition-all focus-within:border-[#22d3ee]/40 focus-within:bg-white/[0.04] focus-within:shadow-[0_0_30px_rgba(34,211,238,0.08)]"
+                className="group flex items-end gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.025] px-4 py-3 transition-all focus-within:border-[#FFD700]/40 focus-within:bg-white/[0.04] focus-within:shadow-[0_0_30px_rgba(255,215,0,0.08)]"
                 style={{ backdropFilter: "blur(8px)" }}
             >
+                <AttachButton disabled={sending || !!file} onPick={setFile} />
+
                 <textarea
                     ref={textareaRef}
                     value={text}
@@ -61,25 +90,25 @@ export function ChatInput({ onSend }: Props) {
                         autoResize();
                     }}
                     onKeyDown={handleKeyDown}
-                    placeholder="Escribe tu respuesta…"
+                    placeholder={placeholder}
                     rows={1}
                     className="flex-1 resize-none bg-transparent text-sm text-white placeholder:text-gray-600 focus:outline-none leading-relaxed"
                     style={{ minHeight: "32px", maxHeight: "160px" }}
                 />
+
                 <button
                     onClick={handleSend}
                     disabled={!canSend}
                     className="relative h-9 w-9 shrink-0 overflow-hidden rounded-xl transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+                    aria-label="Enviar"
                 >
-                    {/* Gradient background */}
                     <div
                         className="absolute inset-0"
                         style={{
                             background:
-                                "linear-gradient(135deg, #e879f9, #a855f7, #22d3ee)",
+                                "linear-gradient(135deg, #FFD700, #ffffff, #FFD700)",
                         }}
                     />
-                    {/* Shine on hover */}
                     {canSend && (
                         <div className="absolute inset-0 bg-white/0 transition-colors group-focus-within:bg-white/10" />
                     )}
@@ -92,13 +121,14 @@ export function ChatInput({ onSend }: Props) {
                     </div>
                 </button>
             </div>
+
             {error && (
                 <p className="px-1 text-[10px] font-black uppercase tracking-widest text-red-400">
                     {error}
                 </p>
             )}
             <p className="px-1 text-[10px] text-gray-600 font-mono">
-                Enter para enviar · Shift+Enter para nueva línea
+                Enter para enviar · Shift+Enter para nueva línea · 📎 para adjuntar
             </p>
         </div>
     );

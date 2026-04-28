@@ -1,11 +1,13 @@
-import {
+﻿import {
     MessageSquare,
     ShoppingBag,
+    Package,
     Globe,
     LayoutDashboard,
     Users,
     FolderKanban,
     ShieldCheck,
+    History,
 } from 'lucide-react';
 import type { ComponentType, SVGProps } from 'react';
 
@@ -39,12 +41,14 @@ export const adminNavSections: AdminNavSection[] = [
         items: [
             { icon: MessageSquare, label: 'Chats', href: '/admin/chats', match: (p) => p.startsWith('/admin/chats') },
             { icon: ShoppingBag, label: 'Pedidos', href: '/admin/pedidos', match: (p) => p.startsWith('/admin/pedidos') },
+            { icon: History, label: 'Historial', href: '/admin/historial', match: (p) => p.startsWith('/admin/historial') },
         ],
     },
     {
         label: 'Settings',
         items: [
-            { icon: ShieldCheck, label: 'Administradores', href: '/admin/administradores', match: (p) => p.startsWith('/admin/administradores') },
+            { icon: Package, label: 'Servicios', href: '/admin/servicios', match: (p) => p.startsWith('/admin/servicios') },
+{ icon: ShieldCheck, label: 'Administradores', href: '/admin/administradores', match: (p) => p.startsWith('/admin/administradores') },
         ],
     },
     {

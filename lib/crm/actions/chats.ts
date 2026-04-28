@@ -7,10 +7,25 @@ import { revalidatePath } from "next/cache";
 import type {
     ActionResult,
     Contact,
+    ContactMedia,
     Conversation,
     ConversationWithContact,
+    MediaType,
     Message,
 } from "../types";
+import { currentAdminId } from "./_helpers";
+import { logEvent } from "./events";
+
+const MEDIA_BUCKET = "inzidium-whatsapp-media";
+const SIGNED_URL_TTL = 60 * 60; // 1h
+
+async function signMediaUrl(storagePath: string): Promise<string | null> {
+    const { data, error } = await supabaseCrmAdmin.storage
+        .from(MEDIA_BUCKET)
+        .createSignedUrl(storagePath, SIGNED_URL_TTL);
+    if (error || !data) return null;
+    return data.signedUrl;
+}
 
 /**
  * Lista conversations (status=open) con datos del contacto y preview del último mensaje.
@@ -65,21 +80,98 @@ export async function getConversationMessages(
 
     const { data, error } = await supabaseCrmAdmin
         .from("messages")
-        .select("*")
+        .select("*, media:contact_media(*)")
         .eq("conversation_id", conversationId)
         .order("sent_at", { ascending: true })
+        .order("seq", { ascending: true })
         .limit(500);
 
     if (error) {
         console.error("[chats:messages]", error);
         return [];
     }
-    return (data ?? []) as Message[];
+
+    const rows = (data ?? []) as Message[];
+
+    // Adjuntar signed URLs a media + reply_preview lookups
+    const replyTargets = Array.from(
+        new Set(rows.map((r) => r.reply_to_wa_id).filter(Boolean) as string[]),
+    );
+    let replyMap = new Map<string, { role: Message["role"]; content: string | null; wa_type: Message["wa_type"] }>();
+    if (replyTargets.length > 0) {
+        const { data: parents } = await supabaseCrmAdmin
+            .from("messages")
+            .select("wa_message_id, role, content, wa_type")
+            .in("wa_message_id", replyTargets);
+        for (const p of parents ?? []) {
+            if (p.wa_message_id) {
+                replyMap.set(p.wa_message_id, { role: p.role, content: p.content, wa_type: p.wa_type });
+            }
+        }
+    }
+
+    const enriched = await Promise.all(
+        rows.map(async (m) => {
+            const media = (m as any).media as ContactMedia | null;
+            let signedUrl: string | null = null;
+            if (media?.storage_path) signedUrl = await signMediaUrl(media.storage_path);
+            const reply_preview = m.reply_to_wa_id ? replyMap.get(m.reply_to_wa_id) ?? null : null;
+            return {
+                ...m,
+                media: media ? { ...media, signed_url: signedUrl } : null,
+                reply_preview,
+            } as Message;
+        }),
+    );
+
+    return enriched;
+}
+
+/**
+ * Devuelve un signed URL fresco para una pieza de media.
+ * El cliente lo llama bajo demanda (lightbox, audio play) si la URL expiró.
+ */
+export async function refreshMediaUrl(mediaId: string): Promise<string | null> {
+    const session = await validateAdminSession();
+    if (!session.valid) return null;
+    const { data, error } = await supabaseCrmAdmin
+        .from("contact_media")
+        .select("storage_path")
+        .eq("id", mediaId)
+        .maybeSingle();
+    if (error || !data) return null;
+    return await signMediaUrl(data.storage_path);
+}
+
+/**
+ * Galería completa de media de un contacto, opcionalmente filtrada por tipo.
+ */
+export async function listContactMedia(
+    contactId: string,
+    opts: { type?: MediaType; limit?: number } = {},
+): Promise<ContactMedia[]> {
+    const session = await validateAdminSession();
+    if (!session.valid) return [];
+
+    let q = supabaseCrmAdmin.from("contact_media").select("*").eq("contact_id", contactId);
+    if (opts.type) q = q.eq("media_type", opts.type);
+    q = q.order("created_at", { ascending: false }).limit(opts.limit ?? 200);
+    const { data, error } = await q;
+    if (error) {
+        console.error("[chats:gallery]", error);
+        return [];
+    }
+    const rows = (data ?? []) as ContactMedia[];
+    const withUrls = await Promise.all(
+        rows.map(async (r) => ({ ...r, signed_url: await signMediaUrl(r.storage_path) })),
+    );
+    return withUrls;
 }
 
 export async function sendHumanMessage(
     conversationId: string,
     text: string,
+    replyToWaMessageId?: string,
 ): Promise<ActionResult<Message>> {
     const session = await validateAdminSession();
     if (!session.valid) return { error: "NO AUTORIZADO." };
@@ -87,12 +179,20 @@ export async function sendHumanMessage(
     const content = text.trim();
     if (!content) return { error: "EL MENSAJE NO PUEDE ESTAR VACÍO." };
 
+    const author = await currentAdminId();
+
+    // Insert con status='pending' para que el CRM muestre "enviando..." al instante.
+    // El bot (vía POST /send) lo actualiza a 'sent'/'failed' con el wa_message_id real.
     const { data, error } = await supabaseCrmAdmin
         .from("messages")
         .insert({
             conversation_id: conversationId,
             role: "human",
             content,
+            wa_type: "text",
+            status: "pending",
+            reply_to_wa_id: replyToWaMessageId ?? null,
+            created_by: author,
         })
         .select()
         .single();
@@ -124,7 +224,12 @@ export async function sendHumanMessage(
                     "Content-Type": "application/json",
                     "X-Revalidate-Secret": secret,
                 },
-                body: JSON.stringify({ to: phone, text: content }),
+                body: JSON.stringify({
+                    to: phone,
+                    text: content,
+                    messageId: data.id,
+                    replyToWaMessageId: replyToWaMessageId ?? undefined,
+                }),
             }).catch((e) =>
                 console.error("[chats:sendHuman] bot /send falló:", e.message),
             );
@@ -133,8 +238,46 @@ export async function sendHumanMessage(
         console.warn("[chats:sendHuman] BOT_URL o REVALIDATE_SECRET no configurados — mensaje solo en DB");
     }
 
+    // Trazabilidad
+    const { data: contactRow } = await supabaseCrmAdmin
+        .from("conversations")
+        .select("contact_id")
+        .eq("id", conversationId)
+        .maybeSingle();
+    logEvent({
+        type: "message.human_sent",
+        actor: author,
+        contactId: contactRow?.contact_id ?? null,
+        conversationId,
+        targetId: data.id,
+        payload: { wa_type: "text", preview: content.slice(0, 80) },
+    });
+
     revalidatePath("/admin/chats");
     return { success: true, data: data as Message };
+}
+
+/**
+ * Marca todos los mensajes nuevos de la conversación como vistos (unread_count=0).
+ * El trigger de DB ya lo resetea al insertar respuesta de IA/humano, pero esto sirve
+ * para cuando un admin abre el chat sin responder (lectura pasiva).
+ */
+export async function markConversationRead(
+    conversationId: string,
+): Promise<ActionResult<{ id: string }>> {
+    const session = await validateAdminSession();
+    if (!session.valid) return { error: "NO AUTORIZADO." };
+
+    const { error } = await supabaseCrmAdmin
+        .from("conversations")
+        .update({ unread_count: 0 })
+        .eq("id", conversationId);
+
+    if (error) {
+        console.error("[chats:markRead]", error);
+        return { error: "NO SE PUDO MARCAR COMO LEÍDO." };
+    }
+    return { success: true, data: { id: conversationId } };
 }
 
 export async function toggleAIForContact(
@@ -155,6 +298,15 @@ export async function toggleAIForContact(
         console.error("[chats:toggleAI]", error);
         return { error: "NO SE PUDO ACTUALIZAR." };
     }
+
+    const author = await currentAdminId();
+    logEvent({
+        type: "ai.toggled",
+        actor: author,
+        contactId,
+        targetId: contactId,
+        payload: { enabled },
+    });
 
     revalidatePath("/admin/chats");
     return { success: true, data: data as Contact };
@@ -183,6 +335,15 @@ export async function assignConversationToMe(
         console.error("[chats:assign]", error);
         return { error: "NO SE PUDO ASIGNAR." };
     }
+
+    logEvent({
+        type: "conversation.assigned",
+        actor: assignee ?? "admin",
+        contactId: data.contact_id,
+        conversationId,
+        targetId: conversationId,
+        payload: { assignee },
+    });
 
     revalidatePath("/admin/chats");
     return { success: true, data: data as Conversation };

@@ -1,6 +1,6 @@
-'use client';
+﻿'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -10,6 +10,8 @@ import { Drawer } from 'vaul';
 import { signOut } from 'next-auth/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { adminNavSections, type AdminNavItem, type AdminNavLeaf } from './adminNav';
+import { AdminSessionBadge } from './AdminSessionBadge';
+import { clearSessionGuard } from './session/useSessionGuard';
 
 export default function AdminMobileNav() {
     const pathname = usePathname();
@@ -30,7 +32,7 @@ export default function AdminMobileNav() {
 
     return (
         <>
-            <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-white/5 bg-[#060214]/90 px-4 backdrop-blur-xl lg:hidden">
+            <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-white/5 bg-[#0a0a0a]/90 px-4 backdrop-blur-xl lg:hidden">
                 <button
                     onClick={() => setOpen(true)}
                     aria-label="Abrir menú"
@@ -39,23 +41,16 @@ export default function AdminMobileNav() {
                     <Menu className="h-5 w-5" />
                 </button>
 
-                <Link href="/admin/chats" className="flex items-center gap-2">
+                <Link href="/admin/chats" className="flex items-center" aria-label="Nexus Admin">
                     <Image
-                        src="/logo.webp"
-                        alt="InZidium"
-                        width={28}
-                        height={28}
-                        className="object-contain"
-                        style={{ filter: 'drop-shadow(0 0 6px rgba(34,211,238,0.35))' }}
+                        src="/nexus-solo.webp"
+                        alt="Nexus"
+                        width={157}
+                        height={32}
+                        className="h-8 w-auto object-contain"
+                        style={{ filter: 'drop-shadow(0 0 8px rgba(255,215,0,0.35))' }}
+                        priority
                     />
-                    <span
-                        className="text-lg font-black tracking-tighter text-transparent bg-clip-text font-[family-name:var(--font-orbitron)]"
-                        style={{
-                            backgroundImage: 'linear-gradient(90deg, #e879f9, #a855f7, #22d3ee)',
-                        }}
-                    >
-                        ADMIN
-                    </span>
                 </Link>
 
                 <div className="w-10" />
@@ -64,28 +59,21 @@ export default function AdminMobileNav() {
             <Drawer.Root open={open} onOpenChange={setOpen} direction="left">
                 <Drawer.Portal>
                     <Drawer.Overlay className="fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm" />
-                    <Drawer.Content className="fixed inset-y-0 left-0 z-[70] flex h-full w-[85%] max-w-sm flex-col bg-[#060214]/95 outline-none backdrop-blur-xl">
+                    <Drawer.Content className="fixed inset-y-0 left-0 z-[70] flex h-full w-[85%] max-w-sm flex-col bg-[#0a0a0a]/95 outline-none backdrop-blur-xl">
                         <Drawer.Title className="sr-only">Menú de administración</Drawer.Title>
                         <Drawer.Description className="sr-only">Navegación del panel de administración</Drawer.Description>
 
                         <div className="flex items-center justify-between p-6">
-                            <Link href="/admin/chats" onClick={closeDrawer} className="flex items-center gap-3">
+                            <Link href="/admin/chats" onClick={closeDrawer} className="flex items-center" aria-label="Nexus Admin">
                                 <Image
-                                    src="/logo.webp"
-                                    alt="InZidium"
-                                    width={36}
-                                    height={36}
-                                    className="object-contain"
-                                    style={{ filter: 'drop-shadow(0 0 8px rgba(34,211,238,0.35))' }}
+                                    src="/nexus-solo.webp"
+                                    alt="Nexus"
+                                    width={196}
+                                    height={40}
+                                    className="h-10 w-auto object-contain"
+                                    style={{ filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.35))' }}
+                                    priority
                                 />
-                                <span
-                                    className="text-2xl font-black tracking-tighter text-transparent bg-clip-text font-[family-name:var(--font-orbitron)]"
-                                    style={{
-                                        backgroundImage: 'linear-gradient(90deg, #e879f9, #a855f7, #22d3ee)',
-                                    }}
-                                >
-                                    ADMIN
-                                </span>
                             </Link>
                             <button
                                 onClick={closeDrawer}
@@ -118,7 +106,8 @@ export default function AdminMobileNav() {
                             ))}
                         </div>
 
-                        <div className="border-t border-white/5 p-6">
+                        <div className="border-t border-white/5 p-6 space-y-3">
+                            <AdminSessionBadge />
                             <button
                                 onClick={handleLogoutClick}
                                 className="group flex w-full items-center gap-4 rounded-2xl border border-transparent px-5 py-4 text-gray-400 transition hover:border-red-500/10 hover:bg-red-500/5 hover:text-red-400"
@@ -149,7 +138,7 @@ export default function AdminMobileNav() {
                                     initial={{ opacity: 0, scale: 0.9, y: 20 }}
                                     animate={{ opacity: 1, scale: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                                    className="relative z-10 w-full max-w-sm overflow-hidden rounded-3xl border border-white/10 bg-[#060214]/95 p-8 shadow-2xl"
+                                    className="relative z-10 w-full max-w-sm overflow-hidden rounded-3xl border border-white/10 bg-[#0a0a0a]/95 p-8 shadow-2xl"
                                 >
                                     <div className="absolute top-0 right-0 -z-10 h-32 w-32 bg-red-500/10 blur-[50px]" />
                                     <div className="text-center">
@@ -165,13 +154,16 @@ export default function AdminMobileNav() {
                                         <div className="grid grid-cols-2 gap-3">
                                             <button
                                                 onClick={() => setShowLogoutConfirm(false)}
-                                                className="rounded-xl border border-white/10 bg-white/5 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-400 transition hover:bg-white/10 hover:text-white"
+                                                className="rounded-xl border border-white/10 bg-white/5 py-3 text-xs font-bold uppercase tracking-widest text-gray-400 transition hover:bg-white/10 hover:text-white"
                                             >
                                                 Cancelar
                                             </button>
                                             <button
-                                                onClick={() => signOut({ callbackUrl: '/' })}
-                                                className="rounded-xl bg-red-600 py-3 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-red-600/20 transition hover:bg-red-700"
+                                                onClick={() => {
+                                                    clearSessionGuard();
+                                                    signOut({ callbackUrl: '/' });
+                                                }}
+                                                className="rounded-xl bg-red-600 py-3 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-red-600/20 transition hover:bg-red-700"
                                             >
                                                 Confirmar
                                             </button>
@@ -246,18 +238,18 @@ function MobileLink({ icon: Icon, label, href, active, onNavigate }: MobileLinkP
             onClick={onNavigate}
             className={`relative flex items-center gap-4 overflow-hidden rounded-2xl px-5 py-3.5 transition ${
                 active
-                    ? 'bg-gradient-to-r from-[#22d3ee]/10 via-[#a855f7]/5 to-transparent text-white'
+                    ? 'bg-gradient-to-r from-[#FFD700]/10 via-[#ffffff]/5 to-transparent text-white'
                     : 'text-gray-400 hover:bg-white/5 hover:text-white'
             }`}
         >
             {active && (
-                <div className="absolute inset-y-0 left-0 w-[2px] bg-gradient-to-b from-[#22d3ee] to-[#a855f7]" />
+                <div className="absolute inset-y-0 left-0 w-[2px] bg-gradient-to-b from-[#FFD700] to-[#ffffff]" />
             )}
             <Icon
                 className="h-5 w-5"
                 style={{
-                    color: active ? '#22d3ee' : undefined,
-                    filter: active ? 'drop-shadow(0 0 6px rgba(34,211,238,0.5))' : undefined,
+                    color: active ? '#FFD700' : undefined,
+                    filter: active ? 'drop-shadow(0 0 6px rgba(255,215,0,0.5))' : undefined,
                 }}
             />
             <span className="text-sm font-bold tracking-wide">{label}</span>
@@ -277,11 +269,11 @@ function MobileSubLink({ icon: Icon, label, href, active, onNavigate }: MobileLi
             }`}
         >
             {active && (
-                <div className="absolute inset-y-1.5 left-0 w-[2px] rounded-full bg-gradient-to-b from-[#22d3ee] to-[#a855f7]" />
+                <div className="absolute inset-y-1.5 left-0 w-[2px] rounded-full bg-gradient-to-b from-[#FFD700] to-[#ffffff]" />
             )}
             <Icon
                 className="h-4 w-4"
-                style={{ color: active ? '#22d3ee' : undefined }}
+                style={{ color: active ? '#FFD700' : undefined }}
             />
             <span className="text-xs font-semibold tracking-wide">{label}</span>
         </Link>

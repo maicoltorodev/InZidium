@@ -1,10 +1,12 @@
-import React from "react";
+﻿import React from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { auth as authService } from "@/lib/data/service";
 import { AdminDesktopShell } from "@/components/desktop/admin/AdminDesktopShell";
 import { AuthProvider } from "@/app/providers/AuthProvider";
+import { SessionGuard } from "./_components/session/SessionGuard";
+import { RealtimeProvider } from "./_components/realtime/RealtimeProvider";
 
 export default async function AdminLayout({
   children,
@@ -47,7 +49,10 @@ export default async function AdminLayout({
   if (isLoginPage) return <AuthProvider>{children}</AuthProvider>;
   return (
     <AuthProvider>
-      <AdminDesktopShell>{children}</AdminDesktopShell>
+      <RealtimeProvider>
+        <SessionGuard />
+        <AdminDesktopShell>{children}</AdminDesktopShell>
+      </RealtimeProvider>
     </AuthProvider>
   );
 }

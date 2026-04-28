@@ -1,18 +1,31 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { Phone, Sparkles } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Phone, Sparkles, Search, FileCode2 } from "lucide-react";
 import type { ConversationWithContact, Message } from "@/lib/crm/types";
 import { MessageBubble } from "./MessageBubble";
 import { ChatInput } from "./ChatInput";
 import { AIToggle } from "./AIToggle";
+import { useChatSearch } from "./search/useChatSearch";
+import { SearchBar } from "./search/SearchBar";
+import { SendTemplateModal } from "./templates/SendTemplateModal";
+import type { TypingPayload } from "./typing/useTypingIndicator";
+import { TypingBubble } from "./typing/TypingBubble";
+import { AnimatePresence } from "framer-motion";
 
 type Props = {
     conversation: ConversationWithContact;
     messages: Message[];
     loadingMessages: boolean;
     onSend: (text: string) => Promise<{ error?: string }>;
+    onSendMedia?: (file: File, caption: string) => Promise<{ error?: string }>;
     onToggleAI: (contactId: string, enabled: boolean) => Promise<void>;
+    replyingTo?: Message | null;
+    onReply?: (msg: Message) => void;
+    onCancelReply?: () => void;
+    onReact?: (msg: Message, emoji: string) => void;
+    typing?: TypingPayload | null;
+    currentUser?: string | null;
 };
 
 export function ConversationDetail({
@@ -20,15 +33,32 @@ export function ConversationDetail({
     messages,
     loadingMessages,
     onSend,
+    onSendMedia,
     onToggleAI,
+    replyingTo,
+    onReply,
+    onCancelReply,
+    onReact,
+    typing,
+    currentUser,
 }: Props) {
     const scrollRef = useRef<HTMLDivElement>(null);
     const { contact } = conversation;
+    const search = useChatSearch(messages);
+    const [templateOpen, setTemplateOpen] = useState(false);
 
     useEffect(() => {
+        // No auto-scroll mientras se está navegando una búsqueda (la búsqueda hace su propio scroll)
+        if (search.open) return;
         const el = scrollRef.current;
         if (el) el.scrollTop = el.scrollHeight;
-    }, [messages.length, conversation.id]);
+    }, [messages.length, conversation.id, search.open, typing]);
+
+    // Cerrar búsqueda al cambiar de conversación
+    useEffect(() => {
+        search.close();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [conversation.id]);
 
     const displayName = contact.name?.trim() || contact.phone;
     const initial = displayName.charAt(0).toUpperCase();
@@ -43,8 +73,8 @@ export function ConversationDetail({
                         className="absolute inset-0 rounded-full blur-md opacity-50"
                         style={{
                             background: contact.ai_enabled
-                                ? "linear-gradient(135deg, #22d3ee, #a855f7)"
-                                : "linear-gradient(135deg, #e879f9, #f59e0b)",
+                                ? "linear-gradient(135deg, #FFD700, #ffffff)"
+                                : "linear-gradient(135deg, #FFD700, #f59e0b)",
                         }}
                     />
                     <div
@@ -79,11 +109,45 @@ export function ConversationDetail({
                     </div>
                 </div>
 
+                <button
+                    onClick={() => setTemplateOpen(true)}
+                    aria-label="Enviar plantilla de WhatsApp"
+                    title="Enviar plantilla"
+                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.03] text-gray-400 transition hover:border-white/[0.12] hover:text-white"
+                >
+                    <FileCode2 className="h-4 w-4" />
+                </button>
+
+                <button
+                    onClick={search.toggle}
+                    aria-label="Buscar en la conversación"
+                    title="Buscar"
+                    className={`flex h-9 w-9 items-center justify-center rounded-xl border transition ${
+                        search.open
+                            ? "border-[#FFD700]/40 bg-[#FFD700]/10 text-[#FFD700]"
+                            : "border-white/[0.06] bg-white/[0.03] text-gray-400 hover:border-white/[0.12] hover:text-white"
+                    }`}
+                >
+                    <Search className="h-4 w-4" />
+                </button>
+
                 <AIToggle
                     enabled={contact.ai_enabled}
                     onToggle={(enabled) => onToggleAI(contact.id, enabled)}
                 />
             </header>
+
+            {search.open && (
+                <SearchBar
+                    query={search.query}
+                    onQueryChange={search.setQuery}
+                    matchesCount={search.matches.length}
+                    currentIndex={search.currentIndex}
+                    onPrev={search.prev}
+                    onNext={search.next}
+                    onClose={search.close}
+                />
+            )}
 
             {/* Mensajes */}
             <div
@@ -94,7 +158,7 @@ export function ConversationDetail({
                 {loadingMessages && messages.length === 0 && (
                     <div className="flex h-full items-center justify-center">
                         <div className="flex items-center gap-2.5 text-gray-600">
-                            <Sparkles className="h-4 w-4 animate-pulse text-[#22d3ee]" />
+                            <Sparkles className="h-4 w-4 animate-pulse text-[#FFD700]" />
                             <p className="font-mono text-xs uppercase tracking-widest">
                                 Cargando mensajes…
                             </p>
@@ -108,7 +172,7 @@ export function ConversationDetail({
                                 className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.06]"
                                 style={{
                                     background:
-                                        "linear-gradient(135deg, rgba(232,121,249,0.06), rgba(34,211,238,0.06))",
+                                        "linear-gradient(135deg, rgba(255,215,0,0.06), rgba(255,215,0,0.06))",
                                 }}
                             >
                                 <Sparkles className="h-6 w-6 text-gray-600" />
@@ -119,8 +183,21 @@ export function ConversationDetail({
                 )}
                 <div className="space-y-3 max-w-3xl mx-auto">
                     {messages.map((m) => (
-                        <MessageBubble key={m.id} message={m} />
+                        <MessageBubble
+                            key={m.id}
+                            message={m}
+                            onReply={onReply}
+                            onReact={onReact}
+                            searchQuery={search.open ? search.query : undefined}
+                            isCurrentSearchMatch={search.currentMatchId === m.id}
+                            currentUser={currentUser}
+                        />
                     ))}
+                    <AnimatePresence>
+                        {typing?.typing && (
+                            <TypingBubble key="typing" by={typing.by ?? "ai"} />
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
 
@@ -130,9 +207,9 @@ export function ConversationDetail({
                     <div
                         className="flex items-center gap-3 rounded-2xl border px-5 py-3.5 max-w-3xl mx-auto"
                         style={{
-                            borderColor: "rgba(34,211,238,0.2)",
+                            borderColor: "rgba(255,215,0,0.2)",
                             background:
-                                "linear-gradient(135deg, rgba(34,211,238,0.05), rgba(168,85,247,0.05))",
+                                "linear-gradient(135deg, rgba(255,215,0,0.05), rgba(255,255,255,0.05))",
                             backdropFilter: "blur(8px)",
                         }}
                     >
@@ -140,8 +217,8 @@ export function ConversationDetail({
                             className="h-2 w-2 animate-pulse rounded-full shrink-0"
                             style={{
                                 background:
-                                    "linear-gradient(135deg, #22d3ee, #a855f7)",
-                                boxShadow: "0 0 10px rgba(168,85,247,0.6)",
+                                    "linear-gradient(135deg, #FFD700, #ffffff)",
+                                boxShadow: "0 0 10px rgba(255,255,255,0.6)",
                             }}
                         />
                         <p className="text-xs leading-relaxed text-gray-400">
@@ -151,10 +228,21 @@ export function ConversationDetail({
                     </div>
                 ) : (
                     <div className="max-w-3xl mx-auto">
-                        <ChatInput onSend={onSend} />
+                        <ChatInput
+                            onSend={onSend}
+                            onSendMedia={onSendMedia}
+                            replyingTo={replyingTo}
+                            onCancelReply={onCancelReply}
+                        />
                     </div>
                 )}
             </div>
+
+            <SendTemplateModal
+                open={templateOpen}
+                onClose={() => setTemplateOpen(false)}
+                conversationId={conversation.id}
+            />
         </div>
     );
 }
