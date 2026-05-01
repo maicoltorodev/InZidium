@@ -4,7 +4,6 @@ import { Tag, FileText, User, Sparkles } from "lucide-react";
 import type { ConversationWithContact } from "@/lib/crm/types";
 import { Section } from "./profile/Section";
 import { AvatarCard } from "./profile/AvatarCard";
-import { FilesButton } from "./files/FilesButton";
 
 type Props = { conversation: ConversationWithContact };
 
@@ -17,7 +16,7 @@ export function ContactProfile({ conversation }: Props) {
 
     return (
         <div className="flex h-full flex-col">
-            <ProfileHeader contactId={contact.id} contactName={displayName} />
+            <ProfileHeader />
 
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
                 <AvatarCard contact={contact} />
@@ -66,34 +65,25 @@ export function ContactProfile({ conversation }: Props) {
     );
 }
 
-function ProfileHeader({
-    contactId,
-    contactName,
-}: {
-    contactId: string;
-    contactName: string;
-}) {
+function ProfileHeader() {
     return (
         <div className="shrink-0 border-b border-white/[0.05] px-5 py-5">
-            <div className="flex items-center justify-between gap-3">
-                <div className="flex min-w-0 items-center gap-2.5">
-                    <div
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/[0.08]"
-                        style={{
-                            background:
-                                "linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,215,0,0.12))",
-                        }}
-                    >
-                        <User className="h-4 w-4 text-white" />
-                    </div>
-                    <div className="min-w-0">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 font-[family-name:var(--font-orbitron)]">
-                            Profile
-                        </p>
-                        <p className="text-sm font-bold text-white leading-tight">Cliente</p>
-                    </div>
+            <div className="flex items-center gap-2.5">
+                <div
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/[0.08]"
+                    style={{
+                        background:
+                            "linear-gradient(135deg, rgba(34,211,238,0.12), rgba(168,85,247,0.12))",
+                    }}
+                >
+                    <User className="h-4 w-4 text-white" />
                 </div>
-                <FilesButton contactId={contactId} contactName={contactName} />
+                <div className="min-w-0">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 font-[family-name:var(--font-orbitron)]">
+                        Profile
+                    </p>
+                    <p className="text-sm font-bold text-white leading-tight">Cliente</p>
+                </div>
             </div>
         </div>
     );

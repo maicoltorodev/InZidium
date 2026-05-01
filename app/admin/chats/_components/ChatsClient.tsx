@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -21,28 +21,44 @@ import { ConversationDetail } from "./ConversationDetail";
 import { ContactProfile } from "./ContactProfile";
 import { ChatsEmptyState } from "./ChatsEmptyState";
 import { AdminLoading } from "@/lib/ui/AdminLoading";
+import { useRealtime } from "@/app/admin/_components/realtime/RealtimeProvider";
 import { useConversationsRealtime } from "@/app/admin/_components/realtime/useConversationsRealtime";
 import { useMessagesRealtime } from "@/app/admin/_components/realtime/useMessagesRealtime";
 
-const BUSINESS = "business";
-
 export function ChatsClient() {
+    const { onTable } = useRealtime();
     const { conversations, loading } = useConversationsRealtime();
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const { messages, loading: loadingMessages } = useMessagesRealtime(selectedId);
     const [replyingTo, setReplyingTo] = useState<Message | null>(null);
     const notifications = useChatNotifications();
+    const conversationsRef = useRef(conversations);
+    const selectedIdRef = useRef(selectedId);
+    const notifyRef = useRef(notifications.notify);
     const typingMap = useGlobalTyping();
     const { data: session } = useSession();
+    const sessionUser = session?.user as { username?: string; id?: string } | undefined;
     const currentUser =
-        ((session?.user as any)?.username as string | undefined) ??
-        ((session?.user as any)?.id as string | undefined) ??
+        sessionUser?.username ??
+        sessionUser?.id ??
         "admin";
 
     const selected = useMemo(
         () => conversations.find((c) => c.id === selectedId) ?? null,
         [conversations, selectedId],
     );
+
+    useEffect(() => {
+        conversationsRef.current = conversations;
+    }, [conversations]);
+
+    useEffect(() => {
+        selectedIdRef.current = selectedId;
+    }, [selectedId]);
+
+    useEffect(() => {
+        notifyRef.current = notifications.notify;
+    }, [notifications.notify]);
 
     // Marcar como leído al abrir + reset replyingTo + reset title badge
     useEffect(() => {
@@ -53,16 +69,22 @@ export function ChatsClient() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedId]);
 
-    // Notificaciones in-app: cuando llega un INSERT del cliente y NO estamos viendo ese chat
-    useEffect(() => {
-        const last = messages[messages.length - 1];
-        if (!last) return;
-        if (last.role !== "user") return;
-        if (last.conversation_id === selectedId) return; // ya lo estamos viendo
-        const conv = conversations.find((c) => c.id === last.conversation_id) ?? null;
-        notifications.notify(last, conv, false);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [messages.length]);
+    // Notificaciones in-app: escucha todos los INSERT de mensajes mientras /admin/chats está montado.
+    useEffect(
+        () =>
+            onTable<Message>("messages", (e) => {
+                if (e.eventType !== "INSERT") return;
+                const msg = e.new;
+                if (msg.role !== "user") return;
+
+                const currentSelectedId = selectedIdRef.current;
+                const conv =
+                    conversationsRef.current.find((c) => c.id === msg.conversation_id) ?? null;
+
+                notifyRef.current(msg, conv, msg.conversation_id === currentSelectedId);
+            }),
+        [onTable],
+    );
 
     if (loading) return <AdminLoading />;
 
@@ -103,13 +125,13 @@ export function ChatsClient() {
                 }}
             />
 
-            <div className="relative flex h-full min-h-0 overflow-hidden rounded-3xl border border-white/[0.06] bg-[#0a0a0a]/60 backdrop-blur-2xl shadow-[0_0_60px_rgba(255,255,255,0.08)]">
+            <div className="relative flex h-full min-h-0 overflow-hidden rounded-3xl border border-white/[0.06] bg-[#0a0518]/60 backdrop-blur-2xl shadow-[0_0_60px_rgba(255,255,255,0.08)]">
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] overflow-hidden rounded-t-3xl">
                     <div
                         className="absolute inset-0 opacity-60"
                         style={{
                             background:
-                                "linear-gradient(90deg, transparent, #FFD700, #ffffff, #FFD700, transparent)",
+                                "linear-gradient(90deg, transparent, #22d3ee, #a855f7, #22d3ee, transparent)",
                             backgroundSize: "200% 100%",
                             animation: "gradient 8s linear infinite",
                         }}

@@ -3,19 +3,29 @@
 import { useMemo, useState } from "react";
 import type { ConversationWithContact } from "@/lib/crm/types";
 
-export type Filter = "all" | "ai" | "manual" | "unanswered" | "mine";
+export type Filter = "attention" | "all" | "ai" | "manual" | "unanswered" | "mine";
 
 export type FilterCounts = Record<Filter, number>;
+
+/** Detecta si una conversación requiere atención humana ahora mismo. */
+export function needsAttention(c: ConversationWithContact): boolean {
+    // 1. IA apagada y el último mensaje es del cliente (esperando respuesta humana)
+    if (!c.contact.ai_enabled && c.last_message_role === "user") return true;
+    // 2. Hay mensajes sin leer del cliente
+    if ((c.unread_count ?? 0) > 0 && c.last_message_role === "user") return true;
+    return false;
+}
 
 export function useConversationFilters(
     conversations: ConversationWithContact[],
     currentUser?: string | null,
 ) {
     const [search, setSearch] = useState("");
-    const [filter, setFilter] = useState<Filter>("all");
+    const [filter, setFilter] = useState<Filter>("attention");
 
     const counts: FilterCounts = useMemo(() => {
         return {
+            attention: conversations.filter(needsAttention).length,
             all: conversations.length,
             ai: conversations.filter((c) => c.contact.ai_enabled).length,
             manual: conversations.filter((c) => !c.contact.ai_enabled).length,
@@ -29,6 +39,7 @@ export function useConversationFilters(
     const filtered = useMemo(() => {
         const q = search.trim().toLowerCase();
         return conversations.filter((c) => {
+            if (filter === "attention" && !needsAttention(c)) return false;
             if (filter === "ai" && !c.contact.ai_enabled) return false;
             if (filter === "manual" && c.contact.ai_enabled) return false;
             if (filter === "unanswered" && c.last_message_role !== "user") return false;

@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Phone, Sparkles, Search, FileCode2 } from "lucide-react";
+import { FilesButton } from "./files/FilesButton";
 import type { ConversationWithContact, Message } from "@/lib/crm/types";
-import { MessageBubble } from "./MessageBubble";
+import { MessageBubble } from "./bubble/MessageBubble";
 import { ChatInput } from "./ChatInput";
 import { AIToggle } from "./AIToggle";
+import { describe24hWindow } from "@/lib/crm/window";
 import { useChatSearch } from "./search/useChatSearch";
 import { SearchBar } from "./search/SearchBar";
 import { SendTemplateModal } from "./templates/SendTemplateModal";
@@ -73,15 +75,15 @@ export function ConversationDetail({
                         className="absolute inset-0 rounded-full blur-md opacity-50"
                         style={{
                             background: contact.ai_enabled
-                                ? "linear-gradient(135deg, #FFD700, #ffffff)"
-                                : "linear-gradient(135deg, #FFD700, #f59e0b)",
+                                ? "linear-gradient(135deg, #22d3ee, #a855f7)"
+                                : "linear-gradient(135deg, #22d3ee, #0891b2)",
                         }}
                     />
                     <div
                         className={`relative flex h-12 w-12 items-center justify-center rounded-full text-base font-black ${
                             contact.ai_enabled
                                 ? "border border-white/[0.12] bg-white/[0.06] text-white"
-                                : "border border-amber-500/30 bg-amber-500/[0.1] text-amber-300"
+                                : "border border-cyan-500/30 bg-cyan-500/[0.1] text-cyan-300"
                         }`}
                         style={{ backdropFilter: "blur(8px)" }}
                     >
@@ -106,8 +108,11 @@ export function ConversationDetail({
                                 </span>
                             </>
                         )}
+                        <WindowBadge messages={messages} />
                     </div>
                 </div>
+
+                <FilesButton contactId={contact.id} contactName={displayName} />
 
                 <button
                     onClick={() => setTemplateOpen(true)}
@@ -124,17 +129,12 @@ export function ConversationDetail({
                     title="Buscar"
                     className={`flex h-9 w-9 items-center justify-center rounded-xl border transition ${
                         search.open
-                            ? "border-[#FFD700]/40 bg-[#FFD700]/10 text-[#FFD700]"
+                            ? "border-neon-cyan/40 bg-neon-cyan/10 text-neon-cyan"
                             : "border-white/[0.06] bg-white/[0.03] text-gray-400 hover:border-white/[0.12] hover:text-white"
                     }`}
                 >
                     <Search className="h-4 w-4" />
                 </button>
-
-                <AIToggle
-                    enabled={contact.ai_enabled}
-                    onToggle={(enabled) => onToggleAI(contact.id, enabled)}
-                />
             </header>
 
             {search.open && (
@@ -158,7 +158,7 @@ export function ConversationDetail({
                 {loadingMessages && messages.length === 0 && (
                     <div className="flex h-full items-center justify-center">
                         <div className="flex items-center gap-2.5 text-gray-600">
-                            <Sparkles className="h-4 w-4 animate-pulse text-[#FFD700]" />
+                            <Sparkles className="h-4 w-4 animate-pulse text-neon-cyan" />
                             <p className="font-mono text-xs uppercase tracking-widest">
                                 Cargando mensajes…
                             </p>
@@ -172,7 +172,7 @@ export function ConversationDetail({
                                 className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.06]"
                                 style={{
                                     background:
-                                        "linear-gradient(135deg, rgba(255,215,0,0.06), rgba(255,215,0,0.06))",
+                                        "linear-gradient(135deg, rgba(34,211,238,0.06), rgba(168,85,247,0.06))",
                                 }}
                             >
                                 <Sparkles className="h-6 w-6 text-gray-600" />
@@ -207,27 +207,35 @@ export function ConversationDetail({
                     <div
                         className="flex items-center gap-3 rounded-2xl border px-5 py-3.5 max-w-3xl mx-auto"
                         style={{
-                            borderColor: "rgba(255,215,0,0.2)",
+                            borderColor: "rgba(34,211,238,0.2)",
                             background:
-                                "linear-gradient(135deg, rgba(255,215,0,0.05), rgba(255,255,255,0.05))",
+                                "linear-gradient(135deg, rgba(34,211,238,0.05), rgba(168,85,247,0.05))",
                             backdropFilter: "blur(8px)",
                         }}
                     >
                         <div
                             className="h-2 w-2 animate-pulse rounded-full shrink-0"
                             style={{
-                                background:
-                                    "linear-gradient(135deg, #FFD700, #ffffff)",
-                                boxShadow: "0 0 10px rgba(255,255,255,0.6)",
+                                background: "linear-gradient(135deg, #22d3ee, #a855f7)",
+                                boxShadow: "0 0 10px rgba(34,211,238,0.6)",
                             }}
                         />
-                        <p className="text-xs leading-relaxed text-gray-400">
-                            Izzy está respondiendo este chat. Toma control con el toggle{" "}
-                            <span className="font-bold text-white">IA activa</span>.
+                        <p className="flex-1 text-xs leading-relaxed text-gray-400">
+                            Izzy está respondiendo este chat.
                         </p>
+                        <AIToggle
+                            enabled={contact.ai_enabled}
+                            onToggle={(enabled) => onToggleAI(contact.id, enabled)}
+                        />
                     </div>
                 ) : (
-                    <div className="max-w-3xl mx-auto">
+                    <div className="max-w-3xl mx-auto space-y-2">
+                        <div className="flex justify-end">
+                            <AIToggle
+                                enabled={contact.ai_enabled}
+                                onToggle={(enabled) => onToggleAI(contact.id, enabled)}
+                            />
+                        </div>
                         <ChatInput
                             onSend={onSend}
                             onSendMedia={onSendMedia}
@@ -255,4 +263,36 @@ function formatRelative(date: Date): string {
     const hours = Math.floor(mins / 60);
     if (hours < 24) return `hace ${hours}h`;
     return `el ${date.toLocaleDateString("es-CO", { day: "numeric", month: "short" })}`;
+}
+
+/**
+ * Badge de la ventana de 24h de Meta. Si la ventana está abierta muestra
+ * tiempo restante; si está cerrada indica que solo se pueden enviar plantillas.
+ */
+function WindowBadge({ messages }: { messages: Message[] }) {
+    // Último mensaje del cliente (role='user') determina la ventana de 24h
+    let lastInboundAt: string | null = null;
+    for (let i = messages.length - 1; i >= 0; i--) {
+        if (messages[i].role === "user") {
+            lastInboundAt = messages[i].sent_at;
+            break;
+        }
+    }
+    const w = describe24hWindow(lastInboundAt);
+    return (
+        <>
+            <span className="text-gray-700">·</span>
+            <span
+                className="text-[10px] font-bold tracking-widest uppercase tabular-nums"
+                style={{ color: w.open ? "#34d399" : "#fbbf24" }}
+                title={
+                    w.open
+                        ? "Puedes enviar mensajes libres dentro de la ventana de 24h de Meta."
+                        : "Fuera de la ventana de 24h. Solo se pueden enviar plantillas pre-aprobadas."
+                }
+            >
+                {w.open ? `🟢 ${w.label}` : `🟡 24h cerrada`}
+            </span>
+        </>
+    );
 }

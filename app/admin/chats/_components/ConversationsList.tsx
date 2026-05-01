@@ -1,11 +1,10 @@
 "use client";
 
-import { MessageSquare, Search, Bot, BotOff, Inbox, MessageCircle, UserCheck } from "lucide-react";
+import { MessageSquare, Search, Bot, BotOff, Inbox, MessageCircle, UserCheck, ChevronLeft, ChevronRight, AlertCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
 import type { ConversationWithContact } from "@/lib/crm/types";
 import { ConversationItem } from "./ConversationItem";
-import { FilterChip } from "./list/FilterChip";
-import { useConversationFilters } from "./list/useConversationFilters";
+import { useConversationFilters, type Filter, type FilterCounts } from "./list/useConversationFilters";
 import type { TypingState } from "./typing/useGlobalTyping";
 
 type Props = {
@@ -17,9 +16,10 @@ type Props = {
 
 export function ConversationsList({ conversations, selectedId, onSelect, typingMap }: Props) {
     const { data: session } = useSession();
+    const sessionUser = session?.user as { username?: string; id?: string } | undefined;
     const currentUser =
-        ((session?.user as any)?.username as string | undefined) ??
-        ((session?.user as any)?.id as string | undefined) ??
+        sessionUser?.username ??
+        sessionUser?.id ??
         null;
 
     const { search, setSearch, filter, setFilter, counts, filtered } =
@@ -29,50 +29,16 @@ export function ConversationsList({ conversations, selectedId, onSelect, typingM
         <div className="flex flex-1 min-h-0 flex-col">
             <ListHeader total={counts.all} />
 
-            <div className="shrink-0 px-5 pb-4">
+            <div className="shrink-0 px-5 pt-4 pb-4">
                 <SearchInput value={search} onChange={setSearch} />
 
-                <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                    <FilterChip
-                        active={filter === "all"}
-                        onClick={() => setFilter("all")}
-                        label="Todos"
-                        count={counts.all}
+                <div className="mt-3">
+                    <FilterCycler
+                        filter={filter}
+                        setFilter={setFilter}
+                        counts={counts}
+                        currentUser={currentUser}
                     />
-                    <FilterChip
-                        active={filter === "unanswered"}
-                        onClick={() => setFilter("unanswered")}
-                        label="Sin responder"
-                        count={counts.unanswered}
-                        icon={<MessageCircle className="h-3 w-3" />}
-                        accent="#34d399"
-                    />
-                    <FilterChip
-                        active={filter === "ai"}
-                        onClick={() => setFilter("ai")}
-                        label="IA"
-                        count={counts.ai}
-                        icon={<Bot className="h-3 w-3" />}
-                        accent="#FFD700"
-                    />
-                    <FilterChip
-                        active={filter === "manual"}
-                        onClick={() => setFilter("manual")}
-                        label="Manual"
-                        count={counts.manual}
-                        icon={<BotOff className="h-3 w-3" />}
-                        accent="#fbbf24"
-                    />
-                    {currentUser && (
-                        <FilterChip
-                            active={filter === "mine"}
-                            onClick={() => setFilter("mine")}
-                            label="Mías"
-                            count={counts.mine}
-                            icon={<UserCheck className="h-3 w-3" />}
-                            accent="#a78bfa"
-                        />
-                    )}
                 </div>
             </div>
 
@@ -97,6 +63,92 @@ export function ConversationsList({ conversations, selectedId, onSelect, typingM
     );
 }
 
+// ─── Filter cycler ────────────────────────────────────────────────────────────
+
+type FilterDef = {
+    key: Filter;
+    label: string;
+    accent: string;
+    icon: React.ReactNode;
+};
+
+const ALL_FILTERS: FilterDef[] = [
+    { key: "attention",  label: "Requieren atención", accent: "#f87171",               icon: <AlertCircle className="h-3 w-3" /> },
+    { key: "all",        label: "Todos",              accent: "rgba(255,255,255,0.55)", icon: <Inbox className="h-3 w-3" /> },
+    { key: "unanswered", label: "Sin responder",      accent: "#34d399",               icon: <MessageCircle className="h-3 w-3" /> },
+    { key: "ai",         label: "IA",                 accent: "#22d3ee",               icon: <Bot className="h-3 w-3" /> },
+    { key: "manual",     label: "Manual",             accent: "#a855f7",               icon: <BotOff className="h-3 w-3" /> },
+    { key: "mine",       label: "Mías",               accent: "#a78bfa",               icon: <UserCheck className="h-3 w-3" /> },
+];
+
+function FilterCycler({
+    filter,
+    setFilter,
+    counts,
+    currentUser,
+}: {
+    filter: Filter;
+    setFilter: (f: Filter) => void;
+    counts: FilterCounts;
+    currentUser: string | null;
+}) {
+    const filters = currentUser ? ALL_FILTERS : ALL_FILTERS.filter((f) => f.key !== "mine");
+    const idx = filters.findIndex((f) => f.key === filter);
+    const current = filters[idx] ?? filters[0];
+    const accent = current.accent;
+
+    function prev() {
+        setFilter(filters[(idx - 1 + filters.length) % filters.length].key);
+    }
+    function next() {
+        setFilter(filters[(idx + 1) % filters.length].key);
+    }
+
+    return (
+        <div className="flex items-center gap-2">
+            <button
+                onClick={prev}
+                aria-label="Filtro anterior"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.02] text-gray-500 transition hover:border-white/[0.1] hover:text-gray-300 active:scale-95"
+            >
+                <ChevronLeft className="h-4 w-4" />
+            </button>
+
+            <div
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl border px-3 py-2 transition-all duration-200"
+                style={{
+                    borderColor: `color-mix(in srgb, ${accent} 25%, transparent)`,
+                    background: `color-mix(in srgb, ${accent} 8%, transparent)`,
+                }}
+            >
+                <span style={{ color: accent }}>{current.icon}</span>
+                <span
+                    className="text-[10px] font-black uppercase tracking-[0.15em]"
+                    style={{ color: accent }}
+                >
+                    {current.label}
+                </span>
+                <span
+                    className="font-mono text-[10px] font-bold tabular-nums"
+                    style={{ color: accent, opacity: 0.6 }}
+                >
+                    {counts[current.key]}
+                </span>
+            </div>
+
+            <button
+                onClick={next}
+                aria-label="Filtro siguiente"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.02] text-gray-500 transition hover:border-white/[0.1] hover:text-gray-300 active:scale-95"
+            >
+                <ChevronRight className="h-4 w-4" />
+            </button>
+        </div>
+    );
+}
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
 function ListHeader({ total }: { total: number }) {
     return (
         <div className="shrink-0 border-b border-white/[0.05] px-5 pt-5 pb-4">
@@ -106,26 +158,26 @@ function ListHeader({ total }: { total: number }) {
                         className="flex h-8 w-8 items-center justify-center rounded-xl border border-white/[0.08]"
                         style={{
                             background:
-                                "linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,215,0,0.12))",
+                                "linear-gradient(135deg, rgba(34,211,238,0.12), rgba(168,85,247,0.12))",
                         }}
                     >
                         <Inbox className="h-4 w-4 text-white" />
                     </div>
-                    <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 font-[family-name:var(--font-orbitron)]">
-                            Inbox
-                        </p>
-                        <p className="text-sm font-bold text-white leading-tight">
-                            Conversaciones
-                        </p>
-                    </div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">
+                        Bandeja
+                    </p>
                 </div>
-                <div className="flex items-center gap-1.5">
-                    <div className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-1">
-                        <span className="text-[10px] font-black tracking-widest text-gray-300 font-mono">
-                            {total}
-                        </span>
-                    </div>
+                <div
+                    className="relative flex h-8 w-8 items-center justify-center rounded-xl"
+                    style={{
+                        background: "linear-gradient(135deg, rgba(34,211,238,0.15), rgba(168,85,247,0.06))",
+                        border: "1px solid rgba(34,211,238,0.25)",
+                        boxShadow: "0 0 12px rgba(34,211,238,0.15), inset 0 1px 0 rgba(34,211,238,0.1)",
+                    }}
+                >
+                    <span className="text-xs font-black tabular-nums text-neon-cyan">
+                        {total}
+                    </span>
                 </div>
             </div>
         </div>
@@ -141,12 +193,12 @@ function SearchInput({
 }) {
     return (
         <div className="group relative">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600 transition-colors group-focus-within:text-[#FFD700]" />
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600 transition-colors group-focus-within:text-neon-cyan" />
             <input
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder="Buscar nombre, teléfono…"
-                className="w-full rounded-xl border border-white/[0.06] bg-white/[0.02] pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-[#FFD700]/40 focus:bg-white/[0.04] focus:outline-none transition-all"
+                className="w-full rounded-xl border border-white/[0.06] bg-white/[0.02] pl-10 pr-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-neon-cyan/40 focus:bg-white/[0.04] focus:outline-none transition-all"
             />
         </div>
     );
@@ -158,7 +210,7 @@ function ListEmptyState({ hasConversations }: { hasConversations: boolean }) {
             <div
                 className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/[0.06]"
                 style={{
-                    background: "linear-gradient(135deg, rgba(255,215,0,0.06), rgba(255,215,0,0.06))",
+                    background: "linear-gradient(135deg, rgba(34,211,238,0.06), rgba(168,85,247,0.06))",
                 }}
             >
                 <MessageSquare className="h-6 w-6 text-gray-600" />
