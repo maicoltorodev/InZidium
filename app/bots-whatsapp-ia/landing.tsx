@@ -27,6 +27,15 @@ const WA_URL =
 const WA_DEMO_URL =
   "https://wa.me/573143855079?text=Hola%21%20Quiero%20probar%20el%20asistente%20de%20InZidium%20%F0%9F%A4%96"
 
+function trackWA(label: string) {
+  if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
+    ;(window as any).gtag("event", "whatsapp_click", {
+      event_category: "conversion",
+      event_label: label,
+    })
+  }
+}
+
 // ─── WhatsApp icon ─────────────────────────────────────────────────────────────
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
@@ -311,7 +320,7 @@ export function BotLanding() {
         <Link href="/" className="justify-self-center font-orbitron font-semibold tracking-[0.2em] text-[13px] text-white/90">
           InZidium
         </Link>
-        <a href={WA_URL} target="_blank" rel="noopener noreferrer"
+        <a href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackWA("wa_general")}
           className="justify-self-end wa-cta-btn flex items-center gap-2 text-black font-bold text-[12px] px-4 py-2.5 rounded-full transition-transform duration-100 active:scale-95"
         >
           <WhatsAppIcon className="w-[14px] h-[14px]" />
@@ -368,7 +377,7 @@ export function BotLanding() {
                   initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.38, delay: 0.2 }}
                   className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-7"
                 >
-                  <a href={WA_URL} target="_blank" rel="noopener noreferrer"
+                  <a href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackWA("wa_general")}
                     className="wa-cta-btn wa-pulse inline-flex items-center justify-center gap-2.5 text-black font-bold px-8 py-[14px] rounded-full text-[14px] transition-transform duration-100 active:scale-[0.97]"
                   >
                     <WhatsAppIcon className="w-[18px] h-[18px]" />
@@ -516,7 +525,7 @@ export function BotLanding() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-                    <a href={WA_DEMO_URL} target="_blank" rel="noopener noreferrer"
+                    <a href={WA_DEMO_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackWA("wa_demo")}
                       className="wa-cta-btn wa-pulse inline-flex items-center justify-center gap-2.5 text-black font-bold px-8 py-[14px] rounded-full text-[14px] sm:text-[15px] transition-transform duration-100 active:scale-[0.97]"
                     >
                       <WhatsAppIcon className="w-[18px] h-[18px]" />
@@ -636,7 +645,7 @@ export function BotLanding() {
                   <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#25D366] via-[#20c75a] to-[#128C7E]" />
                   <p className="text-[#25D366] text-[11px] font-bold uppercase tracking-[0.15em] mb-3">Implementación</p>
                   <p className="text-white text-3xl sm:text-[2rem] font-black mb-1 leading-none">
-                    1.5 — 3M <span className="text-base font-normal text-white/30">COP</span>
+                    Desde $1.5M
                   </p>
                   <p className="text-white/40 text-[12px] leading-relaxed mt-2">
                     Pago único. Plataforma completa: asistente, panel, web y gestión Meta incluidos.
@@ -645,7 +654,7 @@ export function BotLanding() {
                 <SpotlightCard className="p-6 sm:p-7">
                   <p className="text-white/40 text-[11px] font-bold uppercase tracking-[0.15em] mb-3">Mensual</p>
                   <p className="text-white text-3xl sm:text-[2rem] font-black mb-1 leading-none">
-                    150 — 350K <span className="text-base font-normal text-white/30">COP</span>
+                    Desde $100K
                   </p>
                   <p className="text-white/40 text-[12px] leading-relaxed mt-2">
                     Servidor, IA y mensajes de WhatsApp. Sin cobros ocultos.
@@ -655,7 +664,7 @@ export function BotLanding() {
               <div className="flex items-start gap-3 p-5 rounded-2xl border border-white/[0.07] bg-white/[0.018]">
                 <Zap className="shrink-0 w-4 h-4 text-[#25D366] mt-0.5" />
                 <p className="text-white/40 text-[12px] sm:text-[13px] leading-relaxed">
-                  Una recepcionista cuesta entre 1.5 y 2 millones al mes. La plataforma paga su implementación en menos de 6 meses — y sigue operando sola.
+                  Una recepcionista cuesta más de $2M al mes. La plataforma paga su implementación en menos de 6 meses — y sigue operando sola.
                 </p>
               </div>
             </Reveal>
@@ -686,7 +695,7 @@ export function BotLanding() {
             <p className="text-white/40 mb-8 text-[14px] leading-relaxed">
               Cuéntanos sobre tu operación. En menos de 24 horas te decimos si tiene sentido y cuánto costaría.
             </p>
-            <a href={WA_URL} target="_blank" rel="noopener noreferrer"
+            <a href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackWA("wa_general")}
               className="wa-cta-btn wa-pulse inline-flex items-center gap-3 text-black font-bold px-9 py-[15px] rounded-full text-[14px] sm:text-[15px] transition-transform duration-100 active:scale-[0.97]"
             >
               <WhatsAppIcon className="w-[18px] h-[18px]" />
@@ -702,7 +711,7 @@ export function BotLanding() {
           className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-2 sm:hidden pointer-events-none"
           style={{ background: "linear-gradient(to top, rgba(6,2,20,0.96) 60%, transparent)" }}
         >
-          <a href={WA_URL} target="_blank" rel="noopener noreferrer"
+          <a href={WA_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackWA("wa_general")}
             className="wa-cta-btn pointer-events-auto flex items-center justify-center gap-2.5 w-full text-black font-bold py-[15px] rounded-2xl text-[14px] transition-transform duration-100 active:scale-[0.98]"
           >
             <WhatsAppIcon className="w-[18px] h-[18px]" />
