@@ -18,7 +18,7 @@ import {
   FileText,
   LayoutDashboard,
   Sparkles,
-  Quote,
+  Radio,
 } from "lucide-react"
 
 // ─── URLs ─────────────────────────────────────────────────────────────────────
@@ -466,86 +466,84 @@ export function BotLanding() {
           </div>
         </section>
 
-        {/* ── 3. DEMO ── (el alivio, ahora que ya sienten el dolor) */}
-        <section className="px-5 sm:px-8 pb-16">
-          <div className="max-w-2xl mx-auto">
-            <Reveal>
-              <SpotlightCard className="text-center px-7 py-10 sm:px-12 sm:py-12">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-48 bg-gradient-to-r from-transparent via-[#25D366]/40 to-transparent" />
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#25D366]/25 bg-[#25D366]/6 text-[#25D366] text-[11px] font-bold uppercase tracking-[0.15em] mb-4">
-                  <Sparkles className="w-3 h-3" />
-                  Demo en vivo
-                </div>
-                <h2 className="text-2xl sm:text-[1.85rem] font-bold text-white mb-2 leading-tight">
-                  ¿Quieres verlo funcionando?
-                </h2>
-                <p className="text-white/45 text-[14px] sm:text-[15px] leading-relaxed mb-1">
-                  Escríbenos ahora mismo. Nuestro propio asistente te va a atender.
-                </p>
-                <p className="text-[#25D366] text-[13px] font-semibold mb-7">
-                  Es tan útil que hasta nosotros lo usamos.
-                </p>
-                <a href={WA_DEMO_URL} target="_blank" rel="noopener noreferrer"
-                  className="wa-cta-btn inline-flex items-center gap-2.5 text-black font-bold px-7 py-[13px] rounded-full text-[14px] transition-transform duration-100 active:scale-[0.97]"
-                >
-                  <WhatsAppIcon className="w-[17px] h-[17px]" />
-                  Probar el asistente
-                  <ArrowRight className="w-4 h-4" />
-                </a>
-              </SpotlightCard>
-            </Reveal>
-          </div>
-        </section>
+        {/* ── 3. DEMO — protagonista ── */}
+        <section className="relative px-5 sm:px-8 py-24 sm:py-32 overflow-hidden">
+          {/* glow de fondo específico para esta sección */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `
+                radial-gradient(ellipse 60% 50% at 50% 50%, rgba(37,211,102,0.07) 0%, transparent 70%),
+                radial-gradient(ellipse 30% 40% at 80% 20%, rgba(18,140,126,0.06) 0%, transparent 60%)
+              `,
+            }}
+          />
+          <div className="relative max-w-5xl mx-auto">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:gap-16">
 
-        {/* ── 4. PRUEBA SOCIAL ── */}
-        <section className="px-5 sm:px-8 py-16">
-          <div className="max-w-2xl mx-auto">
-            <Reveal className="text-center mb-10">
-              <Label>Caso real</Label>
-              <h2 className="text-[1.85rem] sm:text-4xl font-bold text-white">Ya está en producción</h2>
-              <p className="text-white/35 mt-2 text-[13px]">No es un prototipo. Es un negocio real funcionando.</p>
-            </Reveal>
-            <Reveal>
-              <SpotlightCard className="p-7 sm:p-9">
-                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#25D366] via-[#20c75a] to-[#128C7E]" />
+              {/* ── Copy ── */}
+              <div className="flex-1 text-center lg:text-left">
+                <Reveal>
+                  {/* badge LIVE */}
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#25D366]/30 bg-[#25D366]/8 text-[#25D366] text-[11px] font-bold uppercase tracking-[0.15em] mb-6">
+                    <Radio className="w-3 h-3" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#25D366] animate-pulse inline-block" />
+                    Activo ahora mismo
+                  </div>
 
-                {/* quote icon — apertura */}
-                <Quote className="w-9 h-9 text-[#25D366]/25 rotate-180 mb-4" />
+                  <h2 className="text-[2rem] sm:text-4xl lg:text-[2.8rem] font-extrabold text-white leading-[1.1] tracking-tight mb-5">
+                    Escríbenos ahora.{" "}
+                    <span
+                      className="block"
+                      style={{ background: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+                    >
+                      Nuestro asistente
+                    </span>
+                    te responde.
+                  </h2>
 
-                {/* quote — protagonista, no apéndice */}
-                <p className="text-white/75 text-[15px] sm:text-[17px] leading-[1.75] mb-3">
-                  Antes le dedicaba horas al día a responder lo mismo: precios, formatos, tiempos de entrega.
-                  Ahora el asistente lo maneja y nos enfocamos en producir.{" "}
-                  <span className="text-white font-medium">Los clientes ni se dan cuenta.</span>
-                </p>
+                  <p className="text-white/50 text-[15px] sm:text-[16px] leading-relaxed mb-4 max-w-md mx-auto lg:mx-0">
+                    No es una demo armada. Es el mismo sistema en producción que usamos para atender nuestros propios clientes.
+                  </p>
 
-                {/* quote icon — cierre */}
-                <Quote className="w-5 h-5 text-[#25D366]/15 ml-auto mb-6" />
+                  {/* el argumento clave */}
+                  <div className="inline-flex items-start gap-3 px-4 py-3 rounded-2xl border border-[#25D366]/20 bg-[#25D366]/[0.06] mb-8 max-w-md mx-auto lg:mx-0">
+                    <Sparkles className="w-4 h-4 text-[#25D366] shrink-0 mt-0.5" />
+                    <p className="text-[#25D366] text-[13px] leading-snug font-medium text-left">
+                      Somos tan convencidos de esto que lo usamos nosotros mismos.<br />
+                      <span className="text-white/60 font-normal">Si no funcionara, no lo venderíamos.</span>
+                    </p>
+                  </div>
 
-                {/* atribución */}
-                <div className="flex items-center gap-3 pt-6 border-t border-white/[0.07]">
-                  {/* avatar */}
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+                    <a href={WA_DEMO_URL} target="_blank" rel="noopener noreferrer"
+                      className="wa-cta-btn wa-pulse inline-flex items-center justify-center gap-2.5 text-black font-bold px-8 py-[14px] rounded-full text-[14px] sm:text-[15px] transition-transform duration-100 active:scale-[0.97]"
+                    >
+                      <WhatsAppIcon className="w-[18px] h-[18px]" />
+                      Probar el asistente
+                      <ArrowRight className="w-4 h-4" />
+                    </a>
+                  </div>
+
+                  <p className="text-white/20 text-[11px] mt-4">
+                    Responde en segundos · Sin formularios · Sin vendedor
+                  </p>
+                </Reveal>
+              </div>
+
+              {/* ── WaMock ── */}
+              <Reveal delay={0.15} className="mt-14 lg:mt-0 lg:shrink-0 flex justify-center">
+                <div className="relative">
+                  {/* halo verde detrás del teléfono */}
                   <div
-                    className="w-10 h-10 rounded-full shrink-0 flex items-center justify-center font-black text-[15px] text-black"
-                    style={{ background: "linear-gradient(135deg, #25D366 0%, #128C7E 100%)" }}
-                  >
-                    N
-                  </div>
-
-                  {/* nombre + industria */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white font-semibold text-[13px] sm:text-[14px] leading-tight">Nexus Estudio Gráfico</p>
-                    <p className="text-white/35 text-[11px] mt-0.5">Impresión y diseño · Bogotá</p>
-                  </div>
-
-                  {/* badge con dot pulsando */}
-                  <span className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#25D366]/10 border border-[#25D366]/20 text-[#25D366] text-[10px] font-bold uppercase tracking-wider">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#25D366] animate-pulse" />
-                    En producción
-                  </span>
+                    className="absolute -inset-8 rounded-full pointer-events-none"
+                    style={{ background: "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(37,211,102,0.12), transparent 70%)" }}
+                  />
+                  <WaMock />
                 </div>
-              </SpotlightCard>
-            </Reveal>
+              </Reveal>
+
+            </div>
           </div>
         </section>
 

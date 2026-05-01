@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Images } from "lucide-react";
 // Nota: `useEffect` + `useState` solo se usan para `pendingTipo` (modal de
 // confirmación local) y el `useDebounced` de la preview de Google Fonts. No
 // se usan para sincronizar data del proyecto — eso vive en `d`, que ya es el
@@ -10,6 +10,7 @@ import { AutoField, AutoTextarea, ImageField } from "../../fields";
 import { labelCls } from "../../styles";
 import { FieldItem } from "../primitives/FieldItem";
 import { ChipSelector } from "../primitives/ChipSelector";
+import { ToggleRow } from "../primitives/ToggleRow";
 import {
   TIPO_NEGOCIO_MAP,
   buildTipoNegocioPatch,
@@ -175,6 +176,22 @@ export function AvanzadoSection({
             El rápido zorro cafe salta sobre el perro perezoso.
           </p>
         </div>
+      </FieldItem>
+
+      <FieldItem>
+        <label className={labelCls}>Galería de fotos</label>
+        <p className="mb-3 text-[11px] text-white/25">
+          Activa una sección extra en tu sitio con hasta 10 fotos del local,
+          productos, equipo o momentos. Si la apagas, las imágenes que ya
+          subiste se conservan para reactivar después.
+        </p>
+        <ToggleRow
+          icon={Images}
+          title="Activar galería"
+          description="Aparece como sección 'Galería' en el hub para que la gestiones aparte."
+          checked={d.galleryEnabled === true}
+          onChange={(next) => savePatch({ galleryEnabled: next })}
+        />
       </FieldItem>
 
       <FieldItem>

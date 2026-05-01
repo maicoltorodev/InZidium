@@ -14,7 +14,7 @@ import { OnboardingCompleteModal } from "../shared/primitives/OnboardingComplete
 import { PhaseTimeline } from "../shared/primitives/PhaseTimeline";
 import { MOTION, STAGGER, usePrefersReducedMotion } from "../shared/primitives/motion";
 import { BrandDivider } from "../shared/primitives/BrandDivider";
-import { HUB_SECTIONS, getCatalogoSubtitle, type SectionKey } from "../shared/sections/registry";
+import { HUB_SECTIONS, getCatalogoSubtitle, isHubSectionVisible, type SectionKey } from "../shared/sections/registry";
 import { iniciarConstruccionEstandar } from "@/lib/actions";
 
 export type HubKey = SectionKey;
@@ -78,19 +78,24 @@ export function MobileHub({
   const isBuilding = fase === "construccion";
   const isOnboarding = fase === "onboarding";
 
+  const visibleSections = useMemo(
+    () => HUB_SECTIONS.filter((s) => isHubSectionVisible(s.key, data)),
+    [data],
+  );
+
   const { nextSection, sectionsCompleted } = useMemo(() => {
     let next: (typeof HUB_SECTIONS)[number] | null = null;
     let completed = 0;
-    for (const s of HUB_SECTIONS) {
+    for (const s of visibleSections) {
       const c = getSectionCompletion(s.key, data);
       if (c === "complete") completed++;
       else if (!next) next = s;
     }
     return { nextSection: next, sectionsCompleted: completed };
-  }, [data]);
+  }, [data, visibleSections]);
 
   const domainComplete = !!data.dominioUno || !!projectLink?.trim();
-  const totalSteps = HUB_SECTIONS.length + 1;
+  const totalSteps = visibleSections.length + 1;
   const completedCount = sectionsCompleted + (domainComplete ? 1 : 0);
   const progressPct = Math.round((completedCount / totalSteps) * 100);
 
@@ -228,7 +233,7 @@ export function MobileHub({
           }}
           className="space-y-2.5"
         >
-          {HUB_SECTIONS.map((sec) => {
+          {visibleSections.map((sec) => {
             const completion = getSectionCompletion(sec.key, data);
             const isNext = isOnboarding && nextSection?.key === sec.key;
             return (

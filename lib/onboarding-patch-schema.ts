@@ -85,6 +85,12 @@ const SIMPLE: Record<string, FieldRule> = {
     // porque Google corta en ~160 pero damos margen; si se pasa, layout.tsx
     // trunca visualmente al emitir el meta tag.
     seoDescripcion: { kind: "string", max: 200 },
+
+    // Galería — toggle + textos. Las imágenes son array (galleryImages) y se
+    // sanitizan aparte. Apagar el toggle NO borra los datos.
+    galleryEnabled: { kind: "boolean" },
+    galleryTitle: { kind: "string", max: 80 },
+    galleryDescription: { kind: "string", max: 200 },
 };
 
 function sanitizeSimple(key: string, value: unknown): unknown {
@@ -164,6 +170,26 @@ function sanitizeCategorias(value: unknown): string[] | undefined {
         .slice(0, 50);
 }
 
+// Cap duro de 10 imágenes — el toggle de "Activar galería" en el portal usa
+// este número como límite visible al cliente. Más imágenes saturan visualmente
+// el sitio público y la grilla pierde balance.
+const GALLERY_MAX_IMAGES = 10;
+
+function sanitizeGalleryImage(item: unknown): Record<string, any> | null {
+    if (!item || typeof item !== "object" || Array.isArray(item)) return null;
+    const i = item as Record<string, unknown>;
+    const src = typeof i.src === "string" && (i.src === "" || HTTPS_RE.test(i.src))
+        ? i.src.slice(0, 1000)
+        : "";
+    if (!src) return null; // imagen sin src no tiene sentido
+    return {
+        id: typeof i.id === "string" ? i.id.slice(0, 50) : "",
+        src,
+        alt: typeof i.alt === "string" ? i.alt.slice(0, 200) : "",
+        caption: typeof i.caption === "string" ? i.caption.slice(0, 200) : "",
+    };
+}
+
 export function sanitizeOnboardingPatch(patch: unknown): Record<string, any> {
     if (!patch || typeof patch !== "object" || Array.isArray(patch)) return {};
     const out: Record<string, any> = {};
@@ -196,6 +222,15 @@ export function sanitizeOnboardingPatch(patch: unknown): Record<string, any> {
         if (key === "categorias") {
             const v = sanitizeCategorias(value);
             if (v !== undefined) out.categorias = v;
+            continue;
+        }
+        if (key === "galleryImages") {
+            if (Array.isArray(value)) {
+                out.galleryImages = value
+                    .slice(0, GALLERY_MAX_IMAGES)
+                    .map(sanitizeGalleryImage)
+                    .filter((v): v is Record<string, any> => v !== null);
+            }
             continue;
         }
         // Unknown key → drop silencioso.

@@ -17,6 +17,17 @@ export interface HoraItem {
   horas: string;
 }
 
+export interface GalleryImage {
+  id: string;
+  src: string;
+  alt: string;
+  caption?: string;
+}
+
+/** Cap visible al cliente en la sección Galería del portal. Mismo número
+ * usado por el sanitizer del patch en `lib/onboarding-patch-schema.ts`. */
+export const GALLERY_MAX_IMAGES = 10;
+
 export type TipoCatalogo = "servicios" | "productos" | "menu";
 export type Completion = "empty" | "partial" | "complete";
 
@@ -39,6 +50,17 @@ export function newItem(): CatalogoItem {
 
 export function newHora(): HoraItem {
   return { dia: "", horas: "" };
+}
+
+export function newGalleryImage(): GalleryImage {
+  return {
+    id:
+      typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    src: "",
+    alt: "",
+  };
 }
 
 export function getSectionCompletion(key: string, d: any): Completion {
@@ -78,6 +100,17 @@ export function getSectionCompletion(key: string, d: any): Completion {
     case "legal": {
       const n = [d.legalTemplate, d.legalLastUpdated].filter(Boolean).length;
       return n === 2 ? "complete" : n > 0 ? "partial" : "empty";
+    }
+    case "galeria": {
+      // Solo contamos completion si el toggle está activo. Si está apagado,
+      // la sección no debería aparecer en el hub — pero por seguridad
+      // devolvemos "empty" para que `nextSection` no apunte a ella.
+      if (!d.galleryEnabled) return "empty";
+      const n = Array.isArray(d.galleryImages) ? d.galleryImages.length : 0;
+      if (n === 0) return "empty";
+      // 3+ imágenes ya se ve sólido en grilla. Antes de eso queda "partial"
+      // para empujar al cliente a llenar más.
+      return n >= 3 ? "complete" : "partial";
     }
     default:
       return "empty";

@@ -915,6 +915,29 @@ export async function deleteArchivo(id: string) {
   return res;
 }
 
+export async function deleteArchivoByUrl(url: string) {
+  const adminSession = await validateAdminSession();
+  const clienteSession = adminSession.valid ? null : await validateClienteSession();
+  if (!adminSession.valid && !clienteSession?.valid) {
+    return { success: false, error: "NO AUTORIZADO." };
+  }
+
+  const marker = "/object/public/archivos/";
+  const idx = url.indexOf(marker);
+  if (idx === -1) return { success: false, error: "URL DE ARCHIVO INVÁLIDA." };
+  const path = url.slice(idx + marker.length).split("?")[0];
+
+  const { error: storageError } = await supabaseAdmin.storage
+    .from("archivos")
+    .remove([path]);
+  if (storageError) {
+    console.error("[Storage] Error al eliminar archivo:", storageError.message);
+  }
+  await archivos.deleteByStoragePath(path);
+  revalidateProyecto();
+  return { success: true };
+}
+
 const CHAT_MAX_MESSAGES = 200;
 const CHAT_STORAGE_MARKER = "/object/public/archivos/";
 

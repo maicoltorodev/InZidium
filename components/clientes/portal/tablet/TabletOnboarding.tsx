@@ -19,6 +19,7 @@ import { UbicacionSection } from "../shared/sections/UbicacionSection";
 import { ContactoSection } from "../shared/sections/ContactoSection";
 import { RedesSection } from "../shared/sections/RedesSection";
 import { ColoresSection } from "../shared/sections/ColoresSection";
+import { GallerySection } from "../shared/sections/GallerySection";
 import { SupportFab } from "../shared/SupportFab";
 import { AjustesSection } from "../shared/sections/AjustesSection";
 
@@ -200,6 +201,14 @@ export function TabletOnboarding({
             {view === "digital" && <ContactoSection d={d} savePatch={savePatch} />}
             {view === "social" && <RedesSection d={d} savePatch={savePatch} />}
             {view === "colores" && <ColoresSection d={d} savePatch={savePatch} />}
+            {view === "galeria" && (
+              <GallerySection
+                d={d}
+                savePatch={savePatch}
+                projectId={project.id}
+                showToast={showToast}
+              />
+            )}
             {view === "ajustes" && (
               <AjustesSection
                 d={d}

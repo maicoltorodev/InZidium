@@ -1,11 +1,11 @@
 import {
   Zap, Users, ShoppingBag, MapPin, Mail, AtSign, Palette,
-  MessageSquare, Lock, SlidersHorizontal, Settings2,
+  MessageSquare, Lock, SlidersHorizontal, Settings2, Images,
 } from "lucide-react";
 
 export type SectionKey =
   | "inicio" | "nosotros" | "catalogo" | "contacto" | "digital"
-  | "social" | "colores" | "legal" | "avanzado" | "chat" | "ajustes";
+  | "social" | "colores" | "galeria" | "legal" | "avanzado" | "chat" | "ajustes";
 
 export type SectionMeta = {
   icon: React.ElementType;
@@ -71,6 +71,11 @@ export const SECTION_REGISTRY: Record<SectionKey, SectionMeta> = {
     title: "Colores",
     subtitle: "Define la paleta visual de tu sitio.",
   },
+  galeria: {
+    icon: Images,
+    title: "Galería",
+    subtitle: "Hasta 10 fotos del local, productos o momentos del negocio.",
+  },
   legal: {
     icon: Lock,
     title: "Legal",
@@ -99,7 +104,10 @@ export function getCatalogoSubtitle(tipoCatalogo?: string): string {
   return "Servicios que ofreces";
 }
 
-/** Listado de secciones scoreables en el hub (en orden). */
+/** Listado de secciones scoreables en el hub (en orden).
+ *
+ * `galeria` es **opcional** — solo se muestra si `data.galleryEnabled === true`.
+ * Los consumidores deben filtrar con `isHubSectionVisible(key, data)`. */
 export const HUB_SECTIONS: { key: SectionKey; icon: React.ElementType; label: string; subtitle: string }[] = [
   { key: "inicio",   icon: Zap,         label: "Inicio",         subtitle: "Nombre, slogan y logo" },
   { key: "nosotros", icon: Users,       label: "Nosotros",       subtitle: "Historia, misión y diferencial" },
@@ -108,4 +116,15 @@ export const HUB_SECTIONS: { key: SectionKey; icon: React.ElementType; label: st
   { key: "digital",  icon: Mail,        label: "Contacto",       subtitle: "WhatsApp, email y teléfono" },
   { key: "social",   icon: AtSign,      label: "Redes sociales", subtitle: "Instagram, TikTok y más" },
   { key: "colores",  icon: Palette,     label: "Colores",        subtitle: "Paleta visual de tu sitio" },
+  { key: "galeria",  icon: Images,      label: "Galería",        subtitle: "Fotos del local, productos o momentos" },
 ];
+
+/** Determina si una sección debe mostrarse en el hub para los datos actuales.
+ *
+ * Hoy solo `galeria` es condicional (toggle en Ajustes Avanzados). Si en el
+ * futuro otras secciones se vuelven opcionales, se agregan acá sin tocar los
+ * consumidores. */
+export function isHubSectionVisible(key: SectionKey, data: any): boolean {
+  if (key === "galeria") return data?.galleryEnabled === true;
+  return true;
+}
