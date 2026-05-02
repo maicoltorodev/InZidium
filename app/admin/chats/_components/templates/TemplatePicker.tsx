@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Check } from "lucide-react";
 import type { WhatsAppTemplate } from "@/lib/crm/actions/templates";
@@ -29,7 +29,7 @@ export function TemplatePicker({ templates, selected, onSelect }: Props) {
                         onClick={() => onSelect(t)}
                         className={`flex w-full items-start gap-3 rounded-xl border px-3 py-2 text-left transition ${
                             isSelected
-                                ? "border-[#FFD700]/40 bg-[#FFD700]/[0.06]"
+                                ? "border-[#22d3ee]/40 bg-[#22d3ee]/[0.06]"
                                 : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12] hover:bg-white/[0.04]"
                         }`}
                     >
@@ -50,7 +50,7 @@ export function TemplatePicker({ templates, selected, onSelect }: Props) {
                             </p>
                         </div>
                         {isSelected && (
-                            <Check className="h-4 w-4 shrink-0 text-[#FFD700]" />
+                            <Check className="h-4 w-4 shrink-0 text-[#22d3ee]" />
                         )}
                     </button>
                 );

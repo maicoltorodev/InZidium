@@ -41,14 +41,14 @@ export default function AdminMobileNav() {
                     <Menu className="h-5 w-5" />
                 </button>
 
-                <Link href="/admin/chats" className="flex items-center" aria-label="Nexus Admin">
+                <Link href="/admin/chats" className="flex items-center" aria-label="InZidium Admin">
                     <Image
-                        src="/nexus-solo.webp"
-                        alt="Nexus"
+                        src="/logo.webp"
+                        alt="InZidium"
                         width={157}
                         height={32}
                         className="h-8 w-auto object-contain"
-                        style={{ filter: 'drop-shadow(0 0 8px rgba(255,215,0,0.35))' }}
+                        style={{ filter: 'drop-shadow(0 0 8px rgba(34,211,238,0.35))' }}
                         priority
                     />
                 </Link>
@@ -64,14 +64,14 @@ export default function AdminMobileNav() {
                         <Drawer.Description className="sr-only">Navegación del panel de administración</Drawer.Description>
 
                         <div className="flex items-center justify-between p-6">
-                            <Link href="/admin/chats" onClick={closeDrawer} className="flex items-center" aria-label="Nexus Admin">
+                            <Link href="/admin/chats" onClick={closeDrawer} className="flex items-center" aria-label="InZidium Admin">
                                 <Image
-                                    src="/nexus-solo.webp"
-                                    alt="Nexus"
+                                    src="/logo.webp"
+                                    alt="InZidium"
                                     width={196}
                                     height={40}
                                     className="h-10 w-auto object-contain"
-                                    style={{ filter: 'drop-shadow(0 0 10px rgba(255,215,0,0.35))' }}
+                                    style={{ filter: 'drop-shadow(0 0 10px rgba(34,211,238,0.35))' }}
                                     priority
                                 />
                             </Link>
@@ -238,18 +238,18 @@ function MobileLink({ icon: Icon, label, href, active, onNavigate }: MobileLinkP
             onClick={onNavigate}
             className={`relative flex items-center gap-4 overflow-hidden rounded-2xl px-5 py-3.5 transition ${
                 active
-                    ? 'bg-gradient-to-r from-[#FFD700]/10 via-[#ffffff]/5 to-transparent text-white'
+                    ? 'bg-gradient-to-r from-[#22d3ee]/10 via-[#a855f7]/5 to-transparent text-white'
                     : 'text-gray-400 hover:bg-white/5 hover:text-white'
             }`}
         >
             {active && (
-                <div className="absolute inset-y-0 left-0 w-[2px] bg-gradient-to-b from-[#FFD700] to-[#ffffff]" />
+                <div className="absolute inset-y-0 left-0 w-[2px] bg-gradient-to-b from-[#22d3ee] to-[#a855f7]" />
             )}
             <Icon
                 className="h-5 w-5"
                 style={{
-                    color: active ? '#FFD700' : undefined,
-                    filter: active ? 'drop-shadow(0 0 6px rgba(255,215,0,0.5))' : undefined,
+                    color: active ? '#22d3ee' : undefined,
+                    filter: active ? 'drop-shadow(0 0 6px rgba(34,211,238,0.5))' : undefined,
                 }}
             />
             <span className="text-sm font-bold tracking-wide">{label}</span>
@@ -269,11 +269,11 @@ function MobileSubLink({ icon: Icon, label, href, active, onNavigate }: MobileLi
             }`}
         >
             {active && (
-                <div className="absolute inset-y-1.5 left-0 w-[2px] rounded-full bg-gradient-to-b from-[#FFD700] to-[#ffffff]" />
+                <div className="absolute inset-y-1.5 left-0 w-[2px] rounded-full bg-gradient-to-b from-[#22d3ee] to-[#a855f7]" />
             )}
             <Icon
                 className="h-4 w-4"
-                style={{ color: active ? '#FFD700' : undefined }}
+                style={{ color: active ? '#22d3ee' : undefined }}
             />
             <span className="text-xs font-semibold tracking-wide">{label}</span>
         </Link>

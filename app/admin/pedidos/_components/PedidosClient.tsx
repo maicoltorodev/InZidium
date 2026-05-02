@@ -98,7 +98,7 @@ export function PedidosClient() {
                     <div>
                         <div className="mb-3 flex items-center gap-3">
                             <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.03]">
-                                <ShoppingBag className="h-5 w-5" style={{ color: "#FFD700" }} />
+                                <ShoppingBag className="h-5 w-5" style={{ color: "#22d3ee" }} />
                             </div>
                             <h1 className="text-3xl font-black tracking-tight text-white font-[family-name:var(--font-jost)]">
                                 Pedidos
@@ -111,7 +111,7 @@ export function PedidosClient() {
                     <button
                         onClick={() => setCreateOpen(true)}
                         className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black uppercase tracking-widest text-black transition active:scale-95"
-                        style={{ background: "linear-gradient(135deg, #FFD700, #ffffff, #FFD700)" }}
+                        style={{ background: "linear-gradient(135deg, #22d3ee, #ffffff, #22d3ee)" }}
                     >
                         <Plus className="h-4 w-4" />
                         Nuevo pedido
@@ -146,7 +146,7 @@ export function PedidosClient() {
                     </div>
 
                     <div className="flex-1 lg:ml-auto lg:max-w-md">
-                        <div className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-2.5 focus-within:border-[#FFD700]/40">
+                        <div className="flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-2.5 focus-within:border-[#22d3ee]/40">
                             <Search className="h-4 w-4 text-gray-600" />
                             <input
                                 value={search}
@@ -227,7 +227,7 @@ function FilterPill({
             onClick={onClick}
             className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition ${
                 active
-                    ? "border-[#FFD700]/30 bg-[#FFD700]/[0.08] text-[#FFD700]"
+                    ? "border-[#22d3ee]/30 bg-[#22d3ee]/[0.08] text-[#22d3ee]"
                     : "border-white/[0.06] bg-white/[0.02] text-gray-500 hover:border-white/[0.12] hover:text-gray-300"
             }`}
             style={active && color ? { color, borderColor: `${color}4d`, backgroundColor: `${color}1a` } : undefined}

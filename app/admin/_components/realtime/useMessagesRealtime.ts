@@ -73,7 +73,8 @@ export function useMessagesRealtime(conversationId: string | null) {
     useEffect(
         () =>
             onTable<ContactMedia>("contact_media", async (e) => {
-                if (e.eventType === "INSERT" || e.eventType === "UPDATE") {
+                if (e.eventType !== "INSERT" && e.eventType !== "UPDATE") return;
+                try {
                     const media = e.new;
                     if (!media.wa_message_id) return;
                     const signed = await refreshMediaUrl(media.id);
@@ -89,6 +90,8 @@ export function useMessagesRealtime(conversationId: string | null) {
                                 : m,
                         ),
                     );
+                } catch (err) {
+                    console.error("[useMessagesRealtime] contact_media enrich error", err);
                 }
             }),
         [onTable],

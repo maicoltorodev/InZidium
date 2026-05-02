@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -129,7 +129,7 @@ export function PedidoDetailModal({
                                 {order.contact?.phone && (
                                     <a
                                         href={`/admin/chats`}
-                                        className="mt-1 inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 transition hover:text-[#FFD700]"
+                                        className="mt-1 inline-flex items-center gap-1.5 text-xs font-medium text-gray-500 transition hover:text-[#22d3ee]"
                                     >
                                         <Phone className="h-3 w-3" />
                                         {order.contact.phone}
@@ -193,7 +193,7 @@ export function PedidoDetailModal({
                                                 <div className="min-w-0 flex-1">
                                                     <div className="flex items-baseline gap-2">
                                                         {it.quantity && (
-                                                            <span className="text-xs font-black text-[#FFD700]">
+                                                            <span className="text-xs font-black text-[#22d3ee]">
                                                                 {it.quantity}×
                                                             </span>
                                                         )}
@@ -232,7 +232,7 @@ export function PedidoDetailModal({
                                     }
                                     placeholder="0"
                                     inputMode="decimal"
-                                    className="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 text-sm font-bold text-white placeholder:text-gray-600 focus:border-[#FFD700]/40 focus:outline-none"
+                                    className="w-full rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 text-sm font-bold text-white placeholder:text-gray-600 focus:border-[#22d3ee]/40 focus:outline-none"
                                 />
                             </section>
 
@@ -244,7 +244,7 @@ export function PedidoDetailModal({
                                     onChange={(e) => setNotes(e.target.value)}
                                     rows={4}
                                     placeholder="Urgencia, dirección de envío, detalles adicionales…"
-                                    className="w-full resize-none rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:border-[#FFD700]/40 focus:outline-none"
+                                    className="w-full resize-none rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:border-[#22d3ee]/40 focus:outline-none"
                                 />
                             </section>
 
@@ -302,7 +302,7 @@ export function PedidoDetailModal({
                                 <button
                                     onClick={handleSave}
                                     disabled={saving}
-                                    className="rounded-xl bg-[#FFD700] px-6 py-2.5 text-xs font-black uppercase tracking-widest text-black transition hover:bg-[#FFD700]/90 disabled:opacity-50"
+                                    className="rounded-xl bg-[#22d3ee] px-6 py-2.5 text-xs font-black uppercase tracking-widest text-black transition hover:bg-[#22d3ee]/90 disabled:opacity-50"
                                 >
                                     {saving ? "Guardando…" : "Guardar"}
                                 </button>
@@ -325,7 +325,7 @@ function SectionLabel({
 }) {
     return (
         <div className="mb-3 flex items-center gap-2">
-            <Icon className="h-3.5 w-3.5" style={{ color: "#FFD700" }} />
+            <Icon className="h-3.5 w-3.5" style={{ color: "#22d3ee" }} />
             <span className="text-xs font-black uppercase tracking-[0.25em] text-gray-400">
                 {children}
             </span>

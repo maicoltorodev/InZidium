@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import type { MessageReaction } from "@/lib/crm/types";
 
@@ -28,7 +28,7 @@ export function Reactions({ reactions, align }: Props) {
                         title={tooltip}
                         className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] backdrop-blur-sm ${
                             isBusiness
-                                ? "border-[#FFD700]/25 bg-[#FFD700]/[0.06]"
+                                ? "border-[#22d3ee]/25 bg-[#22d3ee]/[0.06]"
                                 : "border-white/[0.08] bg-[#0a0a0a]/80"
                         }`}
                         style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.35)" }}

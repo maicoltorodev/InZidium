@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { FileText, Download } from "lucide-react";
 import type { ContactMedia } from "@/lib/crm/types";
@@ -20,9 +20,9 @@ export function DocumentContent({ media, caption }: Props) {
                 download={filename}
                 className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2.5 transition hover:border-white/[0.15] hover:bg-white/[0.05]"
             >
-                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#FFD700]/10">
-                    <FileText className="h-5 w-5 text-[#FFD700]" />
-                    <span className="absolute -bottom-1 right-0 rounded bg-[#FFD700] px-1 text-[8px] font-black tabular-nums text-black">
+                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#22d3ee]/10">
+                    <FileText className="h-5 w-5 text-[#22d3ee]" />
+                    <span className="absolute -bottom-1 right-0 rounded bg-[#22d3ee] px-1 text-[8px] font-black tabular-nums text-black">
                         {ext.slice(0, 4)}
                     </span>
                 </div>

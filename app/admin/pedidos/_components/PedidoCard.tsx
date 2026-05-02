@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import type { OrderWithContact } from "@/lib/crm/types";
 import { Bot, User } from "lucide-react";
@@ -23,7 +23,7 @@ export function PedidoCard({ order, onClick }: Props) {
     return (
         <button
             onClick={onClick}
-            className="group relative w-full overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 text-left transition hover:border-[#FFD700]/20 hover:bg-white/[0.04] hover:shadow-[0_0_20px_rgba(255,215,0,0.08)]"
+            className="group relative w-full overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 text-left transition hover:border-[#22d3ee]/20 hover:bg-white/[0.04] hover:shadow-[0_0_20px_rgba(34,211,238,0.08)]"
         >
             <div className="mb-3 flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
@@ -45,7 +45,7 @@ export function PedidoCard({ order, onClick }: Props) {
                 <div className="flex items-center gap-2 text-xs font-medium text-gray-600">
                     {createdByAI ? (
                         <>
-                            <Bot className="h-3 w-3" style={{ color: "#FFD700" }} />
+                            <Bot className="h-3 w-3" style={{ color: "#22d3ee" }} />
                             <span>Creado por IA</span>
                         </>
                     ) : (
@@ -58,7 +58,7 @@ export function PedidoCard({ order, onClick }: Props) {
                     <span>{formatRelative(new Date(order.created_at))}</span>
                 </div>
                 {order.total !== null && order.total !== undefined && (
-                    <span className="shrink-0 rounded-full border border-[#FFD700]/20 bg-[#FFD700]/5 px-3 py-1 text-xs font-black tracking-wide text-[#FFD700]">
+                    <span className="shrink-0 rounded-full border border-[#22d3ee]/20 bg-[#22d3ee]/5 px-3 py-1 text-xs font-black tracking-wide text-[#22d3ee]">
                         {COP.format(order.total)}
                     </span>
                 )}

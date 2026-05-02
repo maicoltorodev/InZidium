@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { MessageSquare, Sparkles, Bot, Zap, Radio } from "lucide-react";
 import { motion } from "framer-motion";
@@ -10,7 +10,7 @@ export function ChatsEmptyState() {
                 <div
                     className="absolute inset-0 rounded-[2rem] blur-2xl opacity-50"
                     style={{
-                        background: "linear-gradient(135deg, #FFD700, #ffffff, #FFD700)",
+                        background: "linear-gradient(135deg, #22d3ee, #ffffff, #22d3ee)",
                     }}
                 />
                 <motion.div
@@ -22,7 +22,7 @@ export function ChatsEmptyState() {
                 </motion.div>
             </div>
 
-            <div className="flex items-center justify-center gap-3 mb-4 text-[#FFD700]">
+            <div className="flex items-center justify-center gap-3 mb-4 text-[#22d3ee]">
                 <Sparkles className="h-4 w-4 animate-pulse" />
                 <span className="text-[10px] font-black uppercase tracking-[0.4em] font-[family-name:var(--font-orbitron)]">
                     Centro de chats
@@ -35,7 +35,7 @@ export function ChatsEmptyState() {
                     className="bg-clip-text text-transparent bg-[length:200%_auto]"
                     style={{
                         backgroundImage:
-                            "linear-gradient(90deg, #FFD700, #ffffff, #FFD700, #ffffff, #FFD700)",
+                            "linear-gradient(90deg, #22d3ee, #ffffff, #22d3ee, #ffffff, #22d3ee)",
                         animation: "gradient 4s linear infinite",
                     }}
                 >
@@ -51,13 +51,13 @@ export function ChatsEmptyState() {
             <div className="space-y-2.5">
                 <Tip
                     icon={<Zap className="h-4 w-4" />}
-                    accent="#FFD700"
+                    accent="#22d3ee"
                     title="IA en tiempo real"
                     body="Izzy responde automáticamente cuando está activa. Toma control desde el toggle del chat cuando quieras."
                 />
                 <Tip
                     icon={<Bot className="h-4 w-4" />}
-                    accent="#FFD700"
+                    accent="#22d3ee"
                     title="Filtros inteligentes"
                     body="Filtra por estado de IA, busca por nombre o teléfono."
                 />

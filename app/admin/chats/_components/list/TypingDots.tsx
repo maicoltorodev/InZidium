@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 
@@ -9,7 +9,7 @@ type Props = { by: "ai" | "human" };
  * Reemplaza el preview cuando hay typing activo en esa conversación.
  */
 export function TypingDots({ by }: Props) {
-    const color = by === "ai" ? "#FFD700" : "#ffffff";
+    const color = by === "ai" ? "#22d3ee" : "#ffffff";
     const label = by === "ai" ? "Izzy escribiendo" : "Escribiendo";
     return (
         <span className="inline-flex items-center gap-1.5">

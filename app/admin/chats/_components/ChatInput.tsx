@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRef, useState } from "react";
 import { Send, Loader2 } from "lucide-react";
@@ -77,7 +77,7 @@ export function ChatInput({ onSend, onSendMedia, replyingTo, onCancelReply }: Pr
             )}
 
             <div
-                className="group flex items-end gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.025] px-4 py-3 transition-all focus-within:border-[#FFD700]/40 focus-within:bg-white/[0.04] focus-within:shadow-[0_0_30px_rgba(255,215,0,0.08)]"
+                className="group flex items-end gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.025] px-4 py-3 transition-all focus-within:border-[#22d3ee]/40 focus-within:bg-white/[0.04] focus-within:shadow-[0_0_30px_rgba(34,211,238,0.08)]"
                 style={{ backdropFilter: "blur(8px)" }}
             >
                 <AttachButton disabled={sending || !!file} onPick={setFile} />
@@ -106,7 +106,7 @@ export function ChatInput({ onSend, onSendMedia, replyingTo, onCancelReply }: Pr
                         className="absolute inset-0"
                         style={{
                             background:
-                                "linear-gradient(135deg, #FFD700, #ffffff, #FFD700)",
+                                "linear-gradient(135deg, #22d3ee, #ffffff, #22d3ee)",
                         }}
                     />
                     {canSend && (

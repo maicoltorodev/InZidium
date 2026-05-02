@@ -36,7 +36,10 @@ export function useGlobalTyping() {
 
                 // Stale protection: si el bot no apaga, lo limpiamos solos
                 const existing = staleTimers.current.get(convId);
-                if (existing) clearTimeout(existing);
+                if (existing) {
+                    clearTimeout(existing);
+                    staleTimers.current.delete(convId);
+                }
                 if (isTyping) {
                     const t = setTimeout(() => {
                         setTypingMap((prev) => {

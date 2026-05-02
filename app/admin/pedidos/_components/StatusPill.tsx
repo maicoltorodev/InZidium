@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import type { OrderStatus } from "@/lib/crm/types";
 import {
@@ -15,9 +15,9 @@ export const STATUS_META: Record<
 > = {
     new: {
         label: "Nuevo",
-        color: "#FFD700",
-        bg: "rgba(255,215,0,0.08)",
-        border: "rgba(255,215,0,0.3)",
+        color: "#22d3ee",
+        bg: "rgba(34,211,238,0.08)",
+        border: "rgba(34,211,238,0.3)",
         Icon: Sparkles,
     },
     in_production: {
@@ -36,9 +36,9 @@ export const STATUS_META: Record<
     },
     paid: {
         label: "Pagado",
-        color: "#FFD700",
-        bg: "rgba(255,215,0,0.1)",
-        border: "rgba(255,215,0,0.4)",
+        color: "#22d3ee",
+        bg: "rgba(34,211,238,0.1)",
+        border: "rgba(34,211,238,0.4)",
         Icon: CheckCircle2,
     },
     cancelled: {

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { Play, Pause, Mic } from "lucide-react";
@@ -49,7 +49,7 @@ export function AudioContent({ media, isVoice }: Props) {
         <div className="flex items-center gap-3 rounded-xl bg-white/[0.04] px-3 py-2.5 min-w-[240px]">
             <button
                 onClick={toggle}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#FFD700]/15 text-[#FFD700] transition hover:bg-[#FFD700]/25"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#22d3ee]/15 text-[#22d3ee] transition hover:bg-[#22d3ee]/25"
                 aria-label={playing ? "Pausar" : "Reproducir"}
             >
                 {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 ml-0.5" />}
@@ -59,7 +59,7 @@ export function AudioContent({ media, isVoice }: Props) {
                     {isVoice && <Mic className="h-3 w-3 text-gray-500" />}
                     <div className="h-1 w-full overflow-hidden rounded-full bg-white/10">
                         <div
-                            className="h-full rounded-full bg-gradient-to-r from-[#FFD700] to-white transition-all"
+                            className="h-full rounded-full bg-gradient-to-r from-[#22d3ee] to-white transition-all"
                             style={{ width: `${pct}%` }}
                         />
                     </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -96,7 +96,7 @@ export function SendTemplateModal({ open, onClose, conversationId, onSent }: Pro
                     <ModalHeader onClose={onClose} />
 
                     <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-                        <Section label="Plantilla" icon={<Sparkles className="h-3 w-3 text-[#FFD700]" />}>
+                        <Section label="Plantilla" icon={<Sparkles className="h-3 w-3 text-[#22d3ee]" />}>
                             {loading ? (
                                 <div className="flex items-center justify-center py-6">
                                     <Loader2 className="h-5 w-5 animate-spin text-gray-500" />
@@ -114,7 +114,7 @@ export function SendTemplateModal({ open, onClose, conversationId, onSent }: Pro
                             <>
                                 <Section
                                     label="Parámetros"
-                                    icon={<Sparkles className="h-3 w-3 text-[#FFD700]" />}
+                                    icon={<Sparkles className="h-3 w-3 text-[#22d3ee]" />}
                                 >
                                     <TemplateParameters
                                         template={selected}
@@ -125,7 +125,7 @@ export function SendTemplateModal({ open, onClose, conversationId, onSent }: Pro
 
                                 <Section
                                     label="Preview"
-                                    icon={<Sparkles className="h-3 w-3 text-[#FFD700]" />}
+                                    icon={<Sparkles className="h-3 w-3 text-[#22d3ee]" />}
                                 >
                                     <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
                                         <p className="whitespace-pre-wrap text-sm text-gray-200">
@@ -161,7 +161,7 @@ function ModalHeader({ onClose }: { onClose: () => void }) {
         <div className="flex items-center justify-between border-b border-white/[0.05] px-6 py-4">
             <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03]">
-                    <FileCode2 className="h-5 w-5 text-[#FFD700]" />
+                    <FileCode2 className="h-5 w-5 text-[#22d3ee]" />
                 </div>
                 <div>
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 font-[family-name:var(--font-orbitron)]">
@@ -227,7 +227,7 @@ function ModalFooter({
                 onClick={onSend}
                 disabled={!canSend}
                 className="relative inline-flex items-center gap-2 overflow-hidden rounded-xl px-5 py-2 text-xs font-black uppercase tracking-widest text-black transition disabled:cursor-not-allowed disabled:opacity-40"
-                style={{ background: "linear-gradient(135deg, #FFD700, #ffffff, #FFD700)" }}
+                style={{ background: "linear-gradient(135deg, #22d3ee, #ffffff, #22d3ee)" }}
             >
                 {sending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Enviar"}
             </button>

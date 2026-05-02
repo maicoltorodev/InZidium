@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -121,7 +121,7 @@ export function ChatsClient() {
                 className="pointer-events-none absolute inset-0 -z-10 opacity-60"
                 style={{
                     background:
-                        "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255,255,255,0.15), transparent), radial-gradient(ellipse 60% 50% at 100% 100%, rgba(255,215,0,0.10), transparent)",
+                        "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255,255,255,0.15), transparent), radial-gradient(ellipse 60% 50% at 100% 100%, rgba(34,211,238,0.10), transparent)",
                 }}
             />
 

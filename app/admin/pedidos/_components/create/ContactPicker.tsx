@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { Search, User, Loader2, Check } from "lucide-react";
@@ -35,9 +35,9 @@ export function ContactPicker({ selected, onSelect }: Props) {
 
     if (selected) {
         return (
-            <div className="flex items-center gap-3 rounded-xl border border-[#FFD700]/30 bg-[#FFD700]/[0.06] px-3 py-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#FFD700]/10">
-                    <User className="h-4 w-4 text-[#FFD700]" />
+            <div className="flex items-center gap-3 rounded-xl border border-[#22d3ee]/30 bg-[#22d3ee]/[0.06] px-3 py-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#22d3ee]/10">
+                    <User className="h-4 w-4 text-[#22d3ee]" />
                 </div>
                 <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-bold text-white">
@@ -57,7 +57,7 @@ export function ContactPicker({ selected, onSelect }: Props) {
 
     return (
         <div className="relative">
-            <div className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2.5 focus-within:border-[#FFD700]/40">
+            <div className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2.5 focus-within:border-[#22d3ee]/40">
                 <Search className="h-4 w-4 text-gray-500" />
                 <input
                     value={query}

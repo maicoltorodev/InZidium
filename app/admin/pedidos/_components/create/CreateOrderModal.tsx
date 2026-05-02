@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -92,15 +92,15 @@ export function CreateOrderModal({ open, onClose, onCreated }: Props) {
                     <Header onClose={onClose} />
 
                     <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-                        <Section label="Cliente" icon={<Sparkles className="h-3 w-3 text-[#FFD700]" />}>
+                        <Section label="Cliente" icon={<Sparkles className="h-3 w-3 text-[#22d3ee]" />}>
                             <ContactPicker selected={contact} onSelect={setContact} />
                         </Section>
 
-                        <Section label="Ítems" icon={<Sparkles className="h-3 w-3 text-[#FFD700]" />}>
+                        <Section label="Ítems" icon={<Sparkles className="h-3 w-3 text-[#22d3ee]" />}>
                             <ItemEditor items={items} onChange={setItems} />
                         </Section>
 
-                        <Section label="Total" icon={<Sparkles className="h-3 w-3 text-[#FFD700]" />}>
+                        <Section label="Total" icon={<Sparkles className="h-3 w-3 text-[#22d3ee]" />}>
                             <div className="flex items-center gap-3">
                                 <input
                                     type="number"
@@ -109,7 +109,7 @@ export function CreateOrderModal({ open, onClose, onCreated }: Props) {
                                     value={totalOverride}
                                     onChange={(e) => setTotalOverride(e.target.value)}
                                     placeholder={String(computedTotal)}
-                                    className="flex-1 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-sm text-white placeholder:text-gray-600 focus:border-[#FFD700]/40 focus:outline-none"
+                                    className="flex-1 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-sm text-white placeholder:text-gray-600 focus:border-[#22d3ee]/40 focus:outline-none"
                                 />
                                 <span className="font-mono text-[10px] uppercase tracking-widest text-gray-500">
                                     Auto: ${computedTotal.toLocaleString("es-CO")}
@@ -117,13 +117,13 @@ export function CreateOrderModal({ open, onClose, onCreated }: Props) {
                             </div>
                         </Section>
 
-                        <Section label="Notas" icon={<Sparkles className="h-3 w-3 text-[#FFD700]" />}>
+                        <Section label="Notas" icon={<Sparkles className="h-3 w-3 text-[#22d3ee]" />}>
                             <textarea
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
                                 rows={3}
                                 placeholder="Notas internas (entrega, urgencia, requisitos especiales…)"
-                                className="w-full resize-none rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-sm text-white placeholder:text-gray-600 focus:border-[#FFD700]/40 focus:outline-none"
+                                className="w-full resize-none rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2 text-sm text-white placeholder:text-gray-600 focus:border-[#22d3ee]/40 focus:outline-none"
                             />
                         </Section>
 
@@ -152,7 +152,7 @@ function Header({ onClose }: { onClose: () => void }) {
         <div className="flex items-center justify-between border-b border-white/[0.05] px-6 py-4">
             <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03]">
-                    <ShoppingBag className="h-5 w-5 text-[#FFD700]" />
+                    <ShoppingBag className="h-5 w-5 text-[#22d3ee]" />
                 </div>
                 <div>
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 font-[family-name:var(--font-orbitron)]">
@@ -219,7 +219,7 @@ function Footer({
                 disabled={!canSave || saving}
                 className="relative inline-flex items-center gap-2 overflow-hidden rounded-xl px-5 py-2 text-xs font-black uppercase tracking-widest text-black transition disabled:cursor-not-allowed disabled:opacity-40"
                 style={{
-                    background: "linear-gradient(135deg, #FFD700, #ffffff, #FFD700)",
+                    background: "linear-gradient(135deg, #22d3ee, #ffffff, #22d3ee)",
                 }}
             >
                 {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Crear"}

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect } from "react";
 import { motion } from "framer-motion";
@@ -36,20 +36,20 @@ export function NotificationToast({ toast, onClick, onDismiss, autoDismissMs = 6
         >
             <div
                 className="group relative flex items-start gap-3 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0a0a0a]/95 p-3 shadow-2xl backdrop-blur-xl"
-                style={{ boxShadow: "0 12px 48px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,215,0,0.08)" }}
+                style={{ boxShadow: "0 12px 48px rgba(0,0,0,0.55), 0 0 0 1px rgba(34,211,238,0.08)" }}
             >
                 {/* Glow ambiente */}
                 <div
                     className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full blur-2xl opacity-30"
-                    style={{ background: "radial-gradient(circle, #FFD700, transparent)" }}
+                    style={{ background: "radial-gradient(circle, #22d3ee, transparent)" }}
                 />
 
                 <button
                     onClick={onClick}
                     className="relative flex flex-1 items-start gap-3 text-left"
                 >
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#FFD700]/30 bg-[#FFD700]/10">
-                        <MessageSquare className="h-4 w-4 text-[#FFD700]" />
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#22d3ee]/30 bg-[#22d3ee]/10">
+                        <MessageSquare className="h-4 w-4 text-[#22d3ee]" />
                     </div>
                     <div className="min-w-0 flex-1">
                         <div className="flex items-baseline justify-between gap-2">
@@ -81,7 +81,7 @@ export function NotificationToast({ toast, onClick, onDismiss, autoDismissMs = 6
                     animate={{ scaleX: 0 }}
                     transition={{ duration: autoDismissMs / 1000, ease: "linear" }}
                     style={{
-                        background: "linear-gradient(90deg, #FFD700, #ffffff)",
+                        background: "linear-gradient(90deg, #22d3ee, #ffffff)",
                         transformOrigin: "left",
                     }}
                     className="absolute inset-x-0 bottom-0 h-[2px] opacity-50"

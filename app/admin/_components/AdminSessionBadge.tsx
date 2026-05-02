@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useSession } from "next-auth/react";
 import { UserCircle2 } from "lucide-react";
@@ -23,10 +23,10 @@ export function AdminSessionBadge() {
             title={`Sesión activa: ${username}`}
         >
             <div
-                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#FFD700]/30 bg-[#FFD700]/10"
-                style={{ boxShadow: "0 0 12px rgba(255,215,0,0.15)" }}
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#22d3ee]/30 bg-[#22d3ee]/10"
+                style={{ boxShadow: "0 0 12px rgba(34,211,238,0.15)" }}
             >
-                <UserCircle2 className="h-4 w-4 text-[#FFD700]" />
+                <UserCircle2 className="h-4 w-4 text-[#22d3ee]" />
             </div>
             <div className="min-w-0 flex-1">
                 <p className="text-[9px] font-black uppercase tracking-[0.25em] text-gray-500 leading-none mb-0.5">

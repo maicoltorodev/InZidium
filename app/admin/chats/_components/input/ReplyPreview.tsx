@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { X, Reply } from "lucide-react";
 import type { Message, MessageRole, WaMessageType } from "@/lib/crm/types";
@@ -34,10 +34,10 @@ export function ReplyPreview({ message, onCancel }: Props) {
     const { role, wa_type, content } = message;
     const text = content?.trim() || (wa_type !== "text" ? TYPE_LABEL[wa_type] : "(sin contenido)");
     return (
-        <div className="flex items-start gap-2 rounded-xl border-l-2 border-[#FFD700]/60 bg-white/[0.04] px-3 py-2">
-            <Reply className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#FFD700]" />
+        <div className="flex items-start gap-2 rounded-xl border-l-2 border-[#22d3ee]/60 bg-white/[0.04] px-3 py-2">
+            <Reply className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#22d3ee]" />
             <div className="min-w-0 flex-1">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-[#FFD700]">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-[#22d3ee]">
                     Respondiendo a {ROLE_LABEL[role]}
                 </p>
                 <p className="mt-0.5 line-clamp-2 text-xs text-gray-400">{text}</p>

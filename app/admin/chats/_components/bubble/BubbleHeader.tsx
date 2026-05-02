@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Bot, User, FileCode2 } from "lucide-react";
 import type { MessageRole, WaMessageType } from "@/lib/crm/types";
@@ -26,19 +26,19 @@ export function BubbleHeader({ role, waType, createdBy, currentUser }: Props) {
     return (
         <div className="mb-1 flex items-center justify-end gap-1.5 px-1">
             {isAi ? (
-                <Bot className="h-3 w-3 text-[#FFD700]" />
+                <Bot className="h-3 w-3 text-[#22d3ee]" />
             ) : (
                 <User className="h-3 w-3 text-white" />
             )}
             <span
                 className="text-[9px] font-black uppercase tracking-[0.25em] font-[family-name:var(--font-orbitron)]"
-                style={{ color: isAi ? "#FFD700" : "#ffffff" }}
+                style={{ color: isAi ? "#22d3ee" : "#ffffff" }}
                 title={!isAi && createdBy ? `Enviado por ${createdBy}` : undefined}
             >
                 {label}
             </span>
             {isTemplate && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-[#FFD700]/30 bg-[#FFD700]/[0.08] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-[#FFD700]">
+                <span className="inline-flex items-center gap-1 rounded-full border border-[#22d3ee]/30 bg-[#22d3ee]/[0.08] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-[#22d3ee]">
                     <FileCode2 className="h-2.5 w-2.5" />
                     Plantilla
                 </span>

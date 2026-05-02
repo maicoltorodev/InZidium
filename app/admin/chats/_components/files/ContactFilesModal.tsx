@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -51,7 +51,7 @@ export function ContactFilesModal({ open, onClose, contactId, contactName }: Pro
                     <div className="flex items-center justify-between border-b border-white/[0.05] px-6 py-4">
                         <div className="flex items-center gap-3">
                             <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03]">
-                                <FolderOpen className="h-5 w-5 text-[#FFD700]" />
+                                <FolderOpen className="h-5 w-5 text-[#22d3ee]" />
                             </div>
                             <div className="min-w-0">
                                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 font-[family-name:var(--font-orbitron)]">

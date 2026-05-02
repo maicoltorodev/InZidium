@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import type { Message } from "@/lib/crm/types";
 import { BubbleContainer } from "./BubbleContainer";
@@ -62,7 +62,7 @@ export function MessageBubble({
             <div
                 className={`relative max-w-[75%] min-w-0 transition ${
                     isCurrentSearchMatch
-                        ? "ring-2 ring-[#FFD700]/60 ring-offset-2 ring-offset-[#0a0a0a] rounded-2xl"
+                        ? "ring-2 ring-[#22d3ee]/60 ring-offset-2 ring-offset-[#0a0a0a] rounded-2xl"
                         : ""
                 }`}
             >

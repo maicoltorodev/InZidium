@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { X, Image as ImageIcon, Music, Video, FileText } from "lucide-react";
@@ -31,8 +31,8 @@ export function FilePreview({ file, onRemove, sending }: Props) {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={previewUrl} alt="preview" className="h-12 w-12 rounded-lg object-cover" />
             ) : (
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#FFD700]/10">
-                    <Icon className="h-5 w-5 text-[#FFD700]" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#22d3ee]/10">
+                    <Icon className="h-5 w-5 text-[#22d3ee]" />
                 </div>
             )}
             <div className="min-w-0 flex-1">

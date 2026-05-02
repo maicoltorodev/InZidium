@@ -1,4 +1,4 @@
-import {
+﻿import {
     Bot,
     BotOff,
     UserCheck,
@@ -41,7 +41,7 @@ export const EVENT_DESCRIPTORS: Record<EventType, Descriptor> = {
     },
     "message.template_sent": {
         icon: FileCode2,
-        color: "#FFD700",
+        color: "#22d3ee",
         label: "Plantilla",
         describe: (e) => {
             const name = (e.payload as any)?.template_name ?? "(sin nombre)";
@@ -51,7 +51,7 @@ export const EVENT_DESCRIPTORS: Record<EventType, Descriptor> = {
     },
     "ai.toggled": {
         icon: Bot,
-        color: "#FFD700",
+        color: "#22d3ee",
         label: "IA",
         describe: (e) => {
             const enabled = (e.payload as any)?.enabled;
@@ -78,7 +78,7 @@ export const EVENT_DESCRIPTORS: Record<EventType, Descriptor> = {
     },
     "order.created": {
         icon: ShoppingBag,
-        color: "#FFD700",
+        color: "#22d3ee",
         label: "Pedido creado",
         describe: (e) => {
             const items = (e.payload as any)?.items_count ?? "?";

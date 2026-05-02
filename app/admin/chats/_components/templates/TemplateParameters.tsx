@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import type { WhatsAppTemplate } from "@/lib/crm/actions/templates";
 import { countTemplateParams } from "./renderTemplate";
@@ -36,7 +36,7 @@ export function TemplateParameters({ template, params, onChange }: Props) {
                         value={params[i] ?? ""}
                         onChange={(e) => update(i, e.target.value)}
                         placeholder={`Parámetro ${i + 1}`}
-                        className="flex-1 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-sm text-white placeholder:text-gray-600 focus:border-[#FFD700]/40 focus:outline-none"
+                        className="flex-1 rounded-lg border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-sm text-white placeholder:text-gray-600 focus:border-[#22d3ee]/40 focus:outline-none"
                     />
                 </div>
             ))}

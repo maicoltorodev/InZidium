@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 import { Image as ImageIcon, Music, Video, FileText, Mic, Loader2, FolderOpen } from "lucide-react";
@@ -155,7 +155,7 @@ function FilterPill({
             onClick={onClick}
             className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-bold tabular-nums transition ${
                 active
-                    ? "bg-[#FFD700]/12 text-[#FFD700]"
+                    ? "bg-[#22d3ee]/12 text-[#22d3ee]"
                     : "text-gray-500 hover:bg-white/[0.04] hover:text-gray-300"
             }`}
         >
@@ -234,7 +234,7 @@ function FileTile({
             rel="noreferrer noopener"
             className="flex aspect-square flex-col items-center justify-center gap-1.5 rounded-lg bg-white/[0.03] p-2 text-center transition hover:bg-white/[0.06]"
         >
-            <Icon className="h-5 w-5 text-[#FFD700]" />
+            <Icon className="h-5 w-5 text-[#22d3ee]" />
             <p className="line-clamp-2 break-all text-[9px] text-gray-400">
                 {media.original_filename ?? fileExtension(media.mime)}
             </p>

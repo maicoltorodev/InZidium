@@ -11,7 +11,7 @@ import {
 import { supabaseCrmClient } from "@/lib/supabase/crm/client";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
-const SCHEMA = process.env.NEXT_PUBLIC_SUPABASE_SCHEMA ?? "nexus_crm";
+const SCHEMA = process.env.NEXT_PUBLIC_SUPABASE_SCHEMA ?? "inzidium_crm";
 
 /** Tablas que el CRM consume en realtime. */
 export type RealtimeTable =

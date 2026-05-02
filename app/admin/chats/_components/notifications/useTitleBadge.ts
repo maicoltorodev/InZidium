@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
  * - bump(): incrementa si la pestaña NO tiene foco
  * - reset(): vuelve al título original (al volver el foco o entrar a un chat)
  *
- * Title resultante: "(3) Nexus Admin" mientras hay mensajes pendientes y la pestaña está blurred.
+ * Title resultante: "(3) InZidium Admin" mientras hay mensajes pendientes y la pestaña está blurred.
  */
 export function useTitleBadge() {
     const [count, setCount] = useState(0);

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import type { Event, EventType, EventWithContact } from "@/lib/crm/types";
@@ -49,7 +49,7 @@ export function EventRow({ event, showContact = false }: Props) {
                 {contactName && event.contact_id && (
                     <Link
                         href={`/admin/chats?c=${event.contact_id}`}
-                        className="mt-1 inline-flex items-center gap-1 rounded-md border border-white/[0.06] bg-white/[0.02] px-2 py-0.5 text-[10px] text-gray-400 transition hover:border-[#FFD700]/30 hover:text-[#FFD700]"
+                        className="mt-1 inline-flex items-center gap-1 rounded-md border border-white/[0.06] bg-white/[0.02] px-2 py-0.5 text-[10px] text-gray-400 transition hover:border-[#22d3ee]/30 hover:text-[#22d3ee]"
                     >
                         {contactName}
                     </Link>

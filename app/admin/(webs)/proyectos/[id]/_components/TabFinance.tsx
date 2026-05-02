@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useRef, useState } from "react";
 import {
@@ -157,11 +157,11 @@ export function TabFinance({
             Distribución del proyecto
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-5 sm:p-6 rounded-2xl bg-[#FFD700]/5 border border-[#FFD700]/20 space-y-1">
-              <p className="text-[9px] font-black uppercase tracking-widest text-[#FFD700]/60">
+            <div className="p-5 sm:p-6 rounded-2xl bg-[#22d3ee]/5 border border-[#22d3ee]/20 space-y-1">
+              <p className="text-[9px] font-black uppercase tracking-widest text-[#22d3ee]/60">
                 InZidium {isAlaMedida ? "· 80%" : ""}
               </p>
-              <p className="text-2xl font-black text-[#FFD700]">
+              <p className="text-2xl font-black text-[#22d3ee]">
                 {COP(montoInzidiumTotal!)}
               </p>
               <p className="text-[9px] text-gray-600 font-bold uppercase tracking-widest">
@@ -882,7 +882,7 @@ function PrecioCustomEditor({
             value={temp}
             onChange={(e) => setTemp(e.target.value.replace(/\D/g, ""))}
             placeholder="0"
-            className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-2xl font-black text-white outline-none focus:border-[#FFD700]/50"
+            className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-2xl font-black text-white outline-none focus:border-[#22d3ee]/50"
             autoFocus
           />
           <span className="text-sm font-black text-gray-600">COP</span>
@@ -890,7 +890,7 @@ function PrecioCustomEditor({
         {temp && parseInt(temp) > 0 && (
           <div className="flex gap-3 text-[10px] font-black uppercase tracking-widest flex-wrap">
             <span className="text-gray-500">InZidium:</span>
-            <span className="text-[#FFD700]">
+            <span className="text-[#22d3ee]">
               {COP(Math.round(parseInt(temp) * PCT_INZIDIUM))}
             </span>
             <span className="text-gray-600">·</span>
@@ -913,7 +913,7 @@ function PrecioCustomEditor({
           <button
             onClick={handleSave}
             disabled={saving || !temp || parseInt(temp) <= 0}
-            className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#a855f7] to-[#FFD700] text-white font-black text-xs uppercase hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 py-3 rounded-xl bg-gradient-to-r from-[#a855f7] to-[#22d3ee] text-white font-black text-xs uppercase hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {saving ? (
               <Loader2 className="w-4 h-4 animate-spin" />

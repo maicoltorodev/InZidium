@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { type ReactNode } from "react";
 import type { MessageRole } from "@/lib/crm/types";
@@ -18,15 +18,15 @@ export function BubbleContainer({ role, bare = false, children }: Props) {
             <div
                 className="relative overflow-hidden rounded-2xl rounded-tr-md border px-4 py-3"
                 style={{
-                    borderColor: "rgba(255,215,0,0.2)",
+                    borderColor: "rgba(34,211,238,0.2)",
                     background:
-                        "linear-gradient(135deg, rgba(255,215,0,0.10), rgba(255,255,255,0.08))",
-                    boxShadow: "0 4px 20px rgba(255,215,0,0.06)",
+                        "linear-gradient(135deg, rgba(34,211,238,0.10), rgba(255,255,255,0.08))",
+                    boxShadow: "0 4px 20px rgba(34,211,238,0.06)",
                 }}
             >
                 <div
                     className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full blur-2xl opacity-40"
-                    style={{ background: "radial-gradient(circle, #FFD700, transparent)" }}
+                    style={{ background: "radial-gradient(circle, #22d3ee, transparent)" }}
                 />
                 <div className="relative">{children}</div>
             </div>

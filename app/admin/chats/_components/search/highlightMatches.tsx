@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+﻿import type { ReactNode } from "react";
 
 /**
  * Devuelve los matches del query envueltos en <mark> dentro del texto.
@@ -22,7 +22,7 @@ export function highlightMatches(text: string, query: string): ReactNode {
         parts.push(
             <mark
                 key={`m-${key++}`}
-                className="rounded bg-[#FFD700]/30 px-0.5 text-white"
+                className="rounded bg-[#22d3ee]/30 px-0.5 text-white"
             >
                 {text.slice(idx, idx + q.length)}
             </mark>,

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -101,7 +101,7 @@ export function ReactionPicker({ onPick, align }: Props) {
                 onClick={() => setOpen((v) => !v)}
                 aria-label="Reaccionar"
                 title="Reaccionar"
-                className="flex h-6 w-6 items-center justify-center rounded-md border border-white/[0.08] bg-[#0a0a0a]/85 text-gray-300 backdrop-blur-sm transition hover:border-[#FFD700]/40 hover:bg-[#FFD700]/10 hover:text-[#FFD700]"
+                className="flex h-6 w-6 items-center justify-center rounded-md border border-white/[0.08] bg-[#0a0a0a]/85 text-gray-300 backdrop-blur-sm transition hover:border-[#22d3ee]/40 hover:bg-[#22d3ee]/10 hover:text-[#22d3ee]"
             >
                 <Smile className="h-3 w-3" />
             </button>

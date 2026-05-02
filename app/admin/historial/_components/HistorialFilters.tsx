@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import type { EventType } from "@/lib/crm/types";
 import { EVENT_DESCRIPTORS } from "./eventDescriptors";
@@ -33,7 +33,7 @@ export function HistorialFilters({ actor, type, actors, onActorChange, onTypeCha
                 <select
                     value={actor}
                     onChange={(e) => onActorChange(e.target.value)}
-                    className="rounded-lg border border-white/[0.06] bg-white/[0.04] px-2.5 py-1.5 text-xs text-white focus:border-[#FFD700]/40 focus:outline-none"
+                    className="rounded-lg border border-white/[0.06] bg-white/[0.04] px-2.5 py-1.5 text-xs text-white focus:border-[#22d3ee]/40 focus:outline-none"
                 >
                     <option value="">Todos</option>
                     {actors.map((a) => (
@@ -50,7 +50,7 @@ export function HistorialFilters({ actor, type, actors, onActorChange, onTypeCha
                 <select
                     value={type}
                     onChange={(e) => onTypeChange(e.target.value as EventType | "")}
-                    className="rounded-lg border border-white/[0.06] bg-white/[0.04] px-2.5 py-1.5 text-xs text-white focus:border-[#FFD700]/40 focus:outline-none"
+                    className="rounded-lg border border-white/[0.06] bg-white/[0.04] px-2.5 py-1.5 text-xs text-white focus:border-[#22d3ee]/40 focus:outline-none"
                 >
                     <option value="">Todos</option>
                     {ALL_TYPES.map((t) => (

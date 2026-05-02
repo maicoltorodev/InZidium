@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Plus, Trash2 } from "lucide-react";
 import type { OrderItem } from "@/lib/crm/types";
@@ -59,7 +59,7 @@ export function ItemEditor({ items, onChange }: Props) {
             ))}
             <button
                 onClick={add}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-white/[0.1] bg-white/[0.01] py-2 text-xs font-bold uppercase tracking-widest text-gray-500 transition hover:border-[#FFD700]/40 hover:text-[#FFD700]"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-white/[0.1] bg-white/[0.01] py-2 text-xs font-bold uppercase tracking-widest text-gray-500 transition hover:border-[#22d3ee]/40 hover:text-[#22d3ee]"
             >
                 <Plus className="h-3.5 w-3.5" />
                 Agregar ítem

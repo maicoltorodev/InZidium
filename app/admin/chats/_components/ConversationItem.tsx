@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Bot, BotOff } from "lucide-react";
 import type { ConversationWithContact } from "@/lib/crm/types";
@@ -25,9 +25,9 @@ export function ConversationItem({ conversation, selected, onClick, typing }: Pr
             onClick={onClick}
             className={`group relative flex w-full items-start gap-3 overflow-hidden rounded-2xl px-3 py-3 text-left transition-all duration-200 ${
                 selected
-                    ? "bg-gradient-to-r from-[#ffffff]/[0.08] via-[#FFD700]/[0.04] to-transparent"
+                    ? "bg-gradient-to-r from-[#ffffff]/[0.08] via-[#22d3ee]/[0.04] to-transparent"
                     : hasUnread
-                        ? "bg-[#FFD700]/[0.03] hover:bg-[#FFD700]/[0.05]"
+                        ? "bg-[#22d3ee]/[0.03] hover:bg-[#22d3ee]/[0.05]"
                         : "hover:bg-white/[0.025]"
             }`}
         >
@@ -35,7 +35,7 @@ export function ConversationItem({ conversation, selected, onClick, typing }: Pr
                 <div
                     className="absolute inset-y-2 left-0 w-[3px] rounded-r-full"
                     style={{
-                        background: "linear-gradient(to bottom, #FFD700, #ffffff, #FFD700)",
+                        background: "linear-gradient(to bottom, #22d3ee, #a855f7, #22d3ee)",
                         boxShadow: "0 0 12px rgba(255,255,255,0.6)",
                     }}
                 />
@@ -59,7 +59,7 @@ export function ConversationItem({ conversation, selected, onClick, typing }: Pr
                     {last_message_at && (
                         <span
                             className={`shrink-0 font-mono text-[10px] tabular-nums transition-colors ${
-                                hasUnread ? "text-[#FFD700]" : selected ? "text-gray-300" : "text-gray-600"
+                                hasUnread ? "text-[#22d3ee]" : selected ? "text-gray-300" : "text-gray-600"
                             }`}
                         >
                             {formatRelativeShort(new Date(last_message_at))}
@@ -89,7 +89,7 @@ export function ConversationItem({ conversation, selected, onClick, typing }: Pr
                                     <span
                                         className={`font-semibold mr-1 ${
                                             last_message_role === "ai"
-                                                ? "text-[#FFD700]"
+                                                ? "text-[#22d3ee]"
                                                 : last_message_role === "human"
                                                     ? "text-white"
                                                     : "text-gray-600"
@@ -126,8 +126,8 @@ function Avatar({
                 }`}
                 style={{
                     background: aiEnabled
-                        ? "linear-gradient(135deg, #FFD700, #ffffff)"
-                        : "linear-gradient(135deg, #FFD700, #f59e0b)",
+                        ? "linear-gradient(135deg, #22d3ee, #a855f7)"
+                        : "linear-gradient(135deg, #22d3ee, #f59e0b)",
                 }}
             />
             <div
@@ -143,7 +143,7 @@ function Avatar({
             <div
                 className={`absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-[#0a0a0a] ${
                     aiEnabled
-                        ? "bg-gradient-to-br from-[#FFD700] to-[#ffffff]"
+                        ? "bg-gradient-to-br from-[#22d3ee] to-[#a855f7]"
                         : "bg-amber-500"
                 }`}
                 title={aiEnabled ? "IA activa" : "Control manual"}

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Bot, BotOff } from "lucide-react";
 import type { Contact } from "@/lib/crm/types";
@@ -19,7 +19,7 @@ export function AvatarCard({ contact }: Props) {
                 className="pointer-events-none absolute -top-12 left-1/2 h-24 w-32 -translate-x-1/2 rounded-full blur-2xl opacity-40"
                 style={{
                     background: aiActive
-                        ? "radial-gradient(circle, #FFD700, transparent)"
+                        ? "radial-gradient(circle, #22d3ee, transparent)"
                         : "radial-gradient(circle, #f59e0b, transparent)",
                 }}
             />
@@ -29,8 +29,8 @@ export function AvatarCard({ contact }: Props) {
                         className="absolute inset-0 rounded-full blur-md opacity-60"
                         style={{
                             background: aiActive
-                                ? "linear-gradient(135deg, #FFD700, #ffffff)"
-                                : "linear-gradient(135deg, #FFD700, #f59e0b)",
+                                ? "linear-gradient(135deg, #22d3ee, #a855f7)"
+                                : "linear-gradient(135deg, #22d3ee, #f59e0b)",
                         }}
                     />
                     <div
@@ -57,10 +57,10 @@ export function AvatarCard({ contact }: Props) {
                     style={
                         aiActive
                             ? {
-                                  borderColor: "rgba(255,215,0,0.3)",
+                                  borderColor: "rgba(34,211,238,0.3)",
                                   background:
-                                      "linear-gradient(135deg, rgba(255,215,0,0.08), rgba(255,255,255,0.08))",
-                                  color: "#FFD700",
+                                      "linear-gradient(135deg, rgba(34,211,238,0.08), rgba(255,255,255,0.08))",
+                                  color: "#22d3ee",
                               }
                             : {
                                   borderColor: "rgba(245,158,11,0.3)",

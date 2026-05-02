@@ -35,11 +35,11 @@ export default function AdminSidebar() {
                     <div
                         className={`absolute inset-0 w-full h-full bg-[length:100%_100%] ${isAdminHover ? 'energy-flow-css-vertical-fast' : 'energy-flow-css-vertical'}`}
                         style={{
-                            backgroundImage: 'linear-gradient(to bottom, #FFD700, #ffffff, #FFD700, #ffffff, #FFD700)',
+                            backgroundImage: 'linear-gradient(to bottom, #22d3ee, #a855f7, #22d3ee, #a855f7, #22d3ee)',
                             backgroundSize: '100% 200%',
                         }}
                     />
-                    <div className={`absolute inset-0 pointer-events-none transition-all duration-500 ${isAdminHover ? 'shadow-[0_0_20px_rgba(255,215,0,0.8)]' : 'shadow-[0_0_10px_rgba(255,215,0,0.4)]'}`} />
+                    <div className={`absolute inset-0 pointer-events-none transition-all duration-500 ${isAdminHover ? 'shadow-[0_0_20px_rgba(34,211,238,0.8)]' : 'shadow-[0_0_10px_rgba(34,211,238,0.4)]'}`} />
                 </div>
 
                 <div className="relative z-10 flex-1 overflow-y-auto px-8 pb-6 pt-8 flex flex-col">
@@ -52,12 +52,12 @@ export default function AdminSidebar() {
                             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                         >
                             <Image
-                                src="/nexus-solo.webp"
-                                alt="Nexus"
+                                src="/logo.webp"
+                                alt="InZidium"
                                 width={1080}
                                 height={220}
                                 className="w-full h-auto relative z-10 transition-all duration-500"
-                                style={{ filter: 'drop-shadow(0 0 12px rgba(255,215,0,0.35)) drop-shadow(0 0 5px rgba(255,255,255,0.2))' }}
+                                style={{ filter: 'drop-shadow(0 0 12px rgba(34,211,238,0.35)) drop-shadow(0 0 5px rgba(168,85,247,0.2))' }}
                                 priority
                             />
                         </motion.div>
@@ -208,8 +208,8 @@ function SidebarLink({ icon: Icon, label, href, active }: LinkProps) {
                         exit={{ opacity: 0 }}
                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#FFD700]/10 via-[#ffffff]/5 to-transparent" />
-                        <div className="absolute inset-y-0 left-0 w-[2px] bg-gradient-to-b from-[#FFD700] to-[#ffffff]" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#22d3ee]/10 via-[#a855f7]/5 to-transparent" />
+                        <div className="absolute inset-y-0 left-0 w-[2px] bg-gradient-to-b from-[#22d3ee] to-[#a855f7]" />
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -219,15 +219,15 @@ function SidebarLink({ icon: Icon, label, href, active }: LinkProps) {
             {active && (
                 <div
                     className="absolute left-[-10px] top-1/2 h-10 w-4 -translate-y-1/2 px-4 opacity-20 blur-xl"
-                    style={{ background: 'linear-gradient(to bottom, #FFD700, #ffffff)' }}
+                    style={{ background: 'linear-gradient(to bottom, #22d3ee, #a855f7)' }}
                 />
             )}
 
             <Icon
                 className={`relative z-10 h-5 w-5 transition-all duration-500 ${active ? 'scale-110' : 'group-hover:scale-110 group-hover:text-gray-300'}`}
                 style={{
-                    color: active ? '#FFD700' : undefined,
-                    filter: active ? 'drop-shadow(0 0 6px rgba(255,215,0,0.5)) drop-shadow(0 0 4px rgba(255,255,255,0.3))' : undefined,
+                    color: active ? '#22d3ee' : undefined,
+                    filter: active ? 'drop-shadow(0 0 6px rgba(34,211,238,0.5)) drop-shadow(0 0 4px rgba(168,85,247,0.3))' : undefined,
                 }}
             />
 
@@ -240,8 +240,8 @@ function SidebarLink({ icon: Icon, label, href, active }: LinkProps) {
                     layoutId="sidebar-indicator"
                     className="ml-auto h-1.5 w-1.5 rounded-full"
                     style={{
-                        background: 'linear-gradient(to bottom, #FFD700, #ffffff)',
-                        boxShadow: '0 0 8px rgba(255,215,0,0.6), 0 0 6px rgba(255,255,255,0.4)',
+                        background: 'linear-gradient(to bottom, #22d3ee, #a855f7)',
+                        boxShadow: '0 0 8px rgba(34,211,238,0.6), 0 0 6px rgba(168,85,247,0.4)',
                     }}
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
@@ -262,13 +262,13 @@ function SidebarSubLink({ icon: Icon, label, href, active }: LinkProps) {
             }`}
         >
             {active && (
-                <div className="absolute inset-y-1 left-0 w-[2px] rounded-full bg-gradient-to-b from-[#FFD700] to-[#ffffff]" />
+                <div className="absolute inset-y-1 left-0 w-[2px] rounded-full bg-gradient-to-b from-[#22d3ee] to-[#a855f7]" />
             )}
             <Icon
                 className="h-4 w-4 transition-transform duration-300 group-hover:scale-110"
                 style={{
-                    color: active ? '#FFD700' : undefined,
-                    filter: active ? 'drop-shadow(0 0 4px rgba(255,215,0,0.4))' : undefined,
+                    color: active ? '#22d3ee' : undefined,
+                    filter: active ? 'drop-shadow(0 0 4px rgba(34,211,238,0.4))' : undefined,
                 }}
             />
             <span className="text-xs font-semibold tracking-wide">{label}</span>
