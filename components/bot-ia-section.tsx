@@ -8,9 +8,9 @@ import { PageSection } from "@/components/ui/page-section"
 
 // ─── Mini WaMock ──────────────────────────────────────────────────────────────
 const MESSAGES = [
-  { from: "client", text: "Hola, ¿tienen cita disponible hoy?" },
-  { from: "bot",    text: "¡Hola! 👋 Sí tenemos. ¿Prefieres mañana o tarde?" },
-  { from: "client", text: "En la tarde, tipo 3pm" },
+  { from: "client", text: "Hola, ¿tienen cita esta semana?" },
+  { from: "bot",    text: "¡Hola! 👋 Sí. ¿Qué día te queda mejor?" },
+  { from: "client", text: "Jueves en la tarde, tipo 3pm" },
   { from: "bot",    text: "✅ Cita confirmada para el jueves a las 3:00pm. ¡Hasta pronto! 😊" },
 ]
 
@@ -69,7 +69,7 @@ const PILLS = [
 // ─── Section ─────────────────────────────────────────────────────────────────
 export function BotIASection() {
   return (
-    <PageSection id="bot-ia" withBackground={false}>
+    <PageSection id="bot-ia">
 
       <div className="text-center mb-16 sm:mb-24 animate-on-mount" data-animation="fade-down">
         <SectionHeader

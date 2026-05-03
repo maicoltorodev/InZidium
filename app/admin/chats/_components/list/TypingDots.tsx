@@ -10,7 +10,7 @@ type Props = { by: "ai" | "human" };
  */
 export function TypingDots({ by }: Props) {
     const color = by === "ai" ? "#22d3ee" : "#ffffff";
-    const label = by === "ai" ? "Izzy escribiendo" : "Escribiendo";
+    const label = by === "ai" ? "Zid escribiendo" : "Escribiendo";
     return (
         <span className="inline-flex items-center gap-1.5">
             <span

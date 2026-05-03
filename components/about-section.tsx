@@ -34,7 +34,7 @@ const ABOUT_CARDS = [
 
 export function AboutSection() {
   return (
-    <PageSection id="sobre-mi" containerSize="lg" withBackground={false}>
+    <PageSection id="sobre-mi" containerSize="lg">
       <div className="relative">
 
         <div className="text-center mb-16 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-down">

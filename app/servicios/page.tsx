@@ -64,7 +64,7 @@ export default function ServiciosPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background flex flex-col">
+    <main className="min-h-screen flex flex-col">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
@@ -76,11 +76,8 @@ export default function ServiciosPage() {
 
       <Header />
 
-      <div className="flex-1 pt-32 pb-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.08)_0%,transparent_50%)] pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_30%,rgba(168,85,247,0.06)_0%,transparent_40%)] pointer-events-none" />
-
-        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1400px]">
+      <div className="flex-1 pt-32 pb-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-[1400px]">
           <nav aria-label="breadcrumb" className="mb-8 text-xs text-muted-foreground">
             <ol className="flex items-center gap-2">
               <li>

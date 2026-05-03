@@ -87,7 +87,7 @@ function PortalPreview() {
 
 export function PortalSection() {
   return (
-    <PageSection id="portal" withBackground={false}>
+    <PageSection id="portal">
       <div className="relative">
 
         <div className="text-center mb-16 sm:mb-24 animate-on-mount" data-animation="fade-down">

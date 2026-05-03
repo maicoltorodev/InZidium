@@ -69,7 +69,7 @@ export function ResetConfirmModal({ onClose }: Props) {
                                             Esto borra TODO el CRM
                                         </p>
                                         <p className="mt-1 text-xs leading-relaxed text-red-200/70">
-                                            Mensajes, conversaciones, contactos, solicitudes y archivos del bucket. No hay vuelta atras. Solo para testing.
+                                            Mensajes, conversaciones, contactos y archivos del bucket. No hay vuelta atras. Solo para testing.
                                         </p>
                                     </div>
                                 </div>

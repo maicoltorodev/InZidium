@@ -17,16 +17,15 @@ type NavItem = {
 
 const NAV_ITEMS: readonly NavItem[] = [
   { id: "sobre-mi",         label: "Nosotros",  highlight: false },
-  { id: "servicios",        label: "Servicios", highlight: false, href: "/servicios" },
-  { id: "bot-ia",           label: "Bot IA",    highlight: true,  href: "/bots-whatsapp-ia" },
-  { id: "blog",             label: "Blog",      highlight: false, href: "/blog" },
-  { id: "portal",           label: "Portal",    highlight: true  },
-  { id: "casos",            label: "Casos",     highlight: false },
+  { id: "otras-soluciones", label: "Servicios", highlight: false },
+  { id: "portal",          label: "Portal",   highlight: false },
+  { id: "bot-ia",          label: "Bot IA",    highlight: false },
+  { id: "blog",           label: "Blog",     highlight: false },
+  { id: "alianzas",        label: "Alianzas", highlight: false },
 ]
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
   const [isLogoHovered, setIsLogoHovered] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
@@ -53,21 +52,14 @@ export function Header() {
     }, 10)
   }
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50)
     const handleLogoHover = (e: any) => setIsLogoHovered(e.detail)
 
-    // Combined scroll and custom events
-    window.addEventListener("scroll", handleScroll, { passive: true })
     window.addEventListener("logoHover", handleLogoHover as EventListener)
 
     // Body scroll lock logic integrated
     document.body.style.overflow = isMobileMenuOpen ? 'hidden' : ''
 
-    // Initial check
-    handleScroll()
-
     return () => {
-      window.removeEventListener("scroll", handleScroll)
       window.removeEventListener("logoHover", handleLogoHover as EventListener)
       document.body.style.overflow = ''
     }
@@ -88,8 +80,7 @@ export function Header() {
 
   return (
     <header
-      className={`fixed top-0 z-50 w-full transition-all duration-500 ease-in-out ${isScrolled || isMobileMenuOpen ? "glass-panel bg-[#030014]/90 backdrop-blur-md md:backdrop-blur-[40px] shadow-2xl" : "bg-transparent"
-        }`}
+      className="fixed top-0 z-50 w-full glass-panel bg-background/90 backdrop-blur-md md:backdrop-blur-[40px] shadow-2xl"
     >
       <div
         className={`absolute bottom-0 left-0 w-full overflow-hidden opacity-90 transition-all duration-500 pointer-events-none ${isLogoHovered ? "h-[4px]" : "h-[2px]"}`}
@@ -123,7 +114,7 @@ export function Header() {
               priority
             />
           </div>
-          <span className="hidden md:block font-orbitron font-medium tracking-[0.3em] text-[18px] text-white/90 transition-all duration-200 md:group-hover:text-transparent md:group-hover:bg-clip-text md:group-hover:bg-gradient-to-r md:group-hover:from-cyan-400 md:group-hover:via-purple-500 md:group-hover:to-cyan-400 md:group-hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.4)] energy-flow-css bg-[length:200%_auto]">
+          <span className="hidden md:block font-orbitron font-medium tracking-[0.3em] text-[18px] bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-purple-500 to-cyan-400 transition-all duration-200 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)] energy-flow-css bg-[length:200%_auto]">
             InZidium
           </span>
         </a>
@@ -139,29 +130,17 @@ export function Header() {
           </a>
         </div>
 
-        <nav className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
+        <nav className="hidden md:flex items-center gap-6 xl:gap-8 absolute left-1/2 -translate-x-1/2">
           {NAV_ITEMS.map((item) => (
             <a
               key={item.id}
               href={item.href ?? (pathname === "/" ? `#${item.id}` : `/#${item.id}`)}
               onClick={(e) => handleNavClick(e, item)}
-              className={`text-[11px] font-medium transition-all duration-200 relative group px-2 py-1 uppercase tracking-[0.2em] font-orbitron md:hover:scale-110 active:scale-95 cursor-pointer ${
-                item.highlight
-                  ? "text-neon-cyan/60 md:hover:text-neon-cyan"
-                  : "text-white/50 md:hover:text-white"
-              }`}
+              className="text-[10px] xl:text-[11px] font-medium transition-all duration-200 relative group px-2 py-1 uppercase tracking-[0.15em] font-orbitron md:hover:scale-110 active:scale-95 cursor-pointer text-white/50 md:hover:text-white whitespace-nowrap"
             >
               <span className="relative z-10">{item.label}</span>
-              <span className={`absolute bottom-0 left-0 w-0 h-[1px] transition-all duration-200 md:group-hover:w-full ${
-                item.highlight
-                  ? "bg-gradient-to-r from-cyan-400 to-purple-500"
-                  : "bg-white"
-              }`} />
-              <span className={`absolute inset-0 blur-md rounded-lg transition-all duration-200 -z-10 ${
-                item.highlight
-                  ? "bg-neon-cyan/0 md:group-hover:bg-neon-cyan/5"
-                  : "bg-white/0 md:group-hover:bg-white/5"
-              }`} />
+              <span className="absolute bottom-0 left-0 w-0 h-[1px] transition-all duration-200 md:group-hover:w-full bg-white" />
+              <span className="absolute inset-0 blur-md rounded-lg transition-all duration-200 -z-10 bg-white/0 md:group-hover:bg-white/5" />
             </a>
           ))}
         </nav>
@@ -206,7 +185,7 @@ export function Header() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-            className="absolute top-full left-0 right-0 z-[100] md:hidden overflow-hidden border-b border-white/10 bg-[#030014]/98 backdrop-blur-xl"
+            className="absolute top-full left-0 right-0 z-[100] md:hidden overflow-hidden border-b border-white/10 bg-background/98 backdrop-blur-xl"
           >
             {/* Minimal Background Decoration for mobile performance */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
@@ -226,16 +205,12 @@ export function Header() {
                   <a
                     href={item.href ?? (pathname === "/" ? `#${item.id}` : `/#${item.id}`)}
                     onClick={(e) => handleNavClick(e, item)}
-                    className={`group w-full py-7 flex items-center justify-center text-center text-[13px] font-orbitron font-medium tracking-[0.4em] transition-all duration-300 active:scale-[0.98] cursor-pointer relative z-[101] ${
-                      item.highlight
-                        ? "text-neon-cyan/60 hover:text-neon-cyan"
-                        : "text-white/50 hover:text-white"
-                    }`}
+                    className="group w-full py-7 flex items-center justify-center text-center text-[13px] font-orbitron font-medium tracking-[0.3em] transition-all duration-300 active:scale-[0.98] cursor-pointer relative z-[101] text-white/50 hover:text-white whitespace-nowrap"
                   >
                     <span className="relative">
                       {item.label}
                       <motion.span
-                        className="absolute bottom-[-8px] left-1/2 -translate-x-1/2 w-0 h-[2px] bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full"
+                        className="absolute bottom-[-8px] left-1/2 -translate-x-1/2 w-0 h-[2px] bg-white rounded-full"
                         whileHover={{ width: "100%" }}
                         transition={{ duration: 0.3 }}
                       />

@@ -37,7 +37,7 @@ export function ContactProfile({ conversation }: Props) {
                 )}
 
                 {prefEntries.length > 0 && (
-                    <Section icon={Sparkles} label="Datos de Izzy" accent="#22d3ee">
+                    <Section icon={Sparkles} label="Datos de Zid" accent="#22d3ee">
                         <div className="space-y-2.5">
                             {prefEntries.map(([key, value]) => (
                                 <div key={key} className="flex items-start justify-between gap-3">

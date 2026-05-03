@@ -13,13 +13,10 @@ export const metadata: Metadata = {
 
 export default function PoliticaPrivacidad() {
   return (
-    <main className="min-h-screen bg-background flex flex-col">
+    <main className="min-h-screen flex flex-col">
       <Header />
-      <div className="flex-1 pt-32 pb-20 relative overflow-hidden">
-        {/* Decorative background similar to generic page sections */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(168,85,247,0.1)_0%,transparent_50%)] pointer-events-none" />
-
-        <div className="relative z-10 container mx-auto px-4 sm:px-6 max-w-4xl">
+      <div className="flex-1 pt-32 pb-20">
+        <div className="container mx-auto px-4 sm:px-6 max-w-4xl">
           <SectionHeader
             titleLeft="Política de"
             titleHighlight="Privacidad"

@@ -10,9 +10,9 @@ type SectionHeaderProps = {
 export function SectionHeader({ titleLeft, titleHighlight, subtitle, className }: SectionHeaderProps) {
   return (
     <div className={cn("flex flex-col", className)}>
-      <h2 className="section-title-float text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold mb-6 sm:mb-8 tracking-tight leading-tight">
+      <h2 className="section-title-float text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold mb-6 sm:mb-8 tracking-tight leading-tight font-orbitron">
         <span className="text-foreground">{titleLeft}</span>{" "}
-        <span className="text-primary bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+        <span className="text-primary bg-gradient-to-r from-cyan-400 via-purple-500 to-cyan-400 bg-clip-text text-transparent bg-[length:200%_auto] energy-flow-css">
           {titleHighlight}
         </span>
       </h2>

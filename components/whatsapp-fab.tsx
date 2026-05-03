@@ -50,7 +50,7 @@ export function WhatsAppFAB() {
             }
           }}
           exit={{ opacity: 0, scale: 0.5, y: 20 }}
-          href="https://wa.me/573143855079"
+          href="https://wa.me/573202483740"
           target="_blank"
           rel="noopener noreferrer"
           className="fixed bottom-8 right-8 z-50 group mb-[env(safe-area-inset-bottom)]"
@@ -72,7 +72,7 @@ export function WhatsAppFAB() {
             className="relative will-change-transform"
           >
             {/* The Main Holographic Body */}
-            <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full flex items-center justify-center relative overflow-hidden border border-white/20 bg-white/[0.03] backdrop-blur-lg md:backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] group-hover:border-white/50 transition-colors duration-500 will-change-transform translate-z-0 backface-hidden">
+            <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full flex items-center justify-center relative overflow-hidden border border-white/20 bg-white/[0.03] backdrop-blur-lg md:backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] group-hover:border-white/50 transition-colors duration-500 will-change-transform translate-z-0 backface-hidden">
 
               {/* Internal Liquid Gradient - Disabled on mobile for performance */}
               {!isMobile && (
@@ -96,7 +96,7 @@ export function WhatsAppFAB() {
               </div>
 
               {/* The Icon */}
-              <WhatsAppIcon className="h-8 w-8 sm:h-10 sm:w-10 text-white/90 relative z-10 transition-all duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(255,255,255,1)]" />
+              <WhatsAppIcon className="h-10 w-10 sm:h-12 sm:w-12 text-white/90 relative z-10 transition-all duration-500 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(255,255,255,1)]" />
 
               {/* Scanner Shimmer Line */}
               <div className="absolute top-0 left-[-100%] h-full w-[200%] bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-[-25deg] group-hover:animate-[shine_2s_infinite_linear]" />
@@ -104,11 +104,11 @@ export function WhatsAppFAB() {
 
             {/* Tech Tooltip */}
             <div className="absolute right-full mr-8 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 translate-x-10 group-hover:translate-x-0 transition-all duration-500 pointer-events-none hidden md:block">
-              <div className="relative overflow-hidden px-8 py-3 rounded-2xl border-l-[3px] border-neon-cyan bg-[#030014]/70 backdrop-blur-3xl shadow-2xl">
+              <div className="relative overflow-hidden px-8 py-3 rounded-2xl border-l-[3px] border-[#25D366] bg-[#030014]/70 backdrop-blur-3xl shadow-2xl">
                 <p className="text-[11px] font-orbitron font-bold tracking-[0.6em] text-white uppercase flex items-center gap-5">
                   <span className="flex h-2.5 w-2.5 relative">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-cyan opacity-80"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-neon-cyan shadow-[0_0_10px_#22d3ee]"></span>
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#25D366] opacity-80"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#25D366] shadow-[0_0_10px_#25D366]"></span>
                   </span>
                   ONLINE
                 </p>

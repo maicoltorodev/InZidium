@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 
 export function ContactSection() {
   return (
-    <PageSection id="contacto" className="relative overflow-hidden" withBackground={false}>
+    <PageSection id="contacto" className="relative overflow-hidden">
       <div className="relative">
         <div className="text-center mb-16 sm:mb-24 animate-on-mount" data-animation="fade-down">
           <SectionHeader
@@ -24,7 +24,7 @@ export function ContactSection() {
           <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {/* WhatsApp Card - Priority on mobile, center on desktop */}
             <a
-              href="https://wa.me/573143855079"
+              href="https://wa.me/573202483740"
               target="_blank"
               rel="noopener noreferrer"
               className="glass-panel glass-card p-8 sm:p-10 rounded-3xl group border border-white/10 will-change-transform translate-z-0 backface-hidden order-first md:order-none"

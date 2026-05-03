@@ -140,7 +140,7 @@ function CaseCard({ caseItem, index }: { caseItem: Case; index: number }) {
 
 export function CasesSection() {
   return (
-    <PageSection id="casos" containerSize="lg" withBackground={false}>
+    <PageSection id="casos" containerSize="lg">
       <div className="relative">
         <div className="text-center mb-20 sm:mb-24 lg:mb-32 animate-on-mount" data-animation="fade-down">
           <SectionHeader

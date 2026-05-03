@@ -19,7 +19,7 @@ export function BubbleHeader({ role, waType, createdBy, currentUser }: Props) {
 
     // Para humanos: si el admin actual es quien envió, "Tú"; sino mostramos el username
     let label: string;
-    if (isAi) label = "Izzy";
+    if (isAi) label = "Zid";
     else if (!createdBy || createdBy === currentUser) label = "Tú";
     else label = createdBy;
 

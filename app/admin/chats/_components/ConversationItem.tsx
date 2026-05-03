@@ -159,7 +159,7 @@ function Avatar({
 }
 
 function rolePrefix(role: "user" | "ai" | "human" | null): string {
-    if (role === "ai") return "Izzy:";
+    if (role === "ai") return "Zid:";
     if (role === "human") return "Tú:";
     return "";
 }

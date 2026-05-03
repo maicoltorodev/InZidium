@@ -11,7 +11,7 @@ export function OtherSolutions() {
   const destacados = getServiciosDestacados()
 
   return (
-    <PageSection id="otras-soluciones" containerSize="xl" withBackground={false}>
+    <PageSection id="otras-soluciones" containerSize="xl">
       <div className="relative z-10">
         <div className="text-center mb-16 sm:mb-20 lg:mb-24 animate-on-mount" data-animation="fade-down">
           <SectionHeader

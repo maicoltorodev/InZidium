@@ -49,9 +49,9 @@ export function LoginScreen({
             transition={{ delay: 0.1 }}
             className="flex justify-center mb-8"
           >
-            <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-[#a855f7]/20 bg-[#a855f7]/5 backdrop-blur-md">
-              <Lock className="w-3 h-3 text-[#a855f7]" />
-              <span className="text-[10px] font-black tracking-[0.25em] text-white/50 uppercase">
+            <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-white/15 bg-white/[0.03] backdrop-blur-md">
+              <Lock className="w-3 h-3 text-neon-purple" />
+              <span className="text-[10px] font-black tracking-[0.25em] uppercase bg-gradient-to-r from-cyan-400 via-purple-500 to-cyan-400 bg-clip-text text-transparent bg-[length:200%_auto] energy-flow-css">
                 Acceso Cliente
               </span>
             </div>
@@ -84,7 +84,7 @@ export function LoginScreen({
 
               <h1 className="font-orbitron text-2xl sm:text-3xl font-medium tracking-[0.08em] text-white mb-3 leading-snug">
                 Portal de{" "}
-                <span className="bg-gradient-to-r from-[#e879f9] via-[#a855f7] to-[#22d3ee] bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-cyan-400 via-purple-500 to-cyan-400 bg-clip-text text-transparent bg-[length:200%_auto] energy-flow-css">
                   Clientes
                 </span>
               </h1>

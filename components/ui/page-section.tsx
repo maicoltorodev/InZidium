@@ -5,11 +5,10 @@ interface PageSectionProps extends React.HTMLAttributes<HTMLElement> {
   id?: string
   className?: string
   children: React.ReactNode
-  withBackground?: boolean
   containerSize?: "default" | "sm" | "lg" | "xl" | "full"
 }
 
-export function PageSection({ id, className, children, withBackground = true, containerSize = "default", ...props }: PageSectionProps) {
+export function PageSection({ id, className, children, containerSize = "default", ...props }: PageSectionProps) {
   const sectionRef = React.useRef<HTMLElement>(null)
 
   React.useEffect(() => {
@@ -36,12 +35,6 @@ export function PageSection({ id, className, children, withBackground = true, co
       )}
       {...props}
     >
-      {withBackground && (
-        <>
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/20 to-card/30" />
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5 opacity-30" />
-        </>
-      )}
       <div className="relative z-10">
         <div className={containerClasses[containerSize]}>{children}</div>
       </div>

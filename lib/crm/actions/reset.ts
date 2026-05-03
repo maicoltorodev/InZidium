@@ -11,18 +11,17 @@ const CONFIRM_TOKEN = "RESET";
 type ResetCounts = {
     messages: number;
     contactMedia: number;
-    solicitudes: number;
     conversations: number;
     contacts: number;
     storageFiles: number;
 };
 
 /**
- * 🚨 TEMPORAL — borra todos los chats, contactos, solicitudes y archivos del CRM.
+ * 🚨 TEMPORAL — borra todos los chats, contactos y archivos del CRM.
  * Debe pasarse `confirmation = "RESET"` literal para evitar disparos accidentales.
  *
  * Orden de borrado por dependencias FK:
- *   messages → contact_media → solicitudes → conversations → contacts
+ *   messages → contact_media → conversations → contacts
  *
  * Después limpia el bucket de Storage.
  */
@@ -37,7 +36,6 @@ export async function resetAllCrmData(confirmation: string): Promise<ActionResul
     const counts: ResetCounts = {
         messages: 0,
         contactMedia: 0,
-        solicitudes: 0,
         conversations: 0,
         contacts: 0,
         storageFiles: 0,
@@ -48,7 +46,6 @@ export async function resetAllCrmData(confirmation: string): Promise<ActionResul
         const tables = [
             { name: "messages", key: "messages" as const },
             { name: "contact_media", key: "contactMedia" as const },
-            { name: "solicitudes", key: "solicitudes" as const },
             { name: "conversations", key: "conversations" as const },
             { name: "contacts", key: "contacts" as const },
         ];
@@ -84,7 +81,6 @@ export async function resetAllCrmData(confirmation: string): Promise<ActionResul
         }
 
         revalidatePath("/admin/chats");
-        revalidatePath("/admin/solicitudes");
         return { success: true, data: counts };
     } catch (e: any) {
         console.error("[reset]", e);

@@ -9,7 +9,7 @@ type Props = {
 
 export function TypingBubble({ by }: Props) {
     const isAi = by === "ai";
-    const label = isAi ? "Izzy" : "Tú";
+    const label = isAi ? "Zid" : "Tú";
 
     return (
         <motion.div

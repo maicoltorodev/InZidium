@@ -221,7 +221,7 @@ export function ConversationDetail({
                             }}
                         />
                         <p className="flex-1 text-xs leading-relaxed text-gray-400">
-                            Izzy está respondiendo este chat.
+                            Zid está respondiendo este chat.
                         </p>
                         <AIToggle
                             enabled={contact.ai_enabled}

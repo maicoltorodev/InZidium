@@ -32,7 +32,7 @@ export function JSONLDSchema() {
       "SEO técnico",
     ],
     "sameAs": [
-      "https://wa.me/573143855079",
+      "https://wa.me/573202483740",
     ],
   }
 
@@ -52,7 +52,7 @@ export function JSONLDSchema() {
       "availableLanguage": "Spanish",
     },
     "sameAs": [
-      "https://wa.me/573143855079",
+      "https://wa.me/573202483740",
     ],
   }
 

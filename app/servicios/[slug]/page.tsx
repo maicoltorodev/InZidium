@@ -105,23 +105,15 @@ export default async function ServicioDetallePage({ params }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-background flex flex-col">
+    <main className="min-h-screen flex flex-col">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
       <Header />
 
-      <article className="flex-1 pt-32 pb-20 relative overflow-hidden">
-        <div
-          className={`absolute inset-0 pointer-events-none ${
-            isCyan
-              ? "bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.1)_0%,transparent_50%)]"
-              : "bg-[radial-gradient(circle_at_50%_0%,rgba(168,85,247,0.1)_0%,transparent_50%)]"
-          }`}
-        />
-
-        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
+      <article className="flex-1 pt-32 pb-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
           {/* Breadcrumb */}
           <nav aria-label="breadcrumb" className="mb-8 text-xs text-muted-foreground">
             <ol className="flex items-center gap-2 flex-wrap">

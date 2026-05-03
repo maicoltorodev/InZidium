@@ -45,7 +45,7 @@ export function ChatsEmptyState() {
 
             <p className="mb-10 text-sm leading-relaxed text-gray-500">
                 Elige un chat de la lista para ver el historial completo, controlar a
-                Izzy y responder manualmente al cliente.
+                Zid y responder manualmente al cliente.
             </p>
 
             <div className="space-y-2.5">
@@ -53,7 +53,7 @@ export function ChatsEmptyState() {
                     icon={<Zap className="h-4 w-4" />}
                     accent="#22d3ee"
                     title="IA en tiempo real"
-                    body="Izzy responde automáticamente cuando está activa. Toma control desde el toggle del chat cuando quieras."
+                    body="Zid responde automáticamente cuando está activa. Toma control desde el toggle del chat cuando quieras."
                 />
                 <Tip
                     icon={<Bot className="h-4 w-4" />}

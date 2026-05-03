@@ -4,8 +4,8 @@ import { Hero } from "@/components/hero"
 import { AboutSection } from "@/components/about-section"
 import { OtherSolutions } from "@/components/other-solutions"
 import { PortalSection } from "@/components/portal-section"
-// import { CasesSection } from "@/components/cases-section"
 import { BotIASection } from "@/components/bot-ia-section"
+import { BlogSection } from "@/components/blog-section"
 import { AlliancesSection } from "@/components/alliances-section"
 import { ContactSection } from "@/components/contact-section"
 import { Footer } from "@/components/footer"
@@ -38,7 +38,7 @@ export default function Home() {
       <OtherSolutions />
       <PortalSection />
       <BotIASection />
-      {/* <CasesSection /> */}
+      <BlogSection />
       <AlliancesSection />
       <ContactSection />
       <Footer />

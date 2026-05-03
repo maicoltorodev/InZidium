@@ -21,7 +21,7 @@ const TYPE_LABEL: Record<WaMessageType, string> = {
 
 const ROLE_LABEL: Record<MessageRole, string> = {
     user: "Cliente",
-    ai: "Izzy",
+    ai: "Zid",
     human: "Tú",
 };
 
