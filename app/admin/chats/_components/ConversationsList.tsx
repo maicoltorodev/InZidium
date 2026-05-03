@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import type { ConversationWithContact } from "@/lib/crm/types";
 import { ConversationItem } from "./ConversationItem";
 import { useConversationFilters, type Filter, type FilterCounts } from "./list/useConversationFilters";
+import { ResetButton } from "./dev/ResetButton";
 import type { TypingState } from "./typing/useGlobalTyping";
 
 type Props = {
@@ -167,17 +168,20 @@ function ListHeader({ total }: { total: number }) {
                         Bandeja
                     </p>
                 </div>
-                <div
-                    className="relative flex h-8 w-8 items-center justify-center rounded-xl"
-                    style={{
-                        background: "linear-gradient(135deg, rgba(34,211,238,0.15), rgba(168,85,247,0.06))",
-                        border: "1px solid rgba(34,211,238,0.25)",
-                        boxShadow: "0 0 12px rgba(34,211,238,0.15), inset 0 1px 0 rgba(34,211,238,0.1)",
-                    }}
-                >
-                    <span className="text-xs font-black tabular-nums text-neon-cyan">
-                        {total}
-                    </span>
+                <div className="flex items-center gap-1.5">
+                    <ResetButton />
+                    <div
+                        className="relative flex h-8 w-8 items-center justify-center rounded-xl"
+                        style={{
+                            background: "linear-gradient(135deg, rgba(34,211,238,0.15), rgba(168,85,247,0.06))",
+                            border: "1px solid rgba(34,211,238,0.25)",
+                            boxShadow: "0 0 12px rgba(34,211,238,0.15), inset 0 1px 0 rgba(34,211,238,0.1)",
+                        }}
+                    >
+                        <span className="text-xs font-black tabular-nums text-neon-cyan">
+                            {total}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
