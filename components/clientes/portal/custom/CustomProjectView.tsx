@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { LogOut, Archive, ChevronDown } from "lucide-react";
 import { Chat, type ChatVariant } from "../shared/Chat";
 import type { PortalDevice } from "../PortalPage";
-import type { ProjectFase } from "@/lib/data/types";
+import type { ProjectFase } from "@/lib/alliance/data/types";
 import { PhaseTimeline } from "../shared/primitives/PhaseTimeline";
 import { CountdownCard } from "../shared/primitives/CountdownCard";
 import { SharedVault } from "../shared/primitives/SharedVault";

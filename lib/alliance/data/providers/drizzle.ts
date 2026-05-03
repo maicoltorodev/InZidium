@@ -4,7 +4,7 @@ import { clientes, proyectos, administradores, chat, archivos } from "../../db/s
 import { eq, and, desc, inArray, sql } from "drizzle-orm";
 import { Cliente, Proyecto, AdminUser, ChatMessage, Archivo } from "../types";
 import { authSecret, estudioId, supabaseUrl } from "@/lib/env";
-import { supabaseAdmin } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/alliance/supabase/server";
 
 /**
  * Multitenancy: toda operación scopea por `estudioId` (aislamiento a nivel código).

@@ -7,7 +7,7 @@ import {
   resumeClienteSession,
   logoutCliente,
   validateClienteSession,
-} from "@/lib/actions";
+} from "@/lib/alliance/actions";
 import { mergeProyectoPayload, useRealtimeRefresh, type RealtimeEvent } from "@/hooks/use-realtime-refresh";
 import { useProyectoPatcher } from "@/hooks/use-patch-proyecto";
 import { useSessionEviction } from "@/hooks/use-session-eviction";

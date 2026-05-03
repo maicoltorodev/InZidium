@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { getAdmins, createAdmin, deleteAdmin } from "@/lib/actions";
+import { getAdmins, createAdmin, deleteAdmin } from "@/lib/alliance/actions";
 import {
   formatName,
   validateName,

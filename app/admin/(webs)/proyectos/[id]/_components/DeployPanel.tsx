@@ -8,7 +8,7 @@ import {
     Copy,
     Rocket,
 } from "lucide-react";
-import { getProyectoUrls } from "@/lib/actions";
+import { getProyectoUrls } from "@/lib/alliance/actions";
 import { useToast } from "@/app/providers/ToastProvider";
 
 type Urls = { preview: string; custom: string | null } | null;

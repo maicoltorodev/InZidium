@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Settings2, ChevronRight, CheckCircle2, ExternalLink, Sparkles } from "lucide-react";
 import { getSectionCompletion } from "../types";
-import type { ProjectFase } from "@/lib/data/types";
+import type { ProjectFase } from "@/lib/alliance/data/types";
 import { ProgressRing } from "../shared/primitives/ProgressRing";
 import { SectionCard } from "../shared/primitives/SectionCard";
 import { DomainCard } from "../shared/primitives/DomainCard";
@@ -15,7 +15,7 @@ import { PhaseTimeline } from "../shared/primitives/PhaseTimeline";
 import { MOTION, STAGGER, usePrefersReducedMotion } from "../shared/primitives/motion";
 import { BrandDivider } from "../shared/primitives/BrandDivider";
 import { HUB_SECTIONS, getCatalogoSubtitle, isHubSectionVisible, type SectionKey } from "../shared/sections/registry";
-import { iniciarConstruccionEstandar } from "@/lib/actions";
+import { iniciarConstruccionEstandar } from "@/lib/alliance/actions";
 
 export type HubKey = SectionKey;
 

@@ -19,8 +19,6 @@ export type RealtimeTable =
     | "conversations"
     | "contacts"
     | "contact_media"
-    | "orders"
-    | "events"
     | "services"
     | "service_variants";
 
@@ -49,8 +47,6 @@ const TABLES: RealtimeTable[] = [
     "conversations",
     "contacts",
     "contact_media",
-    "orders",
-    "events",
     "services",
     "service_variants",
 ];
@@ -67,8 +63,6 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
         conversations: new Set(),
         contacts: new Set(),
         contact_media: new Set(),
-        orders: new Set(),
-        events: new Set(),
         services: new Set(),
         service_variants: new Set(),
     });

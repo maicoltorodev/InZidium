@@ -3,7 +3,7 @@
 import { Fragment } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
-import type { ProjectFase } from "@/lib/data/types";
+import type { ProjectFase } from "@/lib/alliance/data/types";
 import { MOTION, usePrefersReducedMotion } from "./motion";
 
 /**

@@ -17,7 +17,7 @@ import {
   iniciarConstruccion,
   publicarProyecto,
   toggleProyectoFreezeMode,
-} from "@/lib/actions";
+} from "@/lib/alliance/actions";
 import { PLANS } from "@/lib/constants";
 import { useToast } from "@/app/providers/ToastProvider";
 

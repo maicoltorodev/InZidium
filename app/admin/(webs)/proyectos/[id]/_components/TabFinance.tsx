@@ -23,12 +23,12 @@ import {
   StickyNote,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSession } from "next-auth/react";
+import { publicIsAllianceOwner } from "@/lib/env";
 import {
   approveComprobantePago,
   rejectComprobantePago,
   uploadComprobantePago,
-} from "@/lib/actions";
+} from "@/lib/alliance/actions";
 import { uploadProjectFile } from "@/lib/client/upload-archivo";
 import {
   getPagos,
@@ -44,7 +44,7 @@ import {
   PLAN_ESTANDAR_TITLE,
   type Pago,
   type PagoStatus,
-} from "@/lib/finance";
+} from "@/lib/alliance/finance";
 
 const COP = (n: number) => "$" + n.toLocaleString("es-CO") + " COP";
 
@@ -61,8 +61,7 @@ export function TabFinance({
   onUpdatePrecio,
   savePatch,
 }: TabFinanceProps) {
-  const { data: session } = useSession();
-  const isInZidium = (session?.user as any)?.username === "InZidium";
+  const isInZidium = publicIsAllianceOwner;
   const isEstandar = project.plan === PLAN_ESTANDAR_TITLE;
   const isAlaMedida = project.plan === PLAN_ALA_MEDIDA_TITLE;
 

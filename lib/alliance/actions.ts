@@ -8,8 +8,8 @@ import {
   chat,
   getSystemStatus as dataGetStatus,
 } from "./data/service";
-import { supabaseAdmin } from "@/lib/supabase/server";
-import { estudioId } from "@/lib/env";
+import { supabaseAdmin } from "@/lib/alliance/supabase/server";
+import { estudioId, isAllianceOwner } from "@/lib/env";
 import { revalidatePath } from "next/cache";
 import { revalidateProyecto, revalidateAdmin } from "./revalidate";
 import { cookies } from "next/headers";
@@ -18,10 +18,10 @@ import { auth as getSession } from "@/auth";
 import { db } from "./db";
 import { clientes as clientesTable } from "./db/schema";
 import { eq } from "drizzle-orm";
-import { isOnboardingComplete } from "./completion";
+import { isOnboardingComplete } from "../completion";
 import type { Pago, PagoTipo } from "./finance";
 import { supabaseUrl } from "@/lib/env";
-import { rateLimit, getClientIp } from "./rate-limit";
+import { rateLimit, getClientIp } from "../rate-limit";
 import {
   validateName,
   validateCedula,
@@ -30,7 +30,7 @@ import {
   validateUsername,
   validatePassword,
   formatPhoneDigitsCO,
-} from "./input-formatters";
+} from "../input-formatters";
 import { notifyPlantillaRevalidate } from "./plantilla-deploy";
 import { sanitizeOnboardingPatch } from "./onboarding-patch-schema";
 
@@ -718,8 +718,11 @@ export async function approveComprobantePago(
   tipo: PagoTipo,
 ) {
   const session = await getSession();
-  if ((session?.user as any)?.username !== "InZidium") {
-    return { success: false, error: "Solo InZidium puede aprobar." };
+  if (!session?.user) {
+    return { success: false, error: "NO AUTORIZADO." };
+  }
+  if (!isAllianceOwner) {
+    return { success: false, error: "Solo el dueño de la alianza puede aprobar." };
   }
   const res = await mergePagoPatch(projectId, tipo, {
     approvedAt: new Date().toISOString(),
@@ -736,8 +739,11 @@ export async function rejectComprobantePago(
   reason: string,
 ) {
   const session = await getSession();
-  if ((session?.user as any)?.username !== "InZidium") {
-    return { success: false, error: "Solo InZidium puede rechazar." };
+  if (!session?.user) {
+    return { success: false, error: "NO AUTORIZADO." };
+  }
+  if (!isAllianceOwner) {
+    return { success: false, error: "Solo el dueño de la alianza puede rechazar." };
   }
   const res = await mergePagoPatch(projectId, tipo, {
     rejectedAt: new Date().toISOString(),

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { supabaseClient } from "@/lib/supabase/client";
+import { supabaseClient } from "@/lib/alliance/supabase/client";
 
 type EvictionOptions = {
     userId: string | null;

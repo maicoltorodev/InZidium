@@ -10,7 +10,7 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 import { uploadProjectFile } from "@/lib/client/upload-archivo";
-import { deleteArchivoByUrl } from "@/lib/actions";
+import { deleteArchivoByUrl } from "@/lib/alliance/actions";
 import { labelCls } from "../../styles";
 import {
   newGalleryImage,

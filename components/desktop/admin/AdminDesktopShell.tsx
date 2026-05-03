@@ -6,7 +6,7 @@ import { useSession, signOut } from "next-auth/react";
 import AdminSidebar from "@/app/admin/_components/AdminSidebar";
 import AdminMobileNav from "@/app/admin/_components/AdminMobileNav";
 import { useSessionEviction } from "@/hooks/use-session-eviction";
-import { validateAdminSession } from "@/lib/actions";
+import { validateAdminSession } from "@/lib/alliance/actions";
 
 export function AdminDesktopShell({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();

@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { validateAdminSession } from "@/lib/actions";
+import { validateAdminSession } from "@/lib/alliance/actions";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;

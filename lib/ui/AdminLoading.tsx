@@ -19,11 +19,13 @@ export function AdminLoading() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#060214]/90 backdrop-blur-3xl pointer-events-none"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-background/90 backdrop-blur-3xl pointer-events-none"
     >
       <div className="relative w-40 h-40 flex items-center justify-center">
-        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#22d3ee]/20 via-[#a855f7]/20 to-[#e879f9]/20 blur-3xl" />
+        {/* Halo */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-neon-cyan/25 to-neon-purple/25 blur-3xl" />
 
+        {/* Outer ring */}
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
@@ -31,18 +33,27 @@ export function AdminLoading() {
           style={{ borderTopColor: "#22d3ee", borderRightColor: "#a855f7" }}
         />
 
+        {/* Middle ring — counter-rotation */}
         <motion.div
           animate={{ rotate: -360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
           className="absolute inset-6 rounded-full border-[3px] border-transparent"
-          style={{ borderBottomColor: "#a855f7", borderLeftColor: "#e879f9" }}
+          style={{ borderBottomColor: "#a855f7", borderLeftColor: "#22d3ee" }}
         />
 
+        {/* Inner ring */}
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 0.7, repeat: Infinity, ease: "linear" }}
           className="absolute inset-12 rounded-full border-[3px] border-transparent"
-          style={{ borderTopColor: "#e879f9", borderRightColor: "#22d3ee" }}
+          style={{ borderTopColor: "#22d3ee", borderRightColor: "#a855f7" }}
+        />
+
+        {/* Center pulse dot */}
+        <motion.div
+          animate={{ scale: [1, 1.4, 1], opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+          className="relative w-2 h-2 rounded-full bg-gradient-to-br from-cyan-400 to-purple-500 shadow-[0_0_14px_rgba(168,85,247,0.7)]"
         />
       </div>
     </motion.div>,

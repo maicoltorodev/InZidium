@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { updateProyectoOnboarding } from "@/lib/actions";
+import { updateProyectoOnboarding } from "@/lib/alliance/actions";
 
 /**
  * Hook compartido entre el portal cliente y el admin para aplicar cambios al

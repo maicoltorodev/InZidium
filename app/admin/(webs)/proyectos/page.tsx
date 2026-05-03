@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { createProyecto, getClientes, getProyectos } from "@/lib/actions";
+import { createProyecto, getClientes, getProyectos } from "@/lib/alliance/actions";
 import { useToast } from "@/app/providers/ToastProvider";
 import {
   Plus,

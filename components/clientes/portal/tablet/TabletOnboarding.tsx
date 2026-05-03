@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { getSectionCompletion } from "../types";
-import type { ProjectFase } from "@/lib/data/types";
+import type { ProjectFase } from "@/lib/alliance/data/types";
 import { ESTUDIO_CONFIG } from "@/lib/config";
 import { TabletHub } from "./TabletHub";
 import { TabletSection } from "./TabletSection";

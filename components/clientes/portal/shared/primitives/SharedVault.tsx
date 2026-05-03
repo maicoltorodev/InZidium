@@ -15,7 +15,7 @@ import {
   Briefcase,
 } from "lucide-react";
 import { uploadProjectFile } from "@/lib/client/upload-archivo";
-import { deleteArchivo } from "@/lib/actions";
+import { deleteArchivo } from "@/lib/alliance/actions";
 import { BRAND_ICON_STYLE } from "./BrandDefs";
 
 function formatSize(bytes: number) {

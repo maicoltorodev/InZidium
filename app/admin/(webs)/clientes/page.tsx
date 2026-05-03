@@ -6,7 +6,7 @@ import {
   getClientes,
   deleteCliente,
   updateCliente,
-} from "@/lib/actions";
+} from "@/lib/alliance/actions";
 import {
   formatName,
   validateName,

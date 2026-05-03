@@ -11,7 +11,7 @@ import {
   deleteProyecto,
   addChatMessage,
   updateProyectoPrecioCustom,
-} from "@/lib/actions";
+} from "@/lib/alliance/actions";
 import { useProyectoPatcher } from "@/hooks/use-patch-proyecto";
 import { useToast } from "@/app/providers/ToastProvider";
 import {

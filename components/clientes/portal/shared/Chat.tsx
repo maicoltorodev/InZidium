@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Send, Plus, X, MessageSquare, Check } from "lucide-react";
-import { addChatMessage } from "@/lib/actions";
+import { addChatMessage } from "@/lib/alliance/actions";
 import { uploadProjectFile } from "@/lib/client/upload-archivo";
 import { ESTUDIO_CONFIG } from "@/lib/config";
 import { MOTION } from "./primitives/motion";

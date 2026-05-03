@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { supabaseClient } from "@/lib/supabase/client";
+import { supabaseClient } from "@/lib/alliance/supabase/client";
 import { publicEstudioId } from "@/lib/env";
 
 export type RealtimeTable =

@@ -45,7 +45,7 @@ export default function AdminSidebar() {
                 <div className="relative z-10 flex-1 overflow-y-auto px-8 pb-6 pt-8 flex flex-col">
                     <Link
                         href="/admin/chats"
-                        className="group relative mb-10 block"
+                        className="group relative mb-10 flex justify-center"
                     >
                         <motion.div
                             animate={{ y: [0, -4, 0] }}
@@ -56,8 +56,7 @@ export default function AdminSidebar() {
                                 alt="InZidium"
                                 width={1080}
                                 height={220}
-                                className="w-full h-auto relative z-10 transition-all duration-500"
-                                style={{ filter: 'drop-shadow(0 0 12px rgba(34,211,238,0.35)) drop-shadow(0 0 5px rgba(168,85,247,0.2))' }}
+                                className="w-28 h-auto relative z-10"
                                 priority
                             />
                         </motion.div>

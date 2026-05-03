@@ -1,6 +1,6 @@
 "use server";
 
-import { validateAdminSession } from "@/lib/actions";
+import { validateAdminSession } from "@/lib/alliance/actions";
 import { supabaseCrmAdmin } from "@/lib/supabase/crm/server";
 import type { ActionResult } from "../types";
 import { currentAdminId } from "./_helpers";

@@ -15,7 +15,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PLANS_ARRAY } from "@/lib/constants";
 import { ModalConfirm } from "@/components/ui/ModalConfirm";
 import { DeployPanel } from "./DeployPanel";
-import { toggleProyectoLinkLock } from "@/lib/actions";
+import { toggleProyectoLinkLock } from "@/lib/alliance/actions";
 import { useToast } from "@/app/providers/ToastProvider";
 
 interface TabSettingsProps {

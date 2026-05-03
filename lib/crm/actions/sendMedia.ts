@@ -1,6 +1,6 @@
 "use server";
 
-import { validateAdminSession } from "@/lib/actions";
+import { validateAdminSession } from "@/lib/alliance/actions";
 import { supabaseCrmAdmin } from "@/lib/supabase/crm/server";
 import { revalidatePath } from "next/cache";
 import type { ActionResult, MediaType, Message, WaMessageType } from "../types";

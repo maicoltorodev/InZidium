@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { auth as authService } from "./lib/data/service";
+import { auth as authService } from "./lib/alliance/data/service";
 import { authSecret } from "./lib/env";
 
 const SESSION_MAX_AGE = 24 * 60 * 60; // 24 horas

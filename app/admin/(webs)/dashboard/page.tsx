@@ -13,7 +13,7 @@ import {
   Lock,
   Activity,
 } from "lucide-react";
-import { getClientes, getProyectos, getSystemStatus } from "@/lib/actions";
+import { getClientes, getProyectos, getSystemStatus } from "@/lib/alliance/actions";
 import { useRealtimeRefresh } from "@/hooks/use-realtime-refresh";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";

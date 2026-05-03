@@ -11,7 +11,7 @@ import {
     CheckCircle2,
 } from "lucide-react";
 import { Chat } from "../shared/Chat";
-import type { ProjectFase } from "@/lib/data/types";
+import type { ProjectFase } from "@/lib/alliance/data/types";
 import { BrandDefs } from "../shared/primitives/BrandDefs";
 import { BrandDivider } from "../shared/primitives/BrandDivider";
 import { PhaseTimeline } from "../shared/primitives/PhaseTimeline";

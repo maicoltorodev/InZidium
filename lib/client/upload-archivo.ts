@@ -43,7 +43,7 @@ type UploadDeps = {
 async function defaultUploadAction(
   formData: FormData,
 ): Promise<ServerUploadResult> {
-  const { uploadArchivo } = await import("../actions");
+  const { uploadArchivo } = await import("../alliance/actions");
   return (await uploadArchivo(formData)) as ServerUploadResult;
 }
 
