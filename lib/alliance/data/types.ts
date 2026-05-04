@@ -61,11 +61,3 @@ export interface ChatMessage {
     createdAt: Date;
 }
 
-export interface AdminUser {
-    id: string;
-    nombre: string;
-    username: string;
-    passwordHash?: string; // Solo se usa internamente para Auth
-    activeSessionId?: string | null; // ID de sesión activa para sesión única
-    createdAt: Date;
-}

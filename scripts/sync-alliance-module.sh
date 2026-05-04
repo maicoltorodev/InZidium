@@ -22,19 +22,39 @@ ALL_TARGETS=(
   "C:/Users/aguir/OneDrive/Escritorio/Alkubo"
 )
 
-# Paths del módulo Alliance (relativos al root del proyecto).
+# Paths sincronizados desde InZidium (canónica) hacia los repos hijos.
 # Folders terminan en / para distinguirlos de archivos sueltos.
+#
+# NO sincronizar: `auth.ts` raíz (cada estudio puede personalizar su NextAuth
+# config), `app/admin/_components/`, `app/admin/login/`, y cualquier feature
+# CRM-specific del estudio (chats, pedidos, servicios). `lib/supabase/crm/*`
+# es legacy per-estudio y no se toca acá.
 PATHS=(
-  # Backend — toda la lógica del módulo
+  # Módulo Alliance — backend (Alliance Hub multitenancy: clientes, proyectos,
+  # archivos, chat, pagos de proyectos web)
   "lib/alliance/"
+  "lib/env.ts"  # incluye allianceSupabase* + supabase* + IS_ALLIANCE_OWNER
 
-  # Hooks alliance-specific (los que importan de @/lib/alliance/*)
+  # Cliente raíz de la DB del estudio (admins, CRM propio del estudio).
+  # Código idéntico per-estudio — las env vars apuntan a la DB de cada uno.
+  "lib/supabase/server.ts"
+  "lib/supabase/client.ts"
+
+  # Server actions de gestión de admins per-estudio. Idénticas en código,
+  # cada una corre contra la DB del estudio (vía supabaseAdmin raíz).
+  "lib/admin/"
+
+  # Hooks (todos contra allianceSupabaseClient)
   "hooks/use-patch-proyecto.ts"
   "hooks/use-realtime-refresh.ts"
   "hooks/use-session-eviction.ts"
 
-  # Frontend — admin Webs (dashboard / clientes / proyectos / administradores)
+  # Frontend — admin Webs (dashboard / clientes / proyectos)
   "app/admin/(webs)/"
+
+  # Frontend — admin gestión de administradores (per-estudio en runtime,
+  # idéntica en código)
+  "app/admin/administradores/"
 
   # Frontend — portal cliente público de la alianza
   "app/portal/"

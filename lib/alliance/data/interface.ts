@@ -1,9 +1,8 @@
-import { 
-    Cliente, 
-    Proyecto, 
-    AdminUser, 
-    Archivo, 
-    ChatMessage 
+import {
+    Cliente,
+    Proyecto,
+    Archivo,
+    ChatMessage
 } from "./types";
 
 export interface IDataProvider {
@@ -43,16 +42,6 @@ export interface IDataProvider {
             | { success: true; prev: Proyecto; merged: Record<string, any> }
             | { success: false; error: string }
         >;
-    };
-
-    // 🛡️ Auth / Admins
-    auth: {
-        getUserByUsername(username: string): Promise<AdminUser | null>;
-        getUserById(id: string): Promise<AdminUser | null>;
-        updateSessionId(id: string, sessionId: string | null): Promise<void>;
-        getAllAdmins(): Promise<AdminUser[]>;
-        createAdmin(data: Omit<AdminUser, 'id' | 'createdAt'>): Promise<{ success: boolean; error?: string }>;
-        deleteAdmin(id: string): Promise<{ success: boolean; error?: string }>;
     };
 
     // 💬 Chat

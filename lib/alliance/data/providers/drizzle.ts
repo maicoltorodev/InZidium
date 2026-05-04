@@ -1,10 +1,10 @@
 import { IDataProvider } from "../interface";
 import { db } from "../../db";
-import { clientes, proyectos, administradores, chat, archivos } from "../../db/schema";
-import { eq, and, desc, inArray, sql } from "drizzle-orm";
-import { Cliente, Proyecto, AdminUser, ChatMessage, Archivo } from "../types";
-import { authSecret, estudioId, supabaseUrl } from "@/lib/env";
-import { supabaseAdmin } from "@/lib/alliance/supabase/server";
+import { clientes, proyectos, chat, archivos } from "../../db/schema";
+import { eq, and, inArray, sql } from "drizzle-orm";
+import { Cliente, Proyecto, ChatMessage, Archivo } from "../types";
+import { authSecret, estudioId } from "@/lib/env";
+import { allianceSupabaseAdmin } from "@/lib/alliance/supabase/server";
 
 /**
  * Multitenancy: toda operación scopea por `estudioId` (aislamiento a nivel código).
@@ -25,7 +25,6 @@ function friendlyDbError(fallback: string, e: any): string {
     if (c.includes("link")) return "ESTE DOMINIO YA ESTA ASIGNADO A OTRO PROYECTO.";
     if (c.includes("cedula")) return "YA EXISTE UN CLIENTE CON ESTA CEDULA EN TU ESTUDIO.";
     if (c.includes("email")) return "YA EXISTE UN CLIENTE CON ESTE EMAIL EN TU ESTUDIO.";
-    if (c.includes("username")) return "YA EXISTE UN ADMINISTRADOR CON ESTE USUARIO.";
     if (c.includes("nombre")) return "YA EXISTE UN PROYECTO CON ESTE NOMBRE EN TU ESTUDIO.";
     return "YA EXISTE UN REGISTRO CON ESTOS DATOS.";
   }
@@ -201,68 +200,6 @@ export const DrizzleProvider: IDataProvider = {
     },
   },
 
-  auth: {
-    getUserByUsername: async (username) => {
-      return (
-        (await db.query.administradores.findFirst({
-          where: (a, { and, eq }) =>
-            and(eq(a.estudioId, estudioId), eq(a.username, username)),
-        })) || null
-      );
-    },
-    getUserById: async (id) => {
-      return (
-        (await db.query.administradores.findFirst({
-          where: and(
-            eq(administradores.id, id),
-            eq(administradores.estudioId, estudioId),
-          ),
-        })) || null
-      );
-    },
-    updateSessionId: async (id, sessionId) => {
-      await db
-        .update(administradores)
-        .set({ activeSessionId: sessionId })
-        .where(
-          and(
-            eq(administradores.id, id),
-            eq(administradores.estudioId, estudioId),
-          ),
-        );
-    },
-    getAllAdmins: async () => {
-      return await db
-        .select()
-        .from(administradores)
-        .where(eq(administradores.estudioId, estudioId))
-        .orderBy(desc(administradores.createdAt));
-    },
-    createAdmin: async (data: any) => {
-      try {
-        await db.insert(administradores).values({ ...data, estudioId });
-        return { success: true };
-      } catch (e) {
-        return { success: false, error: friendlyDbError("Error al crear admin", e) };
-      }
-    },
-    deleteAdmin: async (id) => {
-      try {
-        await db
-          .delete(administradores)
-          .where(
-            and(
-              eq(administradores.id, id),
-              eq(administradores.estudioId, estudioId),
-            ),
-          );
-        return { success: true };
-      } catch (e) {
-        return { success: false, error: "Error al eliminar admin" };
-      }
-    },
-  },
-
   chat: {
     addMessage: async (data: any) => {
       try {
@@ -374,7 +311,7 @@ export const DrizzleProvider: IDataProvider = {
     }
 
     try {
-      const { data, error } = await supabaseAdmin.storage.getBucket("archivos");
+      const { error } = await allianceSupabaseAdmin.storage.getBucket("archivos");
       blob = error ? "error" : "ok";
     } catch (e) {
       blob = "error";

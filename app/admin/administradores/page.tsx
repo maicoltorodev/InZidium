@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { getAdmins, createAdmin, deleteAdmin } from "@/lib/alliance/actions";
+import { getAdmins, createAdmin, deleteAdmin } from "@/lib/admin/actions";
 import {
   formatName,
   validateName,
@@ -26,7 +26,6 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AdminLoading } from "@/lib/ui/AdminLoading";
-import { useRealtimeRefresh } from "@/hooks/use-realtime-refresh";
 
 export default function AdminsPage() {
   const [cargando, setCargando] = useState(true);
@@ -50,8 +49,6 @@ export default function AdminsPage() {
   useEffect(() => {
     loadAdmins();
   }, []);
-
-  useRealtimeRefresh(["administradores"], loadAdmins);
 
   async function loadAdmins() {
     const data = await getAdmins();

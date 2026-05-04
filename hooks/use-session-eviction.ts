@@ -1,22 +1,23 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { supabaseClient } from "@/lib/alliance/supabase/client";
+import { allianceSupabaseClient } from "@/lib/alliance/supabase/client";
 
 type EvictionOptions = {
     userId: string | null;
-    table: "clientes" | "administradores";
+    /** Solo se soporta `clientes` — los admins viven en la DB del estudio
+     *  y no se evictan desde el módulo Alliance. Si un estudio quiere
+     *  single-session realtime para sus admins, lo implementa con un hook
+     *  custom contra `supabaseClient` raíz. */
+    table: "clientes";
     validate: () => Promise<{ valid: boolean }>;
     onEvicted: () => void;
 };
 
 /**
- * Escucha cambios en `active_session_id` de la fila del usuario actual.
+ * Escucha cambios en `active_session_id` de la fila del cliente actual.
  * Si otro dispositivo inicia sesión con la misma cuenta, el token en DB
  * cambia, este hook lo detecta vía Supabase Realtime y dispara `onEvicted()`.
- *
- * Aplica a ambos roles: administradores y clientes — pasar `table` y
- * `validate` correspondientes.
  */
 export function useSessionEviction({
     userId,
@@ -33,7 +34,7 @@ export function useSessionEviction({
         if (!userId) return;
 
         const channelName = `eviction-${table}-${userId}-${Math.random().toString(36).slice(2, 7)}`;
-        const channel = supabaseClient.channel(channelName);
+        const channel = allianceSupabaseClient.channel(channelName);
 
         channel.on(
             "postgres_changes" as any,
@@ -59,7 +60,7 @@ export function useSessionEviction({
         channel.subscribe();
 
         return () => {
-            supabaseClient.removeChannel(channel);
+            allianceSupabaseClient.removeChannel(channel);
         };
     }, [userId, table]);
 }

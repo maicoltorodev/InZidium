@@ -1,8 +1,5 @@
 import { IDataProvider } from "../interface";
-import { Cliente, Proyecto, AdminUser, ChatMessage, Archivo } from "../types";
-import bcrypt from "bcryptjs";
-
-const MOCK_ADMIN_PASSWORD_HASH = bcrypt.hashSync("admin123", 10);
+import { Cliente, Proyecto, ChatMessage, Archivo } from "../types";
 
 /**
  * 📦 MOCK PROVIDER: Datos en memoria para pruebas rápidas sin base de datos.
@@ -29,10 +26,6 @@ const MOCK_PROYECTOS: Proyecto[] = [
         onboardingData: {},
         createdAt: new Date()
     },
-];
-
-const MOCK_ADMINS: AdminUser[] = [
-    { id: 'a1', nombre: 'Admin Alkubo', username: 'admin', createdAt: new Date() },
 ];
 
 export const MockProvider: IDataProvider = {
@@ -102,29 +95,6 @@ export const MockProvider: IDataProvider = {
             };
             return { success: true as const, prev, merged };
         },
-    },
-    auth: {
-        getUserByUsername: async (username) => {
-            if (username === 'admin') return { ...MOCK_ADMINS[0], passwordHash: MOCK_ADMIN_PASSWORD_HASH };
-            return null;
-        },
-        getUserById: async (id) => {
-            return MOCK_ADMINS.find(a => a.id === id) || null;
-        },
-        updateSessionId: async (id, sessionId) => {
-            const admin = MOCK_ADMINS.find(a => a.id === id);
-            if (admin) (admin as any).activeSessionId = sessionId;
-        },
-        getAllAdmins: async () => MOCK_ADMINS,
-        createAdmin: async (data: any) => {
-            MOCK_ADMINS.push({ ...data, id: 'a' + Date.now(), createdAt: new Date() });
-            return { success: true };
-        },
-        deleteAdmin: async (id) => {
-            const idx = MOCK_ADMINS.findIndex(a => a.id === id);
-            if (idx !== -1) MOCK_ADMINS.splice(idx, 1);
-            return { success: true };
-        }
     },
     chat: {
         addMessage: async (data: any) => {

@@ -1,15 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { supabaseClient } from "@/lib/alliance/supabase/client";
+import { allianceSupabaseClient } from "@/lib/alliance/supabase/client";
 import { publicEstudioId } from "@/lib/env";
 
 export type RealtimeTable =
   | "clientes"
   | "proyectos"
   | "archivos"
-  | "chat"
-  | "administradores";
+  | "chat";
 
 export type RealtimeEvent = {
   table: RealtimeTable;
@@ -21,8 +20,9 @@ export type RealtimeEvent = {
 };
 
 /**
- * Suscribe a eventos postgres_changes en las tablas especificadas y llama al
- * callback con el payload.
+ * Suscribe a eventos postgres_changes en tablas del módulo Alliance y llama
+ * al callback con el payload. Filtra por `estudio_id` del estudio actual
+ * (multitenancy del módulo).
  *
  * ## Flujo end-to-end
  *
@@ -66,7 +66,7 @@ export function useRealtimeRefresh(
     if (!enabled) return;
 
     const channelName = `rt-${tables.join("-")}-${Math.random().toString(36).slice(2, 7)}`;
-    const channel = supabaseClient.channel(channelName);
+    const channel = allianceSupabaseClient.channel(channelName);
     const isDev = process.env.NODE_ENV === "development";
 
     tables.forEach((table) => {
@@ -104,7 +104,7 @@ export function useRealtimeRefresh(
     });
 
     return () => {
-      supabaseClient.removeChannel(channel);
+      allianceSupabaseClient.removeChannel(channel);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled]);

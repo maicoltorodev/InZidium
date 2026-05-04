@@ -1,13 +1,20 @@
-﻿import React from "react";
+import React from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { auth as authService } from "@/lib/alliance/data/service";
 import { AdminDesktopShell } from "@/components/desktop/admin/AdminDesktopShell";
 import { AuthProvider } from "@/app/providers/AuthProvider";
 import { SessionGuard } from "./_components/session/SessionGuard";
 import { RealtimeProvider } from "./_components/realtime/RealtimeProvider";
 
+/**
+ * Validación de sesión simple — solo NextAuth (cookie + JWT firmado).
+ *
+ * Si querés "sesión única realtime" (eviction cuando otro device loguea con
+ * la misma cuenta), agregalo en el callback `session()` del `auth.ts` de este
+ * estudio — ahí podés validar `active_session_id` contra DB y devolver null
+ * si no coincide. NextAuth se encarga del resto transparentemente.
+ */
 export default async function AdminLayout({
   children,
 }: {
@@ -19,30 +26,8 @@ export default async function AdminLayout({
 
   if (!isLoginPage) {
     const session = await auth();
-
     if (!session?.user) {
       redirect("/admin/login");
-    }
-
-    const sessionId = (session.user as any).sessionId as string | undefined;
-    const adminId = (session.user as any).id as string | undefined;
-
-    if (sessionId && adminId) {
-      const admin = await authService.getUserById(adminId);
-      if (!admin) {
-        redirect("/admin/login");
-      }
-      // Solo comparar si el activeSessionId es del mismo entorno (prod: o dev:)
-      // Así el servidor local y Vercel no se invalidan mutuamente
-      const currentEnv = process.env.NODE_ENV === "production" ? "prod" : "dev";
-      const dbSessionEnv = admin.activeSessionId?.split(":")[0];
-      if (
-        admin.activeSessionId &&
-        dbSessionEnv === currentEnv &&
-        admin.activeSessionId !== sessionId
-      ) {
-        redirect("/admin/login?reason=concurrent");
-      }
     }
   }
 

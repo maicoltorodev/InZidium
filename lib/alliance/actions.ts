@@ -4,31 +4,26 @@ import {
   clientes,
   proyectos,
   archivos,
-  auth,
   chat,
   getSystemStatus as dataGetStatus,
 } from "./data/service";
-import { supabaseAdmin } from "@/lib/alliance/supabase/server";
-import { estudioId, isAllianceOwner } from "@/lib/env";
+import { allianceSupabaseAdmin } from "@/lib/alliance/supabase/server";
+import { estudioId, isAllianceOwner, allianceSupabaseUrl } from "@/lib/env";
 import { revalidatePath } from "next/cache";
 import { revalidateProyecto, revalidateAdmin } from "./revalidate";
 import { cookies } from "next/headers";
-import bcrypt from "bcryptjs";
 import { auth as getSession } from "@/auth";
 import { db } from "./db";
 import { clientes as clientesTable } from "./db/schema";
 import { eq } from "drizzle-orm";
 import { isOnboardingComplete } from "../completion";
 import type { Pago, PagoTipo } from "./finance";
-import { supabaseUrl } from "@/lib/env";
 import { rateLimit, getClientIp } from "../rate-limit";
 import {
   validateName,
   validateCedula,
   validateEmail,
   validatePhoneCO,
-  validateUsername,
-  validatePassword,
   formatPhoneDigitsCO,
 } from "../input-formatters";
 import { notifyPlantillaRevalidate } from "./plantilla-deploy";
@@ -44,9 +39,9 @@ async function notifyEvent(
   extra?: Record<string, any>,
 ) {
   try {
-    const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!supabaseUrl || !anon) return;
-    await fetch(`${supabaseUrl}/functions/v1/notify-event`, {
+    const anon = process.env.NEXT_PUBLIC_ALLIANCE_SUPABASE_ANON_KEY;
+    if (!allianceSupabaseUrl || !anon) return;
+    await fetch(`${allianceSupabaseUrl}/functions/v1/notify-event`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -58,12 +53,6 @@ async function notifyEvent(
     console.error("[notify-event] fire failed:", (e as Error).message);
   }
 }
-
-async function requireAuthenticatedAdmin() {
-  const session = await getSession();
-  return Boolean(session?.user);
-}
-
 
 /**
  * 🛠️ SERVER ACTIONS REFACTORIZADAS
@@ -153,7 +142,7 @@ export async function updateCliente(id: string, data: any) {
 async function purgeProyectoStorage(proyectoId: string) {
   try {
     const prefix = `${estudioId}/${proyectoId}`;
-    const { data, error } = await supabaseAdmin.storage
+    const { data, error } = await allianceSupabaseAdmin.storage
       .from("archivos")
       .list(prefix, { limit: 1000 });
     if (error) {
@@ -162,7 +151,7 @@ async function purgeProyectoStorage(proyectoId: string) {
     }
     if (!data?.length) return;
     const paths = data.map((f) => `${prefix}/${f.name}`);
-    const { error: rmErr } = await supabaseAdmin.storage
+    const { error: rmErr } = await allianceSupabaseAdmin.storage
       .from("archivos")
       .remove(paths);
     if (rmErr) console.error("[Storage] remove falló:", rmErr.message);
@@ -772,56 +761,6 @@ export async function deleteProyecto(id: string) {
   return res;
 }
 
-// 🛡️ ADMINS
-export async function getAdmins() {
-  return await auth.getAllAdmins();
-}
-
-export async function createAdmin(formData: FormData) {
-  const nombre = (formData.get("nombre") as string ?? "").trim();
-  const username = (formData.get("username") as string ?? "").trim();
-  const password = (formData.get("password") as string ?? "");
-
-  if (!(await requireAuthenticatedAdmin())) {
-    return { error: "NO AUTORIZADO." };
-  }
-
-  // Validación estructural — fallback si el cliente envía datos saltando la UI.
-  const nameErr = validateName(nombre);
-  if (nameErr) return { error: nameErr.toUpperCase() };
-  const userErr = validateUsername(username);
-  if (userErr) return { error: userErr.toUpperCase() };
-  const pwErr = validatePassword(password);
-  if (pwErr) return { error: pwErr.toUpperCase() };
-
-  const existing = await auth.getUserByUsername(username);
-  if (existing) return { error: "EL USUARIO YA EXISTE." };
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const res = await auth.createAdmin({
-    nombre,
-    username,
-    passwordHash: hashedPassword,
-  });
-  if (res.success) revalidatePath("/admin/administradores");
-  return res;
-}
-
-export async function deleteAdmin(id: string) {
-  if (!(await requireAuthenticatedAdmin())) {
-    return { error: "NO AUTORIZADO." };
-  }
-
-  const admins = await auth.getAllAdmins();
-  if (admins.length <= 1) {
-    return { error: "NO PUEDES ELIMINAR EL ULTIMO ADMINISTRADOR." };
-  }
-
-  const res = await auth.deleteAdmin(id);
-  if (res.success) revalidatePath("/admin/administradores");
-  return res;
-}
-
 // 🚦 STATUS
 export async function getSystemStatus() {
   return await dataGetStatus();
@@ -855,7 +794,7 @@ export async function uploadArchivo(formData: FormData) {
       const oldPath = oldUrl.slice(idx + marker.length).split("?")[0];
       // Borra el archivo viejo de Storage y la fila correspondiente en la tabla
       // `archivos` para que no quede metadata huérfana apuntando a un blob borrado.
-      await supabaseAdmin.storage.from("archivos").remove([oldPath]);
+      await allianceSupabaseAdmin.storage.from("archivos").remove([oldPath]);
       await archivos.deleteByStoragePath(oldPath);
     }
   }
@@ -864,13 +803,13 @@ export async function uploadArchivo(formData: FormData) {
     const uniqueFilename = `${Date.now()}-${file.name}`;
     const storagePath = `${estudioId}/${proyectoId}/${uniqueFilename}`;
 
-    const { error: uploadError } = await supabaseAdmin.storage
+    const { error: uploadError } = await allianceSupabaseAdmin.storage
       .from("archivos")
       .upload(storagePath, file);
 
     if (uploadError) return { error: uploadError.message };
 
-    const { data: { publicUrl } } = supabaseAdmin.storage
+    const { data: { publicUrl } } = allianceSupabaseAdmin.storage
       .from("archivos")
       .getPublicUrl(storagePath);
 
@@ -909,7 +848,7 @@ export async function deleteArchivo(id: string) {
   const res = await archivos.delete(id);
   if (res.success) {
     if (res.storagePath) {
-      const { error: storageError } = await supabaseAdmin.storage
+      const { error: storageError } = await allianceSupabaseAdmin.storage
         .from("archivos")
         .remove([res.storagePath]);
       if (storageError) {
@@ -933,7 +872,7 @@ export async function deleteArchivoByUrl(url: string) {
   if (idx === -1) return { success: false, error: "URL DE ARCHIVO INVÁLIDA." };
   const path = url.slice(idx + marker.length).split("?")[0];
 
-  const { error: storageError } = await supabaseAdmin.storage
+  const { error: storageError } = await allianceSupabaseAdmin.storage
     .from("archivos")
     .remove([path]);
   if (storageError) {
@@ -970,7 +909,7 @@ export async function addChatMessage(
         })
         .filter(Boolean) as string[];
       if (paths.length > 0) {
-        await supabaseAdmin.storage.from("archivos").remove(paths);
+        await allianceSupabaseAdmin.storage.from("archivos").remove(paths);
       }
     }
     revalidateProyecto();
@@ -1097,6 +1036,14 @@ export async function validateClienteSession(): Promise<
   }
 }
 
+/**
+ * Valida que hay sesión NextAuth válida (cookie + JWT firmado).
+ *
+ * **NO consulta la DB.** El JWT firmado por NextAuth ya garantiza autenticidad.
+ * Si querés "sesión única realtime" (eviction inmediato cuando otro device
+ * loguea con la misma cuenta), implementalo en el callback `session()` del
+ * `auth.ts` per-estudio — el módulo Alliance no debe acoplarse a esa decisión.
+ */
 export async function validateAdminSession(): Promise<
   { valid: true; adminId: string } | { valid: false; adminId?: undefined }
 > {
@@ -1104,25 +1051,7 @@ export async function validateAdminSession(): Promise<
   if (!session?.user) return { valid: false };
 
   const adminId = (session.user as any).id as string | undefined;
-  const sessionId = (session.user as any).sessionId as string | undefined;
-  if (!adminId || !sessionId) return { valid: false };
+  if (!adminId) return { valid: false };
 
-  try {
-    const admin = await auth.getUserById(adminId);
-    if (!admin) return { valid: false };
-
-    // Sólo comparamos si el activeSessionId pertenece al mismo entorno
-    // (prefijo `prod:` o `dev:`). Así el server local no invalida a Vercel.
-    const currentEnv = process.env.NODE_ENV === "production" ? "prod" : "dev";
-    const dbSessionEnv = admin.activeSessionId?.split(":")[0];
-    if (!admin.activeSessionId || dbSessionEnv !== currentEnv) {
-      return { valid: true, adminId };
-    }
-    if (admin.activeSessionId === sessionId) {
-      return { valid: true, adminId };
-    }
-    return { valid: false };
-  } catch {
-    return { valid: false };
-  }
+  return { valid: true, adminId };
 }

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { supabaseCrmClient } from "@/lib/supabase/crm/client";
 
-const SCHEMA = process.env.NEXT_PUBLIC_SUPABASE_SCHEMA ?? "inzidium_crm";
+const SCHEMA = process.env.NEXT_PUBLIC_SUPABASE_SCHEMA ?? "public";
 const TYPING_TOPIC = `typing:${SCHEMA}`;
 const STALE_AFTER_MS = 15_000;
 

@@ -9,8 +9,9 @@ import {
   Lock,
   Search,
 } from "lucide-react";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
+
+// El módulo Alliance NO importa Header/Footer del estudio — los recibe via slots.
+// Si el caller no los pasa, el LoginScreen se renderiza standalone (full-screen).
 
 export function LoginScreen({
   cedula,
@@ -33,7 +34,7 @@ export function LoginScreen({
 }) {
   return (
     <main className="min-h-screen text-white flex flex-col relative overflow-hidden">
-      {navbarSlot ?? <Header />}
+      {navbarSlot}
 
       <section className="flex-1 flex flex-col items-center justify-center p-4 pt-32 sm:pt-40 pb-16 relative z-10">
         <motion.div
@@ -138,7 +139,7 @@ export function LoginScreen({
         </motion.div>
       </section>
 
-      {footerSlot ?? <Footer />}
+      {footerSlot}
     </main>
   );
 }

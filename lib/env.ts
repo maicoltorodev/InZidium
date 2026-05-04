@@ -1,8 +1,19 @@
 export const authSecret =
-  process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET;
+  process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
 
-export const supabaseUrl = process.env.SUPABASE_URL!;
-export const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+// DB del estudio actual — donde viven admins (NextAuth), CRM propio del
+// estudio y cualquier dato que NO sea de proyectos web. Cliente raíz
+// `supabaseAdmin/Client` en `lib/supabase/{server,client}.ts`.
+export const studioSupabaseUrl = process.env.STUDIO_SUPABASE_URL!;
+export const studioSupabaseServiceRoleKey = process.env.STUDIO_SUPABASE_SERVICE_ROLE_KEY!;
+
+// Alianza Estudios — DB multitenancy del módulo Webs (clientes/proyectos/
+// archivos/chat de proyectos web del servicio Alliance). Cliente
+// `allianceSupabaseAdmin/Client` en `lib/alliance/supabase/{server,client}.ts`.
+export const allianceSupabaseUrl = process.env.ALLIANCE_SUPABASE_URL!;
+export const allianceSupabaseServiceRoleKey =
+  process.env.ALLIANCE_SUPABASE_SERVICE_ROLE_KEY!;
+
 export const estudioId = process.env.ESTUDIO_ID!;
 
 // Expuesto al cliente para filtrar suscripciones Realtime por tenant.
@@ -23,5 +34,5 @@ export function resolveDataProvider(): "drizzle" | "mock" {
   if (explicitProvider === "drizzle" || explicitProvider === "mock") {
     return explicitProvider;
   }
-  return process.env.DATABASE_URL ? "drizzle" : "mock";
+  return process.env.ALLIANCE_DATABASE_URL ? "drizzle" : "mock";
 }

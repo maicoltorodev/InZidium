@@ -15,5 +15,5 @@ export const DataService: IDataProvider =
   providerKey === "drizzle" ? DrizzleProvider : MockProvider;
 
 // Exportación amigable para usar en componentes y acciones
-export const { clientes, proyectos, auth, chat, archivos, getSystemStatus } =
+export const { clientes, proyectos, chat, archivos, getSystemStatus } =
   DataService;

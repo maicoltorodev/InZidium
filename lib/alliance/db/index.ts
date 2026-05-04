@@ -2,7 +2,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
 
-const client = postgres(process.env.DATABASE_URL!, {
+const client = postgres(process.env.ALLIANCE_DATABASE_URL!, {
   prepare: false, // Requerido para el Transaction pooler de Supabase (pgbouncer)
 });
 export const db = drizzle(client, { schema });
